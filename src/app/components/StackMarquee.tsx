@@ -9,14 +9,20 @@ const stack = [
 ];
 
 export default function StackMarquee() {
-  const items = [...stack, ...stack];
-
   return (
     <section className="border-b border-hairline py-8">
-      <div className="overflow-hidden">
-        <div className="marquee-track flex w-max gap-12 font-mono text-sm text-muted">
-          {items.map((item, i) => (
-            <span key={`${item}-${i}`} className="whitespace-nowrap">
+      <div className="flex overflow-hidden select-none">
+        {/* We render two identical tracks side-by-side */}
+        <div className="flex shrink-0 min-w-full justify-around gap-12 font-mono text-sm text-muted animate-marquee">
+          {stack.map((item, i) => (
+            <span key={`1-${item}-${i}`} className="whitespace-nowrap">
+              {item}
+            </span>
+          ))}
+        </div>
+        <div className="flex shrink-0 min-w-full justify-around gap-12 font-mono text-sm text-muted animate-marquee" aria-hidden="true">
+          {stack.map((item, i) => (
+            <span key={`2-${item}-${i}`} className="whitespace-nowrap">
               {item}
             </span>
           ))}
