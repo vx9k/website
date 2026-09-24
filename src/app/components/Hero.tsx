@@ -1,67 +1,48 @@
-const lines = [
-  { delay: 0.0, text: "$ whoami" },
-  { delay: 0.35, text: "vx — systems engineer" },
-];
+import BootStatus from "./BootStatus";
 
 export default function Hero() {
   return (
-    <section className="relative border-b border-hairline px-6 pt-28 pb-20 sm:px-10 sm:pt-36 sm:pb-28 lg:px-16">
+    <section id="top" className="py-10 sm:py-14">
+      <p
+        className="fade-up font-mono text-sm text-muted"
+        style={{ animationDelay: "0s" }}
+      >
+        vx — systems engineer
+      </p>
+
+      <h1
+        className="fade-up mt-5 max-w-xl text-balance font-[family-name:var(--font-display)] text-4xl leading-[1.15] tracking-tight sm:text-5xl sm:leading-[1.15]"
+        style={{ animationDelay: "0.12s" }}
+      >
+        I write software meant to outlast the machine it runs on.
+      </h1>
+
+      <p
+        className="fade-up mt-6 max-w-lg text-lg leading-8 text-muted"
+        style={{ animationDelay: "0.24s" }}
+      >
+        POSIX-compliant systems, minimal init stacks, and the kind of code
+        that's still readable in ten years — because it was written to a
+        standard, not a moment.
+      </p>
+
       <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.05]"
-        style={{
-          backgroundImage:
-            "linear-gradient(var(--hairline) 1px, transparent 1px), linear-gradient(90deg, var(--hairline) 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
-        }}
-      />
-      <div className="relative mx-auto max-w-4xl">
-        <div className="font-mono text-xs text-muted">
-          {lines.map((l) => (
-            <p
-              key={l.text}
-              className="boot-line"
-              style={{ animationDelay: `${l.delay}s` }}
-            >
-              {l.text}
-            </p>
-          ))}
-        </div>
-
-        <h1
-          className="boot-line mt-6 font-mono text-4xl font-medium leading-[1.15] tracking-tight sm:text-6xl"
-          style={{ animationDelay: "0.7s" }}
+        className="fade-up mt-8 flex flex-wrap items-center gap-6"
+        style={{ animationDelay: "0.36s" }}
+      >
+        <a
+          href="#works"
+          className="rounded-full bg-ink px-6 py-3 text-sm font-medium text-background transition-colors hover:bg-clay"
         >
-          Building software that
-          <br />
-          runs anywhere, for decades.
-          <span className="caret text-signal">_</span>
-        </h1>
-
-        <p
-          className="boot-line mt-8 max-w-xl font-sans text-base leading-7 text-muted sm:text-lg"
-          style={{ animationDelay: "1.05s" }}
+          See my work
+        </a>
+        <a
+          href="https://github.com/vx9k"
+          className="text-sm font-medium text-muted underline decoration-hairline underline-offset-4 transition-colors hover:text-clay hover:decoration-clay"
         >
-          I write POSIX-compliant software, design for portability over
-          convenience, and spend as much time reading datasheets as I do
-          writing code.
-        </p>
-
-        <div
-          className="boot-line mt-10 flex flex-wrap gap-3 font-mono text-xs text-muted"
-          style={{ animationDelay: "1.3s" }}
-        >
-          {["POSIX & portability", "systems architecture", "hardware"].map(
-            (tag) => (
-              <span
-                key={tag}
-                className="rounded-none border border-hairline px-3 py-1.5"
-              >
-                {tag}
-              </span>
-            ),
-          )}
-        </div>
+          GitHub
+        </a>
+        <BootStatus />
       </div>
     </section>
   );
