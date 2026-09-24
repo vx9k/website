@@ -8,7 +8,7 @@ export default function Footer() {
 
         <div className="mt-8 flex flex-wrap gap-4 font-mono text-sm">
           <a
-            href="mailto:hello@example.com"
+            href="mailto:dev@kthread.dev"
             className="border border-hairline px-5 py-3 text-foreground transition-colors hover:border-signal hover:text-signal"
           >
             dev@kthread.dev
