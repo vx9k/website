@@ -10,6 +10,27 @@
   --clay-soft: #ecd3c1;
 }
 
+/* Automatic system preference default (applies unless data-theme="light" is explicitly set) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: #1b1815;
+    --surface: #242019;
+    --ink: #f3eee3;
+    --muted: #a99f8c;
+    --hairline: #3a3428;
+    --clay: #e58553;
+    --clay-soft: #4a2e1e;
+  }
+
+  :root:not([data-theme="light"])[data-contrast="high"] {
+    --ink: #ffffff;
+    --muted: #e6e6e6;
+    --hairline: #ffffff;
+    --background: #000000;
+    --surface: #111111;
+  }
+}
+
 [data-theme="dark"] {
   --background: #1b1815;
   --surface: #242019;

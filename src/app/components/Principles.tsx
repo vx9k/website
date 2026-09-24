@@ -19,9 +19,9 @@ export default function Principles() {
   return (
     <section
       id="principles"
-      className="border-y border-hairline bg-surface py-14 sm:py-16"
+      className="mt-10 max-w-2xl rounded-2xl border border-hairline bg-surface p-6 sm:p-8"
     >
-      <div className="grid grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-8 p-8">
+      <div className="grid grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-8">
         {principles.map((p, i) => (
           <Reveal key={p.title} className={i === 1 ? "delay-100" : i === 2 ? "delay-200" : ""}>
             <h3 className="font-[family-name:var(--font-display)] text-xl leading-snug">
