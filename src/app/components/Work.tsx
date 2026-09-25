@@ -107,14 +107,14 @@ export default function Work({ t }: { t: Dictionary }) {
         </header>
 
         <div className="grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-          <div className="flex flex-col gap-8 p-5 sm:p-8 lg:p-10">
+          <div className="flex flex-col gap-6 p-5 sm:p-8">
             <h3
               id="suite-title"
-              className="text-title font-medium"
+              className="text-[clamp(1.5rem,1.2rem+1vw,2rem)] leading-tight font-medium tracking-[-0.03em]"
             >
               4suite
             </h3>
-            <p className="max-w-[28rem] text-lg leading-8 text-pretty text-muted">
+            <p className="max-w-[28rem] leading-7 text-pretty text-muted">
               {w.suite.body}
             </p>
             <div className="mt-auto">
@@ -132,7 +132,7 @@ export default function Work({ t }: { t: Dictionary }) {
             </div>
           </div>
 
-          <div className="border-t border-line p-5 sm:p-8 lg:border-t-0 lg:border-l lg:p-10">
+          <div className="border-t border-line p-5 sm:p-8 lg:border-t-0 lg:border-l lg:p-8">
             <p className="eyebrow">{w.suite.components}</p>
             <ul className="tree mt-5 space-y-5" aria-label={w.suite.componentsLabel}>
               {suiteTree.map((n) => (
@@ -157,11 +157,11 @@ export default function Work({ t }: { t: Dictionary }) {
           </p>
           <RepoLink href={links.website} label="github.com/vx9k/website" />
         </header>
-        <div className="grid gap-8 p-5 sm:p-8 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] md:gap-12 lg:p-10">
+        <div className="grid gap-8 p-5 sm:p-8 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] md:gap-12 lg:p-8">
           <div>
             <h3
               id="site-title"
-              className="text-subhead font-medium"
+              className="text-[clamp(1.5rem,1.2rem+1vw,2rem)] leading-tight font-medium tracking-[-0.03em]"
             >
               website
             </h3>
@@ -173,7 +173,7 @@ export default function Work({ t }: { t: Dictionary }) {
             rows={[
               [w.spec.language, "TypeScript"],
               [w.spec.framework, "Next.js"],
-              [w.spec.graphics, "WebGPU, WGSL"],
+              [w.spec.graphics, "SVG"],
               [w.spec.hosting, "Cloudflare Workers"],
             ]}
           />

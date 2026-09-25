@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import "../globals.css";
-import CanopyField from "../components/CanopyField";
 import OfflineBanner from "../components/OfflineBanner";
 import { bootScript, fontVariables } from "../document";
 import { getDictionary, hasLocale, localeKeys, locales } from "../i18n";
@@ -78,11 +77,10 @@ export default async function RootLayout({
       <body className="flex min-h-dvh flex-col overflow-x-clip text-ink antialiased">
         <a
           href="#main"
-          className="glass eyebrow fixed top-3 left-3 z-[60] -translate-y-24 px-5 py-3.5 text-ink! focus-visible:translate-y-0"
+          className="panel eyebrow fixed top-3 left-3 z-[60] -translate-y-24 px-5 py-3.5 text-ink! focus-visible:translate-y-0"
         >
           {t.skip}
         </a>
-        <CanopyField />
         {children}
         <OfflineBanner text={t.offline} />
       </body>

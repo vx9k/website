@@ -121,7 +121,7 @@ export default function FlagsPanel({ text }: { text: FlagsText }) {
         role="group"
         aria-label={text.label}
         hidden={!open}
-        className="glass glass-dense absolute top-[calc(100%+0.6rem)] right-0 z-50 w-[min(21rem,calc(100vw-2.5rem))]"
+        className="panel absolute top-[calc(100%+0.6rem)] right-0 z-50 w-[min(21rem,calc(100vw-2.5rem))]"
       >
         <p className="eyebrow border-b border-line px-4 py-3">{text.button}</p>
         <ul className="p-1">

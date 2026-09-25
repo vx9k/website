@@ -107,7 +107,7 @@ const es: Dictionary = {
     },
     site: {
       eyebrow: "Este sitio",
-      body: "Un export estático de Next.js servido desde Cloudflare Workers. El humo color brasa detrás de la portada es un shader WebGPU que recurre a WebGL2 y, si no, a CSS simple. La página te avisa cuando te quedas sin conexión, tiene un modo papel para pantallas de tinta electrónica y está en inglés, español y portugués.",
+      body: "Un export estático de Next.js servido desde Cloudflare Workers. Las montañas de la portada son pixel art: se generan al compilar el sitio y llegan como un único SVG, sin scripts. La página te avisa cuando te quedas sin conexión, tiene un modo papel para pantallas de tinta electrónica y está en inglés, español y portugués.",
     },
   },
   stack: {

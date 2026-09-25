@@ -2,7 +2,7 @@
 
 Source for [kthread.dev](https://kthread.dev), the personal site of [vx](https://github.com/vx9k).
 
-It's a single static page built with Next.js and Tailwind CSS, exported to plain HTML and served from Cloudflare Workers at [kthread.dev](https://kthread.dev). The background is a WebGPU shader with WebGL2 and CSS fallbacks. The site keeps working offline, and a Display menu offers high contrast, reduced motion, larger text and a paper mode for e-ink screens.
+It's a single static page built with Next.js and Tailwind CSS, exported to plain HTML and served from Cloudflare Workers at [kthread.dev](https://kthread.dev). The mountains under the headline are pixel art, generated at build time as a single SVG. The site keeps working offline, and a Display menu offers high contrast, reduced motion, larger text and a paper mode for e-ink screens.
 
 ## Running it
 
@@ -33,7 +33,7 @@ src/app/
 ├── icon.svg            favicon
 ├── apple-icon.png      home-screen icon
 └── components/
-    ├── Header.tsx          sticky header with section nav and the Display menu
+    ├── Header.tsx          masthead with the language switch and the Display menu
     ├── Hero.tsx            headline, facts and calls to action
     ├── Principles.tsx      ┐
     ├── Work.tsx            │ page sections, each wrapped in the shared
@@ -41,11 +41,12 @@ src/app/
     ├── Contact.tsx         ┘
     ├── Footer.tsx
     ├── SectionHeading.tsx  <Section>: rule, index column and title layout
-    ├── SectionNav.tsx      header links that track the section on screen
+    ├── SectionNav.tsx      side menu that tracks the section on screen
     ├── FlagsPanel.tsx      the Display menu
     ├── OfflineBanner.tsx   notice shown when the connection drops
-    ├── CanopyField.tsx     background: CSS gradient, upgraded to the GPU shader when allowed
-    └── canopy-gpu.ts       WebGPU and WebGL2 renderers, loaded lazily
+    ├── PixelScene.tsx      pixel-art mountains, generated at build time from a seed
+    ├── PixelMark.tsx       the pixel "vx" mark
+    └── Campfire.tsx        the footer's pixel campfire
 ```
 
 Other files at the root:

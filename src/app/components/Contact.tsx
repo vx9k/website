@@ -6,21 +6,13 @@ export default function Contact({ t }: { t: Dictionary }) {
   const { kicker, title, quote, source } = t.contact;
   return (
     <Section id="contact" index="04" kicker={kicker} title={title}>
-      <figure className="reveal mx-auto max-w-[60rem] text-center sm:mx-0 sm:text-left">
-        <blockquote className="text-[clamp(1.75rem,1rem+2.4vw,3.25rem)] leading-[1.1] font-medium tracking-[-0.04em] text-balance">
-          <p>
-            <span aria-hidden className="text-ember">
-              “
-            </span>
-            {quote}
-            <span aria-hidden className="text-ember">
-              ”
-            </span>
-          </p>
+      <figure className="reveal max-w-[44rem] border-l-2 border-ember pl-5 sm:pl-7">
+        <blockquote className="text-[clamp(1.25rem,1rem+1vw,1.75rem)] leading-[1.35] font-medium tracking-[-0.02em] text-pretty">
+          <p>{quote}</p>
         </blockquote>
       </figure>
 
-      <div className="reveal mt-12 flex flex-wrap justify-center gap-3 sm:mt-16 sm:justify-start">
+      <div className="reveal mt-10 flex flex-wrap gap-3">
         <a href={links.github} className="group btn btn-solid">
           github.com/vx9k
           <span

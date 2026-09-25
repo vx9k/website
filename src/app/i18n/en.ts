@@ -105,7 +105,7 @@ const en = {
     },
     site: {
       eyebrow: "This site",
-      body: "A static Next.js export served from Cloudflare Workers. The ember smoke behind the hero is a WebGPU shader that falls back to WebGL2, then to plain CSS. The page tells you when you go offline, has a paper mode for e-ink screens, and reads in English, Spanish and Portuguese.",
+      body: "A static Next.js export served from Cloudflare Workers. The mountains at the top are pixel art, generated when the site is built and shipped as a single SVG with no script. The page tells you when you go offline, has a paper mode for e-ink screens, and reads in English, Spanish and Portuguese.",
     },
   },
   stack: {

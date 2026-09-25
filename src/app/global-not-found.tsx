@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { bootScript, fontVariables } from "./document";
+import PixelMark from "./components/PixelMark";
+import PixelScene from "./components/PixelScene";
 import { getDictionary, localeKeys, locales } from "./i18n";
 
 export { viewport } from "./document";
@@ -57,25 +59,21 @@ export default function GlobalNotFound() {
       <body className="flex min-h-dvh flex-col overflow-x-clip text-ink antialiased">
         <main
           id="main"
-          className="shell flex flex-1 items-center py-[max(3rem,env(safe-area-inset-top))]"
+          className="shell flex flex-1 items-center pt-[max(3rem,env(safe-area-inset-top))] pb-8"
         >
           {localeKeys.map((l) => {
             const t = getDictionary(l).notFound;
             return (
-              <div
-                key={l}
-                className={`card w-full max-w-2xl p-6 sm:p-10 ${visibility[l]}`}
-              >
-                <a
-                  href={`/${l}`}
-                  className="inline-flex min-h-11 items-center text-xl font-semibold tracking-[-0.06em] text-ink"
-                >
-                  vx
+              <div key={l} className={`w-full max-w-2xl ${visibility[l]}`}>
+                <a href={`/${l}`} className="inline-flex min-h-11 items-center">
+                  <PixelMark className="h-[15px] w-[33px]" />
+                  <span className="sr-only">vx</span>
                 </a>
 
-                <p className="eyebrow mt-10">
+                <p className="eyebrow mt-10 flex items-center gap-2.5">
+                  <span aria-hidden className="size-1.5 bg-ember" />
                   <span className="text-ember">404</span>
-                  <span aria-hidden className="px-2 text-faint">
+                  <span aria-hidden className="text-faint">
                     /
                   </span>
                   {t.eyebrow}
@@ -97,6 +95,8 @@ export default function GlobalNotFound() {
             );
           })}
         </main>
+        {/* A different range from the home page's: same generator, new seed. */}
+        <PixelScene seed={404} className="aspect-[200/72] max-h-[28rem] min-h-44" />
       </body>
     </html>
   );
