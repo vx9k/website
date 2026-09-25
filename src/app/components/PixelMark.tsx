@@ -18,7 +18,7 @@ export default function PixelMark({ className = "" }: { className?: string }) {
       className={className}
     >
       <path className="fill-ink" d={v.path()} />
-      <path className="fill-ember" d={x.path()} />
+      <path className="fill-accent" d={x.path()} />
     </svg>
   );
 }

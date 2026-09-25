@@ -1,30 +1,33 @@
 import type { Viewport } from "next";
-import { IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
+import { Pixelify_Sans, Silkscreen } from "next/font/google";
 
 // Shared by the root layout and the global 404, which renders its own
 // <html> and so can't inherit anything from the layout.
 
-// Instrument Sans is variable (weight and width), so one file covers
-// every weight the page uses. Plex Mono is static; only 400 and 500 load.
-// The latin subset covers every accented letter Spanish and Portuguese use.
-const instrument = Instrument_Sans({
-  variable: "--font-instrument",
-  subsets: ["latin"],
+// Pixelify Sans is variable, so one file covers every weight; it carries
+// all the accents Spanish and Portuguese need. Silkscreen is the tiny
+// label face, drawn on an 8px grid, and only loads its regular weight.
+const pixelify = Pixelify_Sans({
+  variable: "--font-pixelify",
+  subsets: ["latin", "latin-ext"],
   display: "swap",
 });
 
-const plexMono = IBM_Plex_Mono({
-  variable: "--font-plex-mono",
-  subsets: ["latin"],
-  weight: ["400", "500"],
+const silkscreen = Silkscreen({
+  variable: "--font-silkscreen",
+  subsets: ["latin", "latin-ext"],
+  weight: "400",
   display: "swap",
 });
 
-export const fontVariables = `${instrument.variable} ${plexMono.variable}`;
+export const fontVariables = `${pixelify.variable} ${silkscreen.variable}`;
+
+// Dustbyte's plum and cream, for the browser chrome at night and by day.
+export const themeColors = { night: "#372a39", day: "#f5e9bf" };
 
 export const viewport: Viewport = {
-  themeColor: "#0c0808",
-  colorScheme: "dark",
+  themeColor: themeColors.night,
+  colorScheme: "dark light",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -32,34 +35,35 @@ export const viewport: Viewport = {
 
 // Runs before first paint. Combines the visitor's saved flags with their
 // system preferences and writes the result onto <html> as data attributes,
-// which is all the CSS looks at. Exposed as window.__vxFlags.apply so the
-// settings panel reuses exactly this logic instead of duplicating it.
+// which is all the CSS looks at. Exposed as window.__vxFlags so the Display
+// menu and the sun in the hero reuse exactly this logic.
+//
+//   day     saved true/false wins; unset follows prefers-color-scheme
+//   motion  saved true, or prefers-reduced-motion
+//   large   saved true
 export const bootScript = `(function () {
   var d = document.documentElement;
   d.classList.add("js");
   function mq(q) { try { return window.matchMedia(q).matches; } catch (e) { return false; } }
   function read() {
-    try {
-      var s = JSON.parse(localStorage.getItem("vx-flags") || "null");
-      if (s) return s;
-      var old = JSON.parse(localStorage.getItem("vx-settings") || "{}");
-      return { contrast: old.contrast === "high", motion: old.motion === "reduced" };
-    } catch (e) { return {}; }
+    try { return JSON.parse(localStorage.getItem("vx-flags") || "{}") || {}; } catch (e) { return {}; }
+  }
+  function save(s) {
+    try { localStorage.setItem("vx-flags", JSON.stringify(s)); } catch (e) {}
   }
   function set(name, on, value) { on ? d.setAttribute(name, value) : d.removeAttribute(name); }
   function apply() {
     var s = read();
-    var eink = !!s.eink || mq("(update: slow)") || mq("(monochrome)");
-    set("data-contrast", !!s.contrast || mq("(prefers-contrast: more)"), "high");
+    var day = typeof s.day === "boolean" ? s.day : mq("(prefers-color-scheme: light)");
+    set("data-theme", day, "day");
     set("data-motion", !!s.motion || mq("(prefers-reduced-motion: reduce)"), "reduced");
-    set("data-display", eink, "eink");
     set("data-text", !!s.large, "large");
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", eink ? "#ffffff" : d.hasAttribute("data-contrast") ? "#000000" : "#0c0808");
+    if (meta) meta.setAttribute("content", day ? "${themeColors.day}" : "${themeColors.night}");
   }
-  window.__vxFlags = { read: read, apply: apply };
+  window.__vxFlags = { read: read, save: save, apply: apply };
   apply();
-  ["(prefers-contrast: more)", "(prefers-reduced-motion: reduce)", "(update: slow)", "(monochrome)"].forEach(function (q) {
+  ["(prefers-color-scheme: light)", "(prefers-reduced-motion: reduce)"].forEach(function (q) {
     try { window.matchMedia(q).addEventListener("change", apply); } catch (e) {}
   });
 })();`;

@@ -71,16 +71,16 @@ export default function GlobalNotFound() {
                 </a>
 
                 <p className="eyebrow mt-10 flex items-center gap-2.5">
-                  <span aria-hidden className="size-1.5 bg-ember" />
-                  <span className="text-ember">404</span>
-                  <span aria-hidden className="text-faint">
+                  <span aria-hidden className="size-[6px] bg-accent" />
+                  <span>404</span>
+                  <span aria-hidden>
                     /
                   </span>
                   {t.eyebrow}
                 </p>
                 <h1 className="mt-4 text-title font-medium">{t.title}</h1>
 
-                <p className="mt-6 max-w-lg leading-7 text-muted">{t.body}</p>
+                <p className="mt-6 max-w-lg leading-7">{t.body}</p>
 
                 <a href={`/${l}`} className="group btn btn-solid mt-10">
                   {t.back}

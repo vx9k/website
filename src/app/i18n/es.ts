@@ -22,11 +22,17 @@ const es: Dictionary = {
     button: "Pantalla",
     label: "Ajustes de pantalla",
     systemOn: "activado: lo pide tu sistema",
-    note: "Se guarda en este dispositivo. Los ajustes de tu sistema para contraste, movimiento y pantallas de tinta electrónica se aplican solos.",
-    contrast: { label: "Alto contraste", hint: "Colores sólidos, bordes más marcados" },
+    note: "Se guarda en este dispositivo. Los ajustes de tu sistema para movimiento y modo claro u oscuro se aplican solos.",
+    day: { label: "Luz de día", hint: "Papel crema en lugar del cielo nocturno" },
     motion: { label: "Reducir movimiento", hint: "Desactiva las animaciones" },
-    eink: { label: "Papel (tinta electrónica)", hint: "Negro sobre blanco, para pantallas de tinta electrónica" },
     large: { label: "Texto más grande", hint: "Letra 25% más grande" },
+  },
+  scene: {
+    hint: "Algunos píxeles hacen cosas: prueba el sol o la luna, la cabaña y la fogata al final de la página.",
+    toDay: "Hacer salir el sol",
+    toNight: "Hacer salir la luna",
+    light: "Luz de la cabaña",
+    fire: "Avivar la fogata",
   },
   offline: {
     down: "Estás sin conexión. Las páginas que ya abriste siguen funcionando.",
@@ -107,7 +113,7 @@ const es: Dictionary = {
     },
     site: {
       eyebrow: "Este sitio",
-      body: "Un export estático de Next.js servido desde Cloudflare Workers. Las montañas de la portada son pixel art: se generan al compilar el sitio y llegan como un único SVG, sin scripts. La página te avisa cuando te quedas sin conexión, tiene un modo papel para pantallas de tinta electrónica y está en inglés, español y portugués.",
+      body: "Un export estático de Next.js servido desde Cloudflare Workers. Las montañas de la portada son pixel art: se generan al compilar el sitio y llegan como un único SVG, sin scripts. La página te avisa cuando te quedas sin conexión, cambia la noche por el día cuando tocas la luna y está en inglés, español y portugués.",
     },
   },
   stack: {

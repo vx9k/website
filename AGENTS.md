@@ -22,7 +22,7 @@ pnpm wrangler dev  # serve out/ through the Workers runtime, as in production
 pnpm lint        # currently broken: typescript-eslint doesn't support TypeScript 7 yet
 ```
 
-There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler dev`) and looking at it in a browser at desktop and phone widths, in every display mode (see below).
+There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler dev`) and looking at it in a browser at desktop and phone widths, by night and by day, and with reduced motion on. Click and tap every interactive sprite you touched.
 
 ## Stack
 
@@ -41,19 +41,20 @@ src/worker.ts         runs for "/" only: redirects to /en, /es or /pt
 src/app/
   [lang]/layout.tsx   root layout per language: <html lang>, metadata, hreflang
   [lang]/page.tsx     the page: Header, Hero, Principles, Work, Stack, Contact, Footer
-  document.ts         fonts, viewport and the pre-paint display-mode script
+  document.ts         fonts, viewport, theme colours and the pre-paint theme and flags script
   global-not-found.tsx  exported as 404.html; carries all three languages
   content.ts          language-neutral data (links, section ids, suite tree, tool names)
   i18n/               en.ts (source of truth), es.ts, pt.ts, locales.ts
-  globals.css         design tokens, display modes, utilities, motion
+  globals.css         the palette, themes, pixel primitives, the scene's styles, motion
+  pixel.ts            build-time pixel helpers: seeded PRNG, sprites, ridges, path merging
   components/
     SectionHeading.tsx  <Section>: the shared frame every section below the hero uses
     PixelScene.tsx      the hero's pixel-art mountains, generated at build time from a seed
+    SceneControls.tsx   the buttons over the scene: sun/moon swaps day and night, the cabin's light
+    Campfire.tsx        the footer's campfire; tap it to stoke it
     PixelMark.tsx       the pixel "vx" mark in the header (icon.svg draws the same grid)
-    Campfire.tsx        the footer's two-frame pixel campfire
-  pixel.ts            build-time pixel helpers: seeded PRNG, sprites, ridges, path merging
-    FlagsPanel.tsx      the "Display" menu (contrast, motion, e-ink, text size)
-    SectionNav.tsx      header nav with active-section tracking
+    FlagsPanel.tsx      the "Display" menu (daylight, motion, text size)
+    SectionNav.tsx      side menu with active-section tracking
     LanguageSwitch.tsx  EN / ES / PT links; saves the choice in localStorage["vx-lang"]
 ```
 
@@ -74,52 +75,73 @@ src/app/
 
 ## Design direction
 
-The reference is [suckless.org](https://suckless.org), modernised: a plain masthead, a side menu beside a single column of content that reads like a document, modest type and nothing ornamental in the layout itself. The fun lives in pixel art: a mountain range at dusk under the hero (an ember sun, snow, pines, a cabin with a lit window, stars, a passing flock and a rare shooting star), a pixel "vx" mark, a pixel pointer in the side menu and a campfire in the footer. Kept from the previous direction: the red palette, Instrument Sans and Plex Mono, 3px corners and hairlines.
+Pixel art, retro, and minimal. The layout follows [suckless.org](https://suckless.org): a plain masthead, a side menu beside a single column of content that reads like a document, and nothing in the layout that's only there for show. The character comes from everything being drawn in pixels, in four colours: a pixel-art mountain range under the hero, pixel type, stepped frames, chunky buttons that press down, and small sprites you can play with.
 
-**Tokens** (in `globals.css`, redefined for every display mode):
-- Surfaces: `--bg` `#0c0808`, `--surface` `#140e0e` (cards), `--raised`.
-- Text: `--ink`, `--muted`, `--faint`. These are solid colours, all AA on `--bg` and `--surface`. Don't use opacity for text.
-- **One accent: `--ember`** (`#ef5b45`) for highlights, active states, status and the focus ring. `--blush` is only the primary button fill. `--sun` is reserved for warnings (the offline banner).
-- `--radius: 3px` on everything: buttons, chips, cards, menus.
+**Palette.** Four colours, [Dustbyte](https://lospec.com/palette-list/dustbyte) by polyphrog, and nothing else: no tints, no opacity for colour, no gradients, no fifth colour.
+
+| Token | Colour | Night | Day |
+| --- | --- | --- | --- |
+| `--plum` | `#372a39` | `--bg` | `--ink` |
+| `--cream` | `#f5e9bf` | `--ink` | `--bg` |
+| `--sage` | `#788374` | `--line` | `--line` |
+| `--rust` | `#aa644d` | `--accent` | `--accent` |
+
+Contrast decides what each colour may do. Only plum and cream pass AA for text against each other (11.1:1), so **all text is `--ink` on `--bg`**, at every size. Sage (3.4:1 on plum, 3.3:1 on cream) draws lines, frames and control edges, and may colour purely decorative glyphs. Rust (3.7:1 on cream, 3.0:1 on plum) is fills, marks, the button lip and the hero's highlight block; text on rust is cream and display-sized only. Hierarchy comes from size, weight and typeface, never from a paler text colour.
+
+**Type.** Pixelify Sans for everything, headings at 600 and body at 400, using the scale in `@theme` (`text-display`, `text-title`, `text-subhead`, `text-lede`). Silkscreen, uppercase, only for small labels via `eyebrow` and `chip`. No negative tracking on pixel faces, and ligatures stay off.
+
+**Pixel primitives** (in `globals.css`). `--px` is one art pixel of the interface, 3px; frames, rules, underlines and offsets are multiples of it.
+- `px-frame`: a stepped outline one art pixel wide, with the corner pixels left empty. It's how boxes are drawn: cards, chips, menus, the banner. It sits outside the element, so give framed things room (`m-[var(--px)]`). Set `--frame` to recolour it.
+- `.btn` and `.btn-solid`: a stepped frame on a rust or sage lip; pressing (click or tap) drops the button onto its lip. Sentence case, with an arrow.
+- `rule-t` / `rule-b`: dashed pixel rules, two art pixels on and two off. They separate list rows and spec rows; sections are separated by space.
+- `link`: a rust underline one art pixel thick. Hover on any text link or menu item inverts it into an ink block.
+- `px-switch`: the square-knobbed switch in the Display menu.
+- Pixel cursors (arrow and hand) are set on `html` and on interactive elements.
+
+**Pixel art.** Inline SVG built with `Pixels` in `pixel.ts`: one viewBox unit per art pixel, `shapeRendering="crispEdges"`, and a whole number of screen pixels per art pixel wherever the size is fixed (the header mark and the campfire are 3px per pixel). Colour it with the palette tokens or `--px-*`, never literal colours. Sprite motion moves in whole pixels with `steps()`, and frame swaps are hard cuts.
+
+**Interactive sprites.** Anything in the art that responds to a click also responds to a tap and to the keyboard, because it's a real `<button>`: at least 44px square, with an `aria-label` from the dictionaries, a `title` for mouse users, and the ink focus square. Over the scene, buttons are positioned in grid units (`--gx`, `--gy`, `--gw`, `--gh`) and `.scene-button` turns those into CSS with container query units, matching the SVG's `slice` scaling. What exists today:
+- the sun or moon: sinks behind the ridge and brings up the other, swapping day and night (saved like the Display menu's switch)
+- the cabin: switches its window light, and the chimney smoke with it
+- the campfire: stoking it speeds the flicker and throws sparks
+
+Interactions are small, reversible and optional: nothing on the page depends on finding them, and the hint under the scene says they exist. Every one needs a visible result with motion off.
 
 **Do:**
-- Type: Instrument Sans at weight 500 for headings, using the scale in `@theme` (`text-display`, `text-title`, `text-subhead`, `text-lede`; tracking and line height are built in). IBM Plex Mono, uppercase and lightly tracked, only for small labels, via `eyebrow` and `chip`.
-- Use the `<Section>` frame for every section below the hero: a numbered mono label led by one ember pixel, a title with an optional aside under it, then the content. Everything is left-aligned at every width. Separate sections with space; hairlines go inside lists and cards.
-- Use `card` for raised content, `chip` for statuses and short facts (the glyph carries meaning, not just colour), and spec tables (`dl` rows with hairlines) for facts.
-- Buttons: `.btn` (dark, hairline) and `.btn-solid` (blush), in sentence case with an arrow.
-- Pixel art is inline SVG built from `Pixels` in `pixel.ts`: one viewBox unit per art pixel, `shapeRendering="crispEdges"`, and a rendered size that's a whole multiple of the grid where it's fixed (the header mark is 3px per pixel). Colour it with the `--px-*` tokens or theme tokens, never literal colours. Sprite motion moves in whole pixels with `steps()`.
-- Keep pixel art decorative and sparse: one scene, a few small sprites. Text stays in the real fonts; no pixel fonts for copy.
+- Use the `<Section>` frame for every section below the hero: a Silkscreen label led by one rust pixel, a title with an optional aside under it, then the content. Everything is left-aligned at every width.
+- Use `px-frame` boxes for grouped content, `chip` for statuses and short facts (the glyph carries meaning, not just colour: filled, half and empty squares), and spec tables (`dl` rows with dashed rules) for facts.
+- Keep the art sparse: one scene, a few sprites, each with a reason to be there.
 
 **Don't:**
-- Pills, `rounded-full` on anything that isn't a dot, or radii other than `--radius`.
-- A second accent colour, gradients on text, or purple/blue "AI" gradients.
-- Terminal or hacker clichés: fake shells, `$` prompts, boot logs, blinking cursors, `>_` logos, CLI-flag labels, kernel-panic jokes.
-- The earlier Helsing/Palantir motifs: blueprint grid lines, crosshairs, corner ticks, square-cut everything.
+- Rounded corners of any kind, pills, blur, soft shadows, gradients (other than the ones that draw pixel rules), or opacity used as a colour.
+- Colours outside the four, or grey text.
+- Terminal or hacker clichés: fake shells, `$` prompts, boot logs, blinking text cursors, `>_` logos, CLI-flag labels, kernel-panic jokes. Retro here means pixel art and games, not terminals.
+- Smooth, eased motion on sprites, or animation that moves layout.
 - Three equal feature cards in a row.
 
 Design-oriented agent skills live in `.claude/skills/`. Use them for visual work, but this section wins where they disagree.
 
-## Display modes and accessibility
+## Themes and accessibility
 
-Target WCAG 2.2 AA. An inline script in `layout.tsx` runs before paint and sets attributes on `<html>` from saved flags (`localStorage["vx-flags"]`) and system preferences. CSS reads only those attributes:
+Target WCAG 2.2 AA. An inline script (`bootScript` in `document.ts`) runs before paint and sets attributes on `<html>` from saved flags (`localStorage["vx-flags"]`) and system preferences. CSS reads only those attributes:
 
 | Attribute | Trigger | Effect |
 | --- | --- | --- |
-| `data-contrast="high"` | toggle, `prefers-contrast: more` | pure black/white, opaque surfaces, 2px borders |
-| `data-motion="reduced"` | toggle, `prefers-reduced-motion` | no animation; sprites hold their first frame |
-| `data-display="eink"` | toggle, `update: slow`, `monochrome` | black on white, **no grey at all**, nothing moves |
-| `data-text="large"` | toggle | root font size 125% |
+| `data-theme="day"` | the sun/moon, the Display menu, `prefers-color-scheme: light` | cream paper, plum ink, the sun instead of the moon |
+| `data-motion="reduced"` | Display menu, `prefers-reduced-motion` | no animation; sprites hold their first frame |
+| `data-text="large"` | Display menu | root font size 125% |
 
-Use the Tailwind variants `eink:` and `hc:` for mode-specific styles. For every visual change:
-- Colours come from the CSS tokens in `globals.css` (`--ink`, `--muted`, `--line`, `--ember`, …), and each mode redefines them. New tokens need a value in every mode block, including print and the no-JS `prefers-contrast` fallback.
-- Decoration (the pixel scene's sky, sun, stars, far range and snow; glows, tinted fills) must disappear or turn solid in e-ink and high contrast. The scene keeps only its two front ranges there, as a solid silhouette.
-- Check it with each mode on. To preview a mode without clicking, set `localStorage["vx-flags"]` to `{"eink":true}` or `{"contrast":true}` and reload.
-- Keep semantic landmarks, `aria-labelledby` on sections, the skip link, visible `:focus-visible` rings, 44px minimum touch targets and `aria-hidden` on purely decorative glyphs.
+A saved `day` choice wins over the system; with none saved, the theme follows the system. There is no high-contrast, e-ink or print mode. The one concession to forced colours (Windows contrast themes) is a small rule in `globals.css` that hides the scene and gives frames a real border.
+
+For every visual change:
+- Colours come from the tokens, and both themes must work. A new token needs a night value in `:root` and, if it differs, a day value in `[data-theme="day"]`. The `day:` Tailwind variant is there for one-offs.
+- Check it by night and by day. To preview without clicking, set `localStorage["vx-flags"]` to `{"day":true}` or `{"motion":true}` and reload.
+- Keep semantic landmarks, `aria-labelledby` on sections, the skip link, visible `:focus-visible` squares, 44px minimum touch targets and `aria-hidden` on purely decorative art.
 - Motion uses `transform`/`opacity` only and must be covered by the reduced-motion rules.
 
 ## Performance
 
-The page is static and small; keep it that way. No new runtime dependencies without a strong reason. The pixel art is generated at build time and ships as a few SVG paths with no script; its motion is a handful of CSS animations that the reduced-motion rules switch off. Keep any new effects to that standard: no canvas, no runtime rendering.
+The page is static and small; keep it that way. No new runtime dependencies without a strong reason. The pixel art is generated at build time and ships as a few SVG paths; its motion is a handful of CSS animations that the reduced-motion rules switch off. The only script it needs is the small client component for the buttons over the scene and the campfire. Keep any new effects to that standard: no canvas, no runtime rendering, no animation libraries.
 
 ## Code style
 

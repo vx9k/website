@@ -41,15 +41,13 @@ export default function LanguageSwitch({
                   remember(l);
                   if (!current) e.currentTarget.hash = window.location.hash;
                 }}
-                className={`relative inline-flex min-h-11 min-w-11 items-center justify-center font-mono text-[0.75rem] font-medium tracking-[0.06em] transition-colors ${
-                  current ? "text-ink" : "text-muted hover:text-ink"
-                }`}
+                className="relative inline-flex min-h-11 min-w-11 items-center justify-center font-label text-[0.75rem] hover:bg-ink hover:text-bg"
               >
                 {short}
                 <span className="sr-only"> {name}</span>
                 <span
                   aria-hidden
-                  className={`absolute inset-x-3 bottom-2 h-px bg-ember transition-opacity ${
+                  className={`absolute inset-x-3 bottom-1.5 h-[var(--px)] bg-accent ${
                     current ? "opacity-100" : "opacity-0"
                   }`}
                 />

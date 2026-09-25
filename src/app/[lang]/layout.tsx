@@ -77,7 +77,7 @@ export default async function RootLayout({
       <body className="flex min-h-dvh flex-col overflow-x-clip text-ink antialiased">
         <a
           href="#main"
-          className="panel eyebrow fixed top-3 left-3 z-[60] -translate-y-24 px-5 py-3.5 text-ink! focus-visible:translate-y-0"
+          className="px-frame eyebrow fixed bg-bg top-3 left-3 z-[60] -translate-y-24 px-5 py-3.5 text-ink! focus-visible:translate-y-0"
         >
           {t.skip}
         </a>
