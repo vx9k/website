@@ -18,18 +18,21 @@ The personal site of vx ([github.com/vx9k](https://github.com/vx9k)), live at [k
 pnpm install     # pnpm only; the lockfile is committed
 pnpm dev         # local dev server (also rewrites the block above; leave it)
 pnpm build       # static export to out/: the check that must pass
+pnpm wrangler dev  # serve out/ through the Workers runtime, as in production
 pnpm lint        # currently broken: typescript-eslint doesn't support TypeScript 7 yet
 ```
 
-There are no tests. Verify a change by building, serving `out/` (`python3 -m http.server -d out`) and looking at it in a browser at desktop and phone widths, in every display mode (see below).
+There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler dev`) and looking at it in a browser at desktop and phone widths, in every display mode (see below).
 
 ## Stack
 
-- **Next.js 16, App Router, `output: "export"`.** Fully static and hosted on GitHub Pages, so there are no server features: no route handlers, no server actions, no `next/image` optimisation, no middleware. `experimental.useOffline` powers the offline banner.
+- **Next.js 16, App Router, `output: "export"`.** Fully static and served as Cloudflare Workers static assets (`wrangler.jsonc`), so there are no server features: no route handlers, no server actions, no `next/image` optimisation, no middleware. `experimental.useOffline` powers the offline banner.
 - **React 19 with the React Compiler.** Don't hand-write `useMemo`/`useCallback` for performance.
 - **Tailwind CSS v4.** Configured in CSS (`@theme`, `@utility`, `@custom-variant` in `globals.css`). There's no `tailwind.config.*`.
 - **TypeScript 7**, strict. `@/*` maps to `src/*`.
-- Deploys on every push to `main` via `.github/workflows/deploy.yml`. Work on a branch and open a PR.
+- Deployed by Cloudflare Workers Builds, connected to this repo: every push to `main` runs `pnpm run build` then `pnpm wrangler deploy`, and every other branch gets a preview URL posted on its PR. Work on a branch, open a PR, and check the preview.
+- The Worker is named `website`; the `name` in `wrangler.jsonc` must match it or builds fail. Build and deploy commands live in the Cloudflare dashboard, not in the repo; they use `pnpm wrangler …` so the pinned wrangler runs, never `pnpm dlx`/`npx` without a local install. pnpm's version comes from `packageManager` in `package.json`.
+- Response headers for static files live in `public/_headers` (copied into `out/`).
 
 ## Layout of the code
 

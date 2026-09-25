@@ -164,7 +164,7 @@ export default function Work() {
               website
             </h3>
             <p className="mt-5 max-w-[34rem] leading-7 text-pretty text-muted">
-              A static Next.js export on GitHub Pages. The forest behind this
+              A static Next.js export on Cloudflare Workers. The forest behind this
               text is a WebGPU shader with WebGL2 and plain CSS fallbacks, it
               keeps working offline, and it has a paper mode for e-ink
               screens.
@@ -175,7 +175,7 @@ export default function Work() {
               ["Language", "TypeScript"],
               ["Framework", "Next.js"],
               ["Graphics", "WebGPU, WGSL"],
-              ["Hosting", "GitHub Pages"],
+              ["Hosting", "Cloudflare Workers"],
             ]}
           />
         </div>

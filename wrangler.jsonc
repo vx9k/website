@@ -1,0 +1,17 @@
+// Cloudflare Workers config. The site is a static export, so there's no
+// Worker script: Cloudflare serves the files in out/ directly.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "website",
+  "compatibility_date": "2026-09-25",
+  "assets": {
+    "directory": "./out",
+    // Unknown paths get out/404.html with a real 404 status.
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  },
+  // Every non-production branch gets its own Preview URL (posted on its
+  // PR). Empty because previews use the same settings as production.
+  "preview_urls": true,
+  "previews": {}
+}

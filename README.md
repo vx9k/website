@@ -2,7 +2,7 @@
 
 Source for [kthread.dev](https://kthread.dev), the personal site of [vx](https://github.com/vx9k).
 
-It's a single static page built with Next.js and Tailwind CSS, exported to plain HTML and hosted on GitHub Pages. The background is a WebGPU shader with WebGL2 and CSS fallbacks. The site keeps working offline, and a Display menu offers high contrast, reduced motion, larger text and a paper mode for e-ink screens.
+It's a single static page built with Next.js and Tailwind CSS, exported to plain HTML and served from Cloudflare Workers. The background is a WebGPU shader with WebGL2 and CSS fallbacks. The site keeps working offline, and a Display menu offers high contrast, reduced motion, larger text and a paper mode for e-ink screens.
 
 ## Running it
 
@@ -16,8 +16,8 @@ pnpm dev          # dev server at http://localhost:3000
 To build the static site the way it's deployed:
 
 ```sh
-pnpm build                          # writes the site to out/
-python3 -m http.server -d out 8000  # or any static file server
+pnpm build          # writes the site to out/
+pnpm wrangler dev   # serves out/ through the Workers runtime at http://localhost:8787
 ```
 
 ## Structure
@@ -54,7 +54,8 @@ Other files at the root:
 | --- | --- |
 | `AGENTS.md` | Guide for anyone (or any coding agent) changing the site: design rules, accessibility checks, content rules. `CLAUDE.md` points to it. |
 | `.agents/skills/`, `.claude/skills/` | Design skills for coding agents, pinned in `skills-lock.json`. |
-| `.github/workflows/deploy.yml` | Builds and deploys to GitHub Pages. |
+| `wrangler.jsonc` | Cloudflare Workers config: serves `out/` as static assets, with `404.html` for unknown paths. |
+| `public/_headers` | Response headers, such as long-term caching for hashed assets. |
 | `next.config.ts` | Static export, React Compiler, offline support. |
 
 ## Editing content
@@ -65,7 +66,7 @@ For anything visual, read the design and accessibility sections of [`AGENTS.md`]
 
 ## Deploying
 
-Every push to `main` builds the site and publishes `out/` to GitHub Pages. There's no manual step.
+Cloudflare Workers Builds is connected to this repo. Every push to `main` builds the site and deploys it with `wrangler deploy`. Pull requests get their own preview URL, posted as a comment on the PR.
 
 ## License
 
