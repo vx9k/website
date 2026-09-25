@@ -6,11 +6,11 @@ export default function Stack({ t }: { t: Dictionary }) {
   const { kicker, title, groups } = t.stack;
   return (
     <Section id="stack" index="03" kicker={kicker} title={title}>
-      <dl className="border-b border-line">
+      <dl className="rule-b">
         {stack.map((g) => (
           <div
             key={g.group}
-            className="reveal grid gap-x-8 gap-y-2 border-t border-line py-6 sm:grid-cols-[9rem_minmax(0,1fr)] sm:items-baseline"
+            className="reveal grid gap-x-8 gap-y-2 rule-t py-6 sm:grid-cols-[9rem_minmax(0,1fr)] sm:items-baseline"
           >
             <dt className="eyebrow">{groups[g.group]}</dt>
             <dd>
@@ -18,7 +18,7 @@ export default function Stack({ t }: { t: Dictionary }) {
                 {g.items.map((item) => (
                   <li
                     key={item}
-                    className="after:ml-3 after:font-normal after:text-faint after:content-['/'] last:after:content-none"
+                    className="after:ml-3 after:font-normal after:text-line after:content-['/'] last:after:content-none"
                   >
                     {item}
                   </li>

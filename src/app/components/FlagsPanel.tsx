@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 
-type Key = "contrast" | "motion" | "eink" | "large";
+type Key = "day" | "motion" | "large";
 type Flags = Partial<Record<Key, boolean>>;
 
 type Option = { label: string; hint: string };
@@ -14,40 +14,40 @@ export type FlagsText = Record<Key, Option> & {
   note: string;
 };
 
-// The system preference each switch mirrors, if any.
-const OPTIONS: { key: Key; system?: string }[] = [
-  { key: "contrast", system: "(prefers-contrast: more)" },
-  { key: "motion", system: "(prefers-reduced-motion: reduce)" },
-  { key: "eink", system: "(update: slow)" },
-  { key: "large" },
-];
+const KEYS: Key[] = ["day", "motion", "large"];
 
-function systemWants(query?: string) {
-  if (!query) return false;
+function systemWantsLessMotion() {
   try {
-    return window.matchMedia(query).matches;
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   } catch {
     return false;
   }
 }
 
+// What each switch shows. Daylight shows the theme on screen, whether it
+// came from a saved choice, the system or the sun in the hero; the others
+// show the saved flag.
+function current(): Flags {
+  const saved = window.__vxFlags?.read() ?? {};
+  return {
+    day: document.documentElement.getAttribute("data-theme") === "day",
+    motion: !!saved.motion,
+    large: !!saved.large,
+  };
+}
+
 export default function FlagsPanel({ text }: { text: FlagsText }) {
   const [open, setOpen] = useState(false);
   const [flags, setFlags] = useState<Flags>({});
-  const [system, setSystem] = useState<Partial<Record<Key, boolean>>>({});
+  const [systemMotion, setSystemMotion] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelId = useId();
 
   useEffect(() => {
-    setFlags(window.__vxFlags?.read() ?? {});
-  }, []);
-
-  useEffect(() => {
     if (!open) return;
-    setSystem(
-      Object.fromEntries(OPTIONS.map((o) => [o.key, systemWants(o.system)])),
-    );
+    setFlags(current());
+    setSystemMotion(systemWantsLessMotion());
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -67,24 +67,12 @@ export default function FlagsPanel({ text }: { text: FlagsText }) {
   }, [open]);
 
   function toggle(key: Key) {
+    const api = window.__vxFlags;
+    if (!api) return;
     const next = { ...flags, [key]: !flags[key] };
+    api.save({ ...api.read(), [key]: next[key] });
+    api.apply();
     setFlags(next);
-    try {
-      localStorage.setItem("vx-flags", JSON.stringify(next));
-    } catch {
-      // Storage can be blocked; the change still applies to this visit.
-    }
-
-    const apply = () => window.__vxFlags?.apply();
-    const calm =
-      document.documentElement.hasAttribute("data-motion") ||
-      next.motion === true;
-    // Cross-fade between modes where the browser supports it.
-    if (!calm && "startViewTransition" in document) {
-      document.startViewTransition(apply);
-    } else {
-      apply();
-    }
   }
 
   return (
@@ -95,23 +83,16 @@ export default function FlagsPanel({ text }: { text: FlagsText }) {
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((v) => !v)}
-        className={`inline-flex min-h-11 items-center gap-2.5 rounded-xs border px-4 text-[0.95rem] font-medium text-ink transition-colors hover:border-line-strong hover:bg-raised ${
-          open ? "border-line-strong bg-raised" : "border-line"
-        }`}
+        className="btn min-h-10! px-3! text-base!"
       >
         <svg
-          viewBox="0 0 20 20"
+          viewBox="0 0 7 7"
+          shapeRendering="crispEdges"
           aria-hidden="true"
           focusable="false"
-          className="size-3.5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          strokeLinecap="round"
+          className="size-3.5 fill-current"
         >
-          <path d="M3 6h9M16 6h1M3 14h1M8 14h9" />
-          <circle cx="14" cy="6" r="2" />
-          <circle cx="6" cy="14" r="2" />
+          <path d="M0 1h7v1H0zM4 0h1v3H4zM0 5h7v1H0zM1 4h1v3H1z" />
         </svg>
         {text.button}
       </button>
@@ -121,56 +102,38 @@ export default function FlagsPanel({ text }: { text: FlagsText }) {
         role="group"
         aria-label={text.label}
         hidden={!open}
-        className="panel absolute top-[calc(100%+0.6rem)] right-0 z-50 w-[min(21rem,calc(100vw-2.5rem))]"
+        className="px-frame absolute top-[calc(100%+0.75rem)] right-[var(--px)] z-50 w-[min(21rem,calc(100vw-2.5rem))] bg-bg"
       >
-        <p className="eyebrow border-b border-line px-4 py-3">{text.button}</p>
+        <p className="eyebrow rule-b px-4 py-3">{text.button}</p>
         <ul className="p-1">
-          {OPTIONS.map((o) => {
-            const on = !!flags[o.key];
-            const noteId = `${panelId}-${o.key}`;
+          {KEYS.map((key) => {
+            const on = !!flags[key];
+            const noteId = `${panelId}-${key}`;
+            const hint =
+              key === "motion" && systemMotion && !on ? text.systemOn : text[key].hint;
             return (
-              <li key={o.key}>
+              <li key={key}>
                 <button
                   type="button"
                   role="switch"
                   aria-checked={on}
                   aria-describedby={noteId}
-                  onClick={() => toggle(o.key)}
-                  className="flex min-h-14 w-full items-center gap-4 px-3 py-2.5 text-left transition-colors hover:bg-ember-wash"
+                  onClick={() => toggle(key)}
+                  className="flex min-h-14 w-full items-center gap-4 px-3 py-2.5 text-left hover:bg-ink hover:text-bg"
                 >
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm text-ink">
-                      {text[o.key].label}
-                    </span>
-                    <span
-                      id={noteId}
-                      className="block text-xs text-muted"
-                    >
-                      {system[o.key] && !on ? text.systemOn : text[o.key].hint}
+                    <span className="block font-semibold">{text[key].label}</span>
+                    <span id={noteId} className="block text-sm leading-5">
+                      {hint}
                     </span>
                   </span>
-                  <span
-                    aria-hidden
-                    className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-xs border transition-colors ${
-                      on
-                        ? "border-ember bg-ember"
-                        : "border-line-strong bg-transparent"
-                    }`}
-                  >
-                    <span
-                      className={`absolute size-3 rounded-[2px] transition-[left,background-color] ${
-                        on ? "left-[1.1rem] bg-on-accent" : "left-[0.2rem] bg-muted"
-                      }`}
-                    />
-                  </span>
+                  <span aria-hidden className="px-switch" data-on={on} />
                 </button>
               </li>
             );
           })}
         </ul>
-        <p className="border-t border-line px-4 py-3 text-xs leading-5 text-muted">
-          {text.note}
-        </p>
+        <p className="rule-t px-4 py-3 text-sm leading-5">{text.note}</p>
       </div>
     </div>
   );

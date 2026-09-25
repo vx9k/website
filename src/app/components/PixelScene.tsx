@@ -1,26 +1,34 @@
 import { fill, Pixels, random, ridge } from "../pixel";
+import SceneControls, { type SceneText } from "./SceneControls";
 
-// A pixel-art mountain range at dusk, generated at build time from a seed
-// and shipped as a handful of SVG paths. Each grid cell is one pixel in the
-// viewBox; crispEdges keeps them square at any size. Colours come from the
-// --px-* tokens, so every display mode restyles it from CSS: e-ink and high
-// contrast keep only the solid front ranges, and print drops it.
+// A pixel-art mountain range, generated at build time from a seed and
+// shipped as a handful of SVG paths. Each grid cell is one pixel in the
+// viewBox; crispEdges keeps them square at any size. Night shows a moon,
+// stars and a lit cabin; day shows the sun. Colours come from the
+// Dustbyte tokens in globals.css.
+//
+// With `text`, the sun/moon and the cabin become buttons (SceneControls):
+// tap the sky's disc to switch day and night, tap the cabin for its light.
 
 const W = 200;
 const H = 72;
 
 const PINE = ["..#..", "..#..", ".###.", ".###.", "#####", "#####", "..#.."];
 const PINE_SMALL = ["..#..", ".###.", ".###.", "#####", "..#.."];
-const CABIN = ["...#...", "..###..", ".#####.", ".##.##.", ".#####."];
+const CABIN = [".....#.", "...#.#.", "..####.", ".#####.", ".##.##.", ".#####."];
+const CABIN_WINDOW = [3, 4];
+const CABIN_CHIMNEY = 5;
 const BIRD_UP = ["#.#", ".#."];
 const BIRD_DOWN = [".#.", "#.#"];
 
 export default function PixelScene({
   seed = 7,
   className = "",
+  text,
 }: {
   seed?: number;
   className?: string;
+  text?: SceneText;
 }) {
   const rand = random(seed);
 
@@ -42,24 +50,31 @@ export default function PixelScene({
     for (let r = y; r < y + depth; r++) snow.set(x, r);
   });
 
-  // The sun sets into the lowest saddle of the far ridge, right of centre.
+  // The sun (or moon) sits in the lowest saddle of the far ridge, right of
+  // centre, so it can sink behind the ridge when day and night swap.
   let cx = Math.round(W * 0.6);
   for (let x = cx; x < W * 0.82; x++) if (far[x] > far[cx]) cx = x;
-  const cy = far[cx] - 4;
+  const cy = far[cx] - 5;
   const R = 8;
   const sun = new Pixels();
-  const halo = new Pixels();
+  const sunGlow = new Pixels();
+  const moon = new Pixels();
+  const moonGlow = new Pixels();
   for (let y = cy - R - 5; y <= cy + R; y++) {
     for (let x = cx - R - 5; x <= cx + R + 5; x++) {
       const d = Math.hypot(x - cx, y - cy);
       if (d <= R) sun.set(x, y);
       // Dithered glow: a checkerboard that thins out with distance.
-      else if (d <= R + 2.5 && (x + y) % 2 === 0) halo.set(x, y);
-      else if (d <= R + 5 && x % 2 === 0 && y % 2 === 0) halo.set(x, y);
+      else if (d <= R + 2.5 && (x + y) % 2 === 0) sunGlow.set(x, y);
+      else if (d <= R + 5 && x % 2 === 0 && y % 2 === 0) sunGlow.set(x, y);
+      if (d <= R - 2) moon.set(x, y);
+      else if (d <= R + 1 && x % 2 === 0 && y % 2 === 0) moonGlow.set(x, y);
     }
   }
+  const craters = new Pixels();
+  craters.sprite(cx - 3, cy - 3, ["##.....", "#......", ".....#.", "..#....", "....##.", "....##."]);
 
-  // Stars in the open sky, clear of the sun and its glow.
+  // Stars in the open sky, clear of the disc and its glow.
   const stars = new Pixels();
   const twinkles: [number, number][] = [];
   for (let i = 0; i < 70; i++) {
@@ -79,7 +94,7 @@ export default function PixelScene({
   const front = fill(near, H);
   let cabin: [number, number] | null = null;
   for (let x = Math.round(W * 0.22); x < W * 0.5 && !cabin; x++) {
-    if (fits(x, CABIN[0].length, CABIN.length)) {
+    if (fits(x, CABIN[0].length, CABIN.length + 3)) {
       cabin = [x, near[x] - CABIN.length];
       front.sprite(x, near[x] - CABIN.length, CABIN);
     }
@@ -106,50 +121,90 @@ export default function PixelScene({
   }
 
   return (
-    <svg
-      viewBox={`0 0 ${W} ${H}`}
-      preserveAspectRatio="xMidYMax slice"
-      shapeRendering="crispEdges"
-      aria-hidden
-      focusable="false"
-      className={`pixel-scene no-print pointer-events-none block w-full ${className}`}
-    >
-      <path className="px-star" d={stars.path()} />
-      {twinkles.map(([x, y], i) => (
-        <rect
-          key={`${x}-${y}`}
-          x={x}
-          y={y}
-          width={1}
-          height={1}
-          className="px-star px-twinkle"
-          style={{ ["--n" as string]: i }}
-        />
-      ))}
-      <g transform={`translate(${Math.round(W * 0.3)} 6)`}>
-        <path className="px-meteor" d="M0 0h1v1h-1zM-1 -1h1v1h-1zM-2 -2h1v1h-1z" />
-      </g>
-      <path className="px-halo" d={halo.path()} />
-      <path className="px-sun" d={sun.path()} />
-      <path className="px-far" d={fill(far, H).path()} />
-      <path className="px-snow" d={snow.path()} />
-      <g transform={`translate(${Math.round(W * 0.12)} ${Math.max(6, summit - 6)})`}>
-        <g className="px-flock">
-          <path className="px-bird" d={flock.path()} />
-          <path className="px-bird px-bird-alt" d={flockAlt.path()} />
+    <div className={`scene relative w-full ${className}`}>
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        preserveAspectRatio="xMidYMax slice"
+        shapeRendering="crispEdges"
+        aria-hidden
+        focusable="false"
+        className="pixel-scene pointer-events-none absolute inset-0 size-full"
+      >
+        <g className="px-night">
+          <path className="px-star" d={stars.path()} />
+          {twinkles.map(([x, y], i) => (
+            <rect
+              key={`${x}-${y}`}
+              x={x}
+              y={y}
+              width={1}
+              height={1}
+              className="px-star px-twinkle"
+              style={{ ["--n" as string]: i }}
+            />
+          ))}
+          <g transform={`translate(${Math.round(W * 0.3)} 6)`}>
+            <path className="px-meteor" d="M0 0h1v1h-1zM-1 -1h1v1h-1zM-2 -2h1v1h-1z" />
+          </g>
         </g>
-      </g>
-      <path className="px-mid" d={fill(mid, H).path()} />
-      <path className="px-near" d={front.path()} />
-      {cabin && (
-        <rect
-          x={cabin[0] + 3}
-          y={cabin[1] + 3}
-          width={1}
-          height={1}
-          className="px-window"
+        <g className="px-disc">
+          <g className="px-day">
+            <path className="px-sun-glow" d={sunGlow.path()} />
+            <path className="px-sun" d={sun.path()} />
+          </g>
+          <g className="px-night">
+            <path className="px-moon-glow" d={moonGlow.path()} />
+            <path className="px-moon" d={moon.path()} />
+            <path className="px-crater" d={craters.path()} />
+          </g>
+        </g>
+        <path className="px-far" d={fill(far, H).path()} />
+        <path className="px-snow" d={snow.path()} />
+        <g transform={`translate(${Math.round(W * 0.12)} ${Math.max(6, summit - 6)})`}>
+          <g className="px-flock">
+            <path className="px-bird" d={flock.path()} />
+            <path className="px-bird px-bird-alt" d={flockAlt.path()} />
+          </g>
+        </g>
+        <path className="px-mid" d={fill(mid, H).path()} />
+        {cabin && (
+          <g className="px-smoke">
+            {[0, 1, 2].map((i) => (
+              <rect
+                key={i}
+                x={cabin[0] + CABIN_CHIMNEY}
+                y={cabin[1] - 1}
+                width={1}
+                height={1}
+              />
+            ))}
+          </g>
+        )}
+        <path className="px-near" d={front.path()} />
+        {cabin && (
+          <rect
+            x={cabin[0] + CABIN_WINDOW[0]}
+            y={cabin[1] + CABIN_WINDOW[1]}
+            width={1}
+            height={1}
+            className="px-window"
+          />
+        )}
+      </svg>
+      {text && (
+        <SceneControls
+          text={text}
+          disc={{ x: cx + 0.5, y: cy + 0.5, w: 2 * R + 2, h: 2 * R + 2 }}
+          cabin={
+            cabin && {
+              x: cabin[0] + CABIN[0].length / 2,
+              y: cabin[1] + CABIN.length / 2,
+              w: CABIN[0].length + 4,
+              h: CABIN.length + 4,
+            }
+          }
         />
       )}
-    </svg>
+    </div>
   );
 }

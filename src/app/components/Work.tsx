@@ -7,19 +7,19 @@ type WorkText = Dictionary["work"];
 // Mono chips whose glyph (full, half, empty square) carries the status
 // without relying on colour.
 const STATUS: Record<Status, { chip: string; glyph: string }> = {
-  shipping: { chip: "border-ember/50 text-ember", glyph: "bg-current" },
+  shipping: { chip: "[--frame:var(--accent)]", glyph: "bg-accent" },
   "in progress": {
-    chip: "text-ink",
-    glyph: "border border-current bg-[linear-gradient(90deg,currentColor_50%,transparent_50%)]",
+    chip: "",
+    glyph: "border-2 border-current bg-[linear-gradient(90deg,currentColor_50%,transparent_50%)]",
   },
-  planned: { chip: "border-dashed text-muted", glyph: "border border-current" },
+  planned: { chip: "", glyph: "border-2 border-current" },
 };
 
 function StatusChip({ status, label }: { status: Status; label: string }) {
   const s = STATUS[status];
   return (
-    <span className={`chip eink:border-ink hc:border-current ${s.chip}`}>
-      <span aria-hidden className={`size-2 rounded-[1px] ${s.glyph}`} />
+    <span className={`chip px-frame ${s.chip}`}>
+      <span aria-hidden className={`size-2.5 ${s.glyph}`} />
       {label}
     </span>
   );
@@ -30,15 +30,15 @@ function TreeNode({ node, w }: { node: Node; w: WorkText }) {
   return (
     <li>
       <div className="flex min-h-9 flex-wrap items-center gap-x-3 gap-y-1">
-        <span className="font-mono text-[0.95rem] font-medium text-ink">
+        <span className="text-lg font-semibold">
           {node.name}
         </span>
         <StatusChip status={node.status} label={w.status[node.status]} />
       </div>
-      <p className="mt-1.5 max-w-[34rem] text-[0.95rem] leading-7 text-pretty text-muted">
+      <p className="mt-1.5 max-w-[34rem] leading-7 text-pretty">
         {text.body}
       </p>
-      {text.note && <p className="mt-1 text-sm text-faint">{text.note}</p>}
+      {text.note && <p className="mt-1 text-sm">{text.note}</p>}
       {node.children && (
         <ul className="mt-4 space-y-5">
           {node.children.map((c) => (
@@ -53,14 +53,14 @@ function TreeNode({ node, w }: { node: Node; w: WorkText }) {
 // Spec sheet in place of tag chips.
 function Spec({ rows }: { rows: [string, string][] }) {
   return (
-    <dl className="border-b border-line">
+    <dl className="rule-b">
       {rows.map(([k, v]) => (
         <div
           key={k}
-          className="grid grid-cols-[7rem_minmax(0,1fr)] gap-4 border-t border-line py-2.5"
+          className="grid grid-cols-[7rem_minmax(0,1fr)] gap-4 rule-t py-2.5"
         >
-          <dt className="eyebrow text-faint!">{k}</dt>
-          <dd className="text-[0.95rem] font-medium text-ink">{v}</dd>
+          <dt className="eyebrow pt-1">{k}</dt>
+          <dd className="font-medium">{v}</dd>
         </div>
       ))}
     </dl>
@@ -71,7 +71,7 @@ function RepoLink({ href, label }: { href: string; label: string }) {
   return (
     <a
       href={href}
-      className="group inline-flex min-h-11 items-center gap-2 font-mono text-[0.8rem] text-ink transition-colors hover:text-ember"
+      className="group inline-flex min-h-11 items-center gap-2 px-1 font-label text-xs hover:bg-ink hover:text-bg"
     >
       {label}
       <span
@@ -94,11 +94,11 @@ export default function Work({ t }: { t: Dictionary }) {
       title={w.title}
       aside={w.aside}
     >
-      <article aria-labelledby="suite-title" className="reveal card">
-        <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 border-b border-line px-5 sm:px-8">
+      <article aria-labelledby="suite-title" className="reveal px-frame m-[var(--px)]">
+        <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 rule-b px-5 sm:px-8">
           <p className="eyebrow py-3">
-            <span className="text-ember">01</span>
-            <span aria-hidden className="px-2 text-faint">
+            <span>01</span>
+            <span aria-hidden className="px-2">
               /
             </span>
             {w.suite.eyebrow}
@@ -110,11 +110,11 @@ export default function Work({ t }: { t: Dictionary }) {
           <div className="flex flex-col gap-6 p-5 sm:p-8">
             <h3
               id="suite-title"
-              className="text-[clamp(1.5rem,1.2rem+1vw,2rem)] leading-tight font-medium tracking-[-0.03em]"
+              className="text-[clamp(1.5rem,1.2rem+1vw,2rem)] leading-tight font-semibold"
             >
               4suite
             </h3>
-            <p className="max-w-[28rem] leading-7 text-pretty text-muted">
+            <p className="max-w-[28rem] leading-7 text-pretty">
               {w.suite.body}
             </p>
             <div className="mt-auto">
@@ -126,13 +126,13 @@ export default function Work({ t }: { t: Dictionary }) {
                   [w.spec.license, "MIT"],
                 ]}
               />
-              <p className="mt-4 text-sm leading-6 text-pretty text-faint">
+              <p className="mt-4 text-sm leading-6 text-pretty">
                 {w.suite.platforms}
               </p>
             </div>
           </div>
 
-          <div className="border-t border-line p-5 sm:p-8 lg:border-t-0 lg:border-l lg:p-8">
+          <div className="rule-t p-5 sm:p-8 lg:bg-none lg:border-l-3 lg:border-dashed lg:border-line lg:p-8">
             <p className="eyebrow">{w.suite.components}</p>
             <ul className="tree mt-5 space-y-5" aria-label={w.suite.componentsLabel}>
               {suiteTree.map((n) => (
@@ -145,12 +145,12 @@ export default function Work({ t }: { t: Dictionary }) {
 
       <article
         aria-labelledby="site-title"
-        className="reveal card mt-4"
+        className="reveal px-frame m-[var(--px)] mt-10"
       >
-        <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 border-b border-line px-5 sm:px-8">
+        <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 rule-b px-5 sm:px-8">
           <p className="eyebrow py-3">
-            <span className="text-ember">02</span>
-            <span aria-hidden className="px-2 text-faint">
+            <span>02</span>
+            <span aria-hidden className="px-2">
               /
             </span>
             {w.site.eyebrow}
@@ -161,11 +161,11 @@ export default function Work({ t }: { t: Dictionary }) {
           <div>
             <h3
               id="site-title"
-              className="text-[clamp(1.5rem,1.2rem+1vw,2rem)] leading-tight font-medium tracking-[-0.03em]"
+              className="text-[clamp(1.5rem,1.2rem+1vw,2rem)] leading-tight font-semibold"
             >
               website
             </h3>
-            <p className="mt-5 max-w-[34rem] leading-7 text-pretty text-muted">
+            <p className="mt-5 max-w-[34rem] leading-7 text-pretty">
               {w.site.body}
             </p>
           </div>

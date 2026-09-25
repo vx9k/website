@@ -22,11 +22,17 @@ const pt: Dictionary = {
     button: "Tela",
     label: "Configurações de tela",
     systemOn: "ligado: seu sistema pede isso",
-    note: "Fica salvo neste dispositivo. As configurações do seu sistema para contraste, movimento e telas de tinta eletrônica são seguidas automaticamente.",
-    contrast: { label: "Alto contraste", hint: "Cores sólidas, bordas mais fortes" },
+    note: "Fica salvo neste dispositivo. As configurações do seu sistema para movimento e modo claro ou escuro são seguidas automaticamente.",
+    day: { label: "Luz do dia", hint: "Papel creme no lugar do céu noturno" },
     motion: { label: "Reduzir movimento", hint: "Desliga as animações" },
-    eink: { label: "Papel (tinta eletrônica)", hint: "Preto no branco, para telas de tinta eletrônica" },
     large: { label: "Texto maior", hint: "Letras 25% maiores" },
+  },
+  scene: {
+    hint: "Alguns pixels fazem coisas: experimente o sol ou a lua, a cabana e a fogueira no fim da página.",
+    toDay: "Fazer o sol nascer",
+    toNight: "Fazer a lua nascer",
+    light: "Luz da cabana",
+    fire: "Atiçar a fogueira",
   },
   offline: {
     down: "Você está offline. As páginas que você já abriu continuam funcionando.",
@@ -107,7 +113,7 @@ const pt: Dictionary = {
     },
     site: {
       eyebrow: "Este site",
-      body: "Um export estático de Next.js servido pelo Cloudflare Workers. As montanhas no topo da página são pixel art: geradas no build do site e entregues como um único SVG, sem scripts. A página avisa quando você fica offline, tem um modo papel para telas de tinta eletrônica e está em inglês, espanhol e português.",
+      body: "Um export estático de Next.js servido pelo Cloudflare Workers. As montanhas no topo da página são pixel art: geradas no build do site e entregues como um único SVG, sem scripts. A página avisa quando você fica offline, troca a noite pelo dia quando você toca a lua e está em inglês, espanhol e português.",
     },
   },
   stack: {

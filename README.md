@@ -2,7 +2,7 @@
 
 Source for [kthread.dev](https://kthread.dev), the personal site of [vx](https://github.com/vx9k).
 
-It's a single static page built with Next.js and Tailwind CSS, exported to plain HTML and served from Cloudflare Workers at [kthread.dev](https://kthread.dev). The mountains under the headline are pixel art, generated at build time as a single SVG. The site keeps working offline, and a Display menu offers high contrast, reduced motion, larger text and a paper mode for e-ink screens.
+It's a single static page built with Next.js and Tailwind CSS, exported to plain HTML and served from Cloudflare Workers at [kthread.dev](https://kthread.dev). Everything is pixel art in the four-colour Dustbyte palette: the mountains under the headline are generated at build time as a single SVG, and the sun, the cabin and the campfire respond to a click or a tap. The site keeps working offline, and a Display menu offers daylight, reduced motion and larger text.
 
 ## Running it
 
@@ -25,9 +25,9 @@ pnpm wrangler dev   # serves out/ through the Workers runtime at http://localhos
 ```
 src/app/
 ├── page.tsx            the home page, assembled from the sections below
-├── layout.tsx          fonts, metadata, and the script that applies display modes before paint
+├── layout.tsx          metadata and the script that applies the theme and flags before paint
 ├── content.ts          all the facts on the page: projects, principles, stack, links
-├── globals.css         design tokens, display modes, utilities and motion
+├── globals.css         the palette, themes, pixel primitives and motion
 ├── not-found.tsx       the 404 page
 ├── manifest.ts         web app manifest
 ├── icon.svg            favicon
@@ -45,8 +45,9 @@ src/app/
     ├── FlagsPanel.tsx      the Display menu
     ├── OfflineBanner.tsx   notice shown when the connection drops
     ├── PixelScene.tsx      pixel-art mountains, generated at build time from a seed
+    ├── SceneControls.tsx   buttons over the sun/moon (day and night) and the cabin (its light)
     ├── PixelMark.tsx       the pixel "vx" mark
-    └── Campfire.tsx        the footer's pixel campfire
+    └── Campfire.tsx        the footer's pixel campfire; tap it to stoke it
 ```
 
 Other files at the root:
@@ -63,7 +64,7 @@ Other files at the root:
 
 Most text lives in `src/app/content.ts`. Change a project, principle or stack entry there and every section that uses it updates. Keep it factual: everything on the page should be checkable against the public repos.
 
-For anything visual, read the design and accessibility sections of [`AGENTS.md`](AGENTS.md) first. Every change has to work in each display mode, including e-ink and high contrast.
+For anything visual, read the design and accessibility sections of [`AGENTS.md`](AGENTS.md) first. Every change has to work by night and by day, and with reduced motion.
 
 ## Deploying
 

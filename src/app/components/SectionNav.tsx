@@ -44,9 +44,9 @@ export default function SectionNav({
   const active = useActiveSection();
 
   return (
-    <nav aria-label={label} className="no-print border-b border-line lg:border-0">
+    <nav aria-label={label} className="rule-b lg:bg-none">
       <div className="lg:sticky lg:top-0 lg:pt-24">
-        <p className="eyebrow hidden pb-3 text-faint! lg:block">{label}</p>
+        <p className="eyebrow hidden pb-3 lg:block">{label}</p>
         <ol className="-ml-2 flex flex-wrap gap-x-2 py-2 lg:ml-0 lg:flex-col lg:py-0">
           {sections.map((id, i) => {
             const current = active === id;
@@ -55,27 +55,25 @@ export default function SectionNav({
                 <a
                   href={`#${id}`}
                   aria-current={current ? "location" : undefined}
-                  className={`group inline-flex min-h-11 items-center gap-2 px-2 text-[0.95rem] font-medium tracking-[-0.01em] transition-colors lg:px-0 ${
-                    current ? "text-ink" : "text-muted hover:text-ink"
-                  }`}
+                  className={`group inline-flex min-h-11 items-center gap-2 px-2 lg:px-0 ${current ? "font-semibold" : ""}`}
                 >
                   <svg
                     viewBox="0 0 3 5"
                     shapeRendering="crispEdges"
                     aria-hidden
                     focusable="false"
-                    className={`hidden h-[10px] w-[6px] fill-ember transition-opacity lg:block ${
+                    className={`hidden h-[10px] w-[6px] fill-accent lg:block ${
                       current ? "opacity-100" : "opacity-0 group-hover:opacity-40"
                     }`}
                   >
                     <path d="M0 0h1v5h-1zM1 1h1v3h-1zM2 2h1v1h-1z" />
                   </svg>
-                  <span aria-hidden className="font-mono text-[0.7rem] text-faint">
+                  <span aria-hidden className="font-label text-[0.7rem]">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <span
-                    className={`underline-offset-[0.4em] ${
-                      current ? "underline decoration-ember decoration-2 lg:no-underline" : ""
+                    className={`px-0.5 underline-offset-[0.35em] group-hover:bg-ink group-hover:text-bg ${
+                      current ? "underline decoration-accent decoration-[length:var(--px)] lg:no-underline" : ""
                     }`}
                   >
                     {labels[id]}

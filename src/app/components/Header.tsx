@@ -8,7 +8,7 @@ import PixelMark from "./PixelMark";
 // with the page; the section nav lives beside the content instead.
 export default function Header({ lang, t }: { lang: Locale; t: Dictionary }) {
   return (
-    <header className="no-print pt-[env(safe-area-inset-top)]">
+    <header className="pt-[env(safe-area-inset-top)]">
       <div className="shell flex h-16 items-center justify-between gap-4 sm:h-20">
         <a
           href="#top"
@@ -17,7 +17,7 @@ export default function Header({ lang, t }: { lang: Locale; t: Dictionary }) {
           {/* 11×5 art pixels at exactly 3px each, so the mark stays sharp. */}
           <PixelMark className="h-[15px] w-[33px]" />
           <span className="sr-only">vx</span>
-          <span className="hidden font-mono text-[0.8rem] text-muted transition-colors group-hover:text-ink sm:inline">
+          <span className="hidden font-label text-xs group-hover:bg-ink group-hover:text-bg sm:inline">
             kthread.dev
           </span>
         </a>

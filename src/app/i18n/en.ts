@@ -19,11 +19,17 @@ const en = {
     button: "Display",
     label: "Display settings",
     systemOn: "on: your system asks for it",
-    note: "Saved on this device. Your system settings for contrast, motion and e-ink screens are followed automatically.",
-    contrast: { label: "High contrast", hint: "Solid colours, stronger edges" },
+    note: "Saved on this device. Your system settings for motion and light or dark mode are followed automatically.",
+    day: { label: "Daylight", hint: "Cream paper instead of the night sky" },
     motion: { label: "Reduce motion", hint: "Turns off animation" },
-    eink: { label: "Paper (e-ink)", hint: "Black on white, for e-ink screens" },
     large: { label: "Larger text", hint: "Type 25% larger" },
+  },
+  scene: {
+    hint: "Some of the pixels do things: try the sun or moon, the cabin and the campfire at the bottom.",
+    toDay: "Bring up the sun",
+    toNight: "Bring up the moon",
+    light: "Cabin light",
+    fire: "Stoke the campfire",
   },
   offline: {
     down: "You're offline. Pages you've already opened still work.",
@@ -105,7 +111,7 @@ const en = {
     },
     site: {
       eyebrow: "This site",
-      body: "A static Next.js export served from Cloudflare Workers. The mountains at the top are pixel art, generated when the site is built and shipped as a single SVG with no script. The page tells you when you go offline, has a paper mode for e-ink screens, and reads in English, Spanish and Portuguese.",
+      body: "A static Next.js export served from Cloudflare Workers. The mountains at the top are pixel art, generated when the site is built and shipped as a single SVG with no script. The page tells you when you go offline, swaps night for day when you tap the moon, and reads in English, Spanish and Portuguese.",
     },
   },
   stack: {
