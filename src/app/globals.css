@@ -6,8 +6,8 @@
    <html> by the inline boot script in layout.tsx, which combines the
    visitor's saved flags with their system preferences:
 
-     data-contrast="high"    opaque surfaces, pure black/white, no blur
-     data-motion="reduced"   no animation, no GPU background
+     data-contrast="high"    opaque surfaces, pure black/white
+     data-motion="reduced"   no animation
      data-display="eink"     paper: white, black ink, no grey, no motion
      data-text="large"       25% larger type everywhere
 
@@ -18,7 +18,9 @@
 @custom-variant hc (&:where([data-contrast="high"], [data-contrast="high"] *));
 
 /* Warm near-black with one ember accent. Text steps are solid colours
-   (not opacity) so every one of them passes AA on --bg and --surface. */
+   (not opacity) so every one of them passes AA on --bg and --surface.
+   The --px-* tokens colour the pixel-art scene; its front range is --bg,
+   so the mountains run straight into the page. */
 :root {
   color-scheme: dark;
   --bg: #0c0808;
@@ -35,18 +37,18 @@
   --blush: #f4d6cf;
   --on-blush: #2a0d09;
   --sun: #e6c27a;
-  --sun-wash: rgb(230 194 122 / 0.12);
   --on-accent: #1a0806;
-  --glass: rgb(16 10 10 / 0.62);
-  --glass-dense: rgb(16 10 10 / 0.95);
-  --glass-edge: rgb(255 236 232 / 0.09);
-  --glass-shine: rgb(255 255 255 / 0.04);
-  --glass-blur: blur(20px) saturate(140%);
-  --shadow: 0 40px 80px -40px rgb(8 2 2 / 0.9);
+  --px-far: #36140f;
+  --px-mid: #1d0e0c;
+  --px-snow: #6f3a31;
+  --px-star: #c9bdb9;
+  --px-sun: #ef5b45;
+  --px-halo: #5e1a12;
   --radius: 3px;
   --ring: var(--ember);
 }
 
+/* High contrast keeps only the two front ranges, as solid shapes. */
 :root[data-contrast="high"] {
   --bg: #000;
   --surface: #000;
@@ -62,14 +64,13 @@
   --blush: #fff;
   --on-blush: #000;
   --sun: #ffe0a0;
-  --sun-wash: transparent;
   --on-accent: #000;
-  --glass: #000;
-  --glass-dense: #000;
-  --glass-edge: #fff;
-  --glass-shine: transparent;
-  --glass-blur: none;
-  --shadow: none;
+  --px-far: transparent;
+  --px-mid: #fff;
+  --px-snow: transparent;
+  --px-star: transparent;
+  --px-sun: transparent;
+  --px-halo: transparent;
   --ring: #ffff00;
 }
 
@@ -77,22 +78,27 @@
   :root:not(.js) {
     --bg: #000;
     --surface: #000;
+    --raised: #000;
     --ink: #fff;
     --muted: #f2f2f2;
     --faint: #d9d9d9;
     --line: #fff;
+    --line-strong: #fff;
     --blush: #fff;
     --on-blush: #000;
-    --glass: #000;
-    --glass-dense: #000;
-    --glass-edge: #fff;
-    --glass-blur: none;
+    --px-far: transparent;
+    --px-mid: #fff;
+    --px-snow: transparent;
+    --px-star: transparent;
+    --px-sun: transparent;
+    --px-halo: transparent;
     --ring: #ffff00;
   }
 }
 
 /* Paper: tuned for e-ink panels, which dither grey and ghost on motion.
-   Everything is pure black on white, borders are thicker, nothing moves. */
+   Everything is pure black on white, borders are thicker, nothing moves.
+   The scene becomes a black woodcut of the front ranges. */
 :root[data-display="eink"] {
   color-scheme: light;
   --bg: #fff;
@@ -109,27 +115,18 @@
   --blush: #000;
   --on-blush: #fff;
   --sun: #000;
-  --sun-wash: transparent;
   --on-accent: #fff;
-  --glass: #fff;
-  --glass-dense: #fff;
-  --glass-edge: #000;
-  --glass-shine: transparent;
-  --glass-blur: none;
-  --shadow: none;
+  --px-far: transparent;
+  --px-mid: #000;
+  --px-snow: transparent;
+  --px-star: transparent;
+  --px-sun: transparent;
+  --px-halo: transparent;
   --ring: #000;
 }
 
 :root[data-text="large"] {
   font-size: 125%;
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  :root {
-    --glass: var(--raised);
-    --glass-dense: var(--raised);
-    --glass-blur: none;
-  }
 }
 
 @theme inline {
@@ -147,7 +144,6 @@
   --color-blush: var(--blush);
   --color-on-blush: var(--on-blush);
   --color-sun: var(--sun);
-  --color-sun-wash: var(--sun-wash);
   --color-on-accent: var(--on-accent);
   --radius-xs: var(--radius);
   --radius-sm: var(--radius);
@@ -157,19 +153,19 @@
 }
 
 @theme {
-  /* Fluid type, after bfl.ai's scale: 500 weight, tight tracking, short
-     line height on anything display-sized. */
-  --text-display: clamp(2.75rem, 0.4rem + 5.9vw, 8.5rem);
-  --text-display--line-height: 0.92;
-  --text-display--letter-spacing: -0.05em;
-  --text-title: clamp(2.5rem, 0.833rem + 3.472vw, 6rem);
-  --text-title--line-height: 0.95;
-  --text-title--letter-spacing: -0.05em;
-  --text-subhead: clamp(1.25rem, 0.75rem + 1.0417vw, 2rem);
-  --text-subhead--line-height: 1.2;
-  --text-subhead--letter-spacing: -0.035em;
-  --text-lede: clamp(1.125rem, 0.875rem + 0.5208vw, 1.5rem);
-  --text-lede--line-height: 1.35;
+  /* Fluid type: 500 weight and tight tracking, kept modest so the page
+     reads like a document rather than a billboard. */
+  --text-display: clamp(2.25rem, 1.1rem + 3.4vw, 4.75rem);
+  --text-display--line-height: 1;
+  --text-display--letter-spacing: -0.045em;
+  --text-title: clamp(1.75rem, 1.2rem + 1.6vw, 2.75rem);
+  --text-title--line-height: 1.05;
+  --text-title--letter-spacing: -0.04em;
+  --text-subhead: clamp(1.125rem, 0.95rem + 0.5vw, 1.4rem);
+  --text-subhead--line-height: 1.3;
+  --text-subhead--letter-spacing: -0.02em;
+  --text-lede: clamp(1.05rem, 0.95rem + 0.3vw, 1.25rem);
+  --text-lede--line-height: 1.5;
   --text-lede--letter-spacing: -0.01em;
   --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -180,13 +176,14 @@
 
 html {
   background: var(--bg);
-  scroll-padding-top: 5rem;
+  scroll-padding-top: 1.5rem;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   scrollbar-color: var(--ember-deep) transparent;
 }
 
 body {
+  background: var(--bg);
   font-family: var(--font-sans);
   font-feature-settings: "kern", "liga";
   text-rendering: optimizeLegibility;
@@ -214,73 +211,34 @@ body {
   outline-width: 3px;
 }
 
-/* A grain layer over the background so gradients don't band on cheap
-   panels. Pure decoration, dropped in every high-legibility mode. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0.05;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-[data-contrast="high"] body::before,
-[data-display="eink"] body::before {
-  display: none;
-}
-
 /* ------------------------------------------------------------------------
    Components
    ------------------------------------------------------------------------ */
 
-/* Page frame. It uses nearly the whole viewport and hugs the left edge
-   from tablet width up, so wide screens gain room instead of margins. On
-   phones it is full width, and components centre their own content. */
+/* Page frame: left-aligned from tablet width up, like a plain document.
+   Components centre nothing; the right side is left empty on wide screens. */
 @utility shell {
   width: 100%;
-  max-width: 120rem;
+  max-width: 88rem;
   margin-inline: auto;
-  padding-inline: clamp(1.25rem, 4vw, 4.5rem);
+  padding-inline: clamp(1.25rem, 4vw, 4rem);
   @media (width >= 40rem) {
     margin-inline: 0;
   }
-}
-
-/* Frosted panel with a lit top edge. Used only on a handful of surfaces,
-   since every backdrop blur costs GPU time. */
-@utility glass {
-  background:
-    linear-gradient(180deg, var(--glass-shine), transparent 40%),
-    var(--glass);
-  border: 1px solid var(--glass-edge);
-  border-radius: var(--radius);
-  box-shadow:
-    inset 0 1px 0 var(--glass-shine),
-    var(--shadow);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-}
-
-/* Near-opaque glass for menus that sit over busy content, where text
-   behind the panel would otherwise compete with the panel's own. */
-@utility glass-dense {
-  --glass: var(--glass-dense);
-}
-
-/* The same material as a full-width bar with only a bottom edge. */
-@utility glass-bar {
-  background: var(--glass);
-  border-bottom: 1px solid var(--glass-edge);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
 }
 
 /* A plain raised card: solid surface, hairline edge, 3px corners. */
 @utility card {
   background: var(--surface);
   border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+/* A floating surface for menus and notices: opaque, so nothing behind it
+   competes with its text, with a slightly stronger edge than a card. */
+@utility panel {
+  background: var(--raised);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius);
 }
 
@@ -329,33 +287,28 @@ body::before {
   }
 }
 
-[data-display="eink"] .glass,
-[data-contrast="high"] .glass,
 [data-display="eink"] .card,
-[data-contrast="high"] .card {
+[data-contrast="high"] .card,
+[data-display="eink"] .panel,
+[data-contrast="high"] .panel {
   border-width: 2px;
   border-color: var(--ink);
 }
 
-[data-display="eink"] .glass-bar,
-[data-contrast="high"] .glass-bar {
-  border-bottom-width: 2px;
-}
-
-/* Buttons, after bfl.ai: 3px corners, sentence case, medium weight, an
-   arrow that moves on hover, and a one-pixel press. Solid is the blush
-   primary; plain is dark glass with a hairline. */
+/* Buttons: 3px corners, sentence case, medium weight, an arrow that moves
+   on hover, and a one-pixel press. Solid is the blush primary; plain is a
+   dark surface with a hairline. */
 @layer components {
   .btn {
     display: inline-flex;
     align-items: center;
     gap: 0.75rem;
-    min-height: 3.125rem;
-    padding-inline: 1.5rem;
+    min-height: 2.875rem;
+    padding-inline: 1.25rem;
     border: 1px solid var(--line-strong);
     border-radius: var(--radius);
-    background: rgb(20 13 12 / 0.72);
-    font-size: 1rem;
+    background: var(--surface);
+    font-size: 0.95rem;
     font-weight: 500;
     letter-spacing: -0.005em;
     color: var(--ink);
@@ -366,7 +319,7 @@ body::before {
       translate 0.1s;
     &:hover {
       border-color: rgb(245 241 240 / 0.32);
-      background: rgb(36 24 22 / 0.85);
+      background: var(--raised);
     }
     &:active {
       translate: 0 1px;
@@ -394,48 +347,13 @@ body::before {
   }
 }
 
-/* Giant outlined wordmark in the footer. */
-.wordmark {
-  color: transparent;
-  -webkit-text-stroke: 1px var(--line-strong);
-}
-
-[data-display="eink"] .wordmark,
-[data-contrast="high"] .wordmark {
-  color: var(--ink);
-  -webkit-text-stroke: 0;
-}
-
 @media (forced-colors: active) {
-  .glass,
-  .glass-bar,
-  .card {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+  .card,
+  .panel {
     border: 1px solid CanvasText;
   }
-  body::before {
+  .pixel-scene {
     display: none;
-  }
-  .wordmark {
-    color: CanvasText;
-  }
-}
-
-/* The CSS ember smoke shown before (or instead of) the GPU shader. */
-.canopy-fallback {
-  background:
-    radial-gradient(ellipse 70% 60% at 20% 10%, rgb(239 91 69 / 0.16), transparent 65%),
-    radial-gradient(ellipse 60% 50% at 90% 80%, rgb(160 40 28 / 0.22), transparent 60%),
-    radial-gradient(ellipse 90% 70% at 55% 45%, rgb(70 16 12 / 0.6), transparent 70%),
-    var(--bg);
-  background-size: 140% 140%;
-  animation: canopy-drift 60s ease-in-out infinite alternate;
-}
-
-@keyframes canopy-drift {
-  to {
-    background-position: 30% 20%;
   }
 }
 
@@ -492,13 +410,61 @@ body::before {
 }
 
 /* ------------------------------------------------------------------------
+   Pixel art
+   One viewBox unit is one art pixel. Colours are the --px-* tokens above;
+   the front range uses --bg so it runs into the page below.
+   ------------------------------------------------------------------------ */
+
+.px-star {
+  fill: var(--px-star);
+}
+.px-sun {
+  fill: var(--px-sun);
+}
+.px-halo {
+  fill: var(--px-halo);
+}
+.px-far {
+  fill: var(--px-far);
+}
+.px-snow {
+  fill: var(--px-snow);
+}
+.px-mid {
+  fill: var(--px-mid);
+}
+.px-near {
+  fill: var(--bg);
+}
+.px-window {
+  fill: var(--ember);
+}
+.px-bird {
+  fill: var(--px-star);
+}
+
+/* Frames that only show while something is animating. With motion off
+   the meteor never appears, birds hold their wings up and the fire holds
+   its first frame. */
+.px-meteor {
+  fill: var(--px-star);
+  opacity: 0;
+}
+.px-bird-alt,
+.campfire .flame-alt {
+  opacity: 0;
+}
+
+/* ------------------------------------------------------------------------
    Motion
+   Sprite motion moves in whole pixels (steps), which is what makes it read
+   as pixel art rather than a smooth vector animation.
    ------------------------------------------------------------------------ */
 
 @keyframes rise {
   from {
     opacity: 0;
-    translate: 0 18px;
+    translate: 0 14px;
   }
 }
 
@@ -518,21 +484,81 @@ body::before {
   }
 }
 
-/* A hairline that draws itself from the left as its section scrolls in.
-   Without scroll timelines it is simply drawn. */
-@keyframes draw {
-  from {
-    transform: scaleX(0);
+@keyframes twinkle {
+  50% {
+    opacity: 0.25;
   }
 }
 
-@supports (animation-timeline: view()) {
-  .draw {
-    transform-origin: left;
-    animation: draw linear both;
-    animation-timeline: view();
-    animation-range: entry 20% entry 90%;
+.px-twinkle {
+  animation: twinkle 3.2s steps(2, jump-none) infinite;
+  animation-delay: calc(var(--n, 0) * -1.1s);
+}
+
+/* The flock crosses the sky once every ninety seconds, one pixel at a time,
+   flapping as it goes. */
+@keyframes flock {
+  from {
+    transform: translateX(-40px);
   }
+  to {
+    transform: translateX(200px);
+  }
+}
+
+@keyframes frame-a {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes frame-b {
+  50% {
+    opacity: 1;
+  }
+}
+
+.px-flock {
+  animation: flock 90s steps(240) infinite;
+  animation-delay: -30s;
+}
+
+.px-bird:not(.px-bird-alt) {
+  animation: frame-a 0.9s steps(1) infinite;
+}
+
+.px-bird-alt {
+  animation: frame-b 0.9s steps(1) infinite;
+}
+
+/* A shooting star, about once every twenty seconds. */
+@keyframes meteor {
+  0%,
+  93% {
+    opacity: 0;
+    transform: none;
+  }
+  94% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(18px, 18px);
+  }
+}
+
+.px-meteor {
+  animation: meteor 21s steps(40) infinite;
+  animation-delay: 6s;
+}
+
+.campfire path:first-child {
+  animation: frame-a 0.5s steps(1) infinite;
+}
+
+.campfire .flame-alt {
+  animation: frame-b 0.5s steps(1) infinite;
 }
 
 /* The hero's rotating phrase. Every phrase sits in the same grid cell, so
@@ -620,13 +646,13 @@ body::before {
     --on-blush: #000;
     --sun: #000;
     --on-accent: #fff;
-    --glass: #fff;
-    --glass-dense: #fff;
-    --glass-edge: #000;
-    --glass-blur: none;
-    --shadow: none;
+    --px-far: transparent;
+    --px-mid: #000;
+    --px-snow: transparent;
+    --px-star: transparent;
+    --px-sun: transparent;
+    --px-halo: transparent;
   }
-  body::before,
   .no-print {
     display: none !important;
   }

@@ -48,8 +48,10 @@ src/app/
   globals.css         design tokens, display modes, utilities, motion
   components/
     SectionHeading.tsx  <Section>: the shared frame every section below the hero uses
-    CanopyField.tsx     background: CSS gradient, upgraded to a GPU shader when allowed
-    canopy-gpu.ts       WebGPU renderer with a WebGL2 fallback, lazy-loaded
+    PixelScene.tsx      the hero's pixel-art mountains, generated at build time from a seed
+    PixelMark.tsx       the pixel "vx" mark in the header (icon.svg draws the same grid)
+    Campfire.tsx        the footer's two-frame pixel campfire
+  pixel.ts            build-time pixel helpers: seeded PRNG, sprites, ridges, path merging
     FlagsPanel.tsx      the "Display" menu (contrast, motion, e-ink, text size)
     SectionNav.tsx      header nav with active-section tracking
     LanguageSwitch.tsx  EN / ES / PT links; saves the choice in localStorage["vx-lang"]
@@ -72,7 +74,7 @@ src/app/
 
 ## Design direction
 
-The reference is [bfl.ai](https://bfl.ai): a full-bleed cinematic hero, large tightly tracked sans headlines, small mono labels, 3px corners and hairline structure. It's made distinct by a red palette, with the ember-smoke GPU shader standing in for BFL's hero video.
+The reference is [suckless.org](https://suckless.org), modernised: a plain masthead, a side menu beside a single column of content that reads like a document, modest type and nothing ornamental in the layout itself. The fun lives in pixel art: a mountain range at dusk under the hero (an ember sun, snow, pines, a cabin with a lit window, stars, a passing flock and a rare shooting star), a pixel "vx" mark, a pixel pointer in the side menu and a campfire in the footer. Kept from the previous direction: the red palette, Instrument Sans and Plex Mono, 3px corners and hairlines.
 
 **Tokens** (in `globals.css`, redefined for every display mode):
 - Surfaces: `--bg` `#0c0808`, `--surface` `#140e0e` (cards), `--raised`.
@@ -82,10 +84,11 @@ The reference is [bfl.ai](https://bfl.ai): a full-bleed cinematic hero, large ti
 
 **Do:**
 - Type: Instrument Sans at weight 500 for headings, using the scale in `@theme` (`text-display`, `text-title`, `text-subhead`, `text-lede`; tracking and line height are built in). IBM Plex Mono, uppercase and lightly tracked, only for small labels, via `eyebrow` and `chip`.
-- Use the `<Section>` frame for every section below the hero: a numbered mono label, a big title with an optional aside, then the content. Separate sections with space; hairlines go inside lists and cards.
+- Use the `<Section>` frame for every section below the hero: a numbered mono label led by one ember pixel, a title with an optional aside under it, then the content. Everything is left-aligned at every width. Separate sections with space; hairlines go inside lists and cards.
 - Use `card` for raised content, `chip` for statuses and short facts (the glyph carries meaning, not just colour), and spec tables (`dl` rows with hairlines) for facts.
 - Buttons: `.btn` (dark, hairline) and `.btn-solid` (blush), in sentence case with an arrow.
-- The shader shows only behind the hero. Everything below sits on solid `bg-bg`, and `<body>` must stay transparent or it hides the shader.
+- Pixel art is inline SVG built from `Pixels` in `pixel.ts`: one viewBox unit per art pixel, `shapeRendering="crispEdges"`, and a rendered size that's a whole multiple of the grid where it's fixed (the header mark is 3px per pixel). Colour it with the `--px-*` tokens or theme tokens, never literal colours. Sprite motion moves in whole pixels with `steps()`.
+- Keep pixel art decorative and sparse: one scene, a few small sprites. Text stays in the real fonts; no pixel fonts for copy.
 
 **Don't:**
 - Pills, `rounded-full` on anything that isn't a dot, or radii other than `--radius`.
@@ -103,20 +106,20 @@ Target WCAG 2.2 AA. An inline script in `layout.tsx` runs before paint and sets 
 | Attribute | Trigger | Effect |
 | --- | --- | --- |
 | `data-contrast="high"` | toggle, `prefers-contrast: more` | pure black/white, opaque surfaces, 2px borders |
-| `data-motion="reduced"` | toggle, `prefers-reduced-motion` | no animation, no GPU background |
+| `data-motion="reduced"` | toggle, `prefers-reduced-motion` | no animation; sprites hold their first frame |
 | `data-display="eink"` | toggle, `update: slow`, `monochrome` | black on white, **no grey at all**, nothing moves |
 | `data-text="large"` | toggle | root font size 125% |
 
 Use the Tailwind variants `eink:` and `hc:` for mode-specific styles. For every visual change:
 - Colours come from the CSS tokens in `globals.css` (`--ink`, `--muted`, `--line`, `--ember`, …), and each mode redefines them. New tokens need a value in every mode block, including print and the no-JS `prefers-contrast` fallback.
-- Decoration (the shader, grain, glows, tinted fills) must disappear or turn solid in e-ink and high contrast.
+- Decoration (the pixel scene's sky, sun, stars, far range and snow; glows, tinted fills) must disappear or turn solid in e-ink and high contrast. The scene keeps only its two front ranges there, as a solid silhouette.
 - Check it with each mode on. To preview a mode without clicking, set `localStorage["vx-flags"]` to `{"eink":true}` or `{"contrast":true}` and reload.
 - Keep semantic landmarks, `aria-labelledby` on sections, the skip link, visible `:focus-visible` rings, 44px minimum touch targets and `aria-hidden` on purely decorative glyphs.
 - Motion uses `transform`/`opacity` only and must be covered by the reduced-motion rules.
 
 ## Performance
 
-The page is static and small; keep it that way. No new runtime dependencies without a strong reason. The GPU background only starts when idle, never in reduced-motion, high-contrast, e-ink or Save-Data modes, pauses when the tab is hidden, and falls back to CSS. Keep any new effects to that standard.
+The page is static and small; keep it that way. No new runtime dependencies without a strong reason. The pixel art is generated at build time and ships as a few SVG paths with no script; its motion is a handful of CSS animations that the reduced-motion rules switch off. Keep any new effects to that standard: no canvas, no runtime rendering.
 
 ## Code style
 

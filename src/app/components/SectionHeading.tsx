@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
-// Every section below the hero shares this frame: a numbered mono label,
-// a large title with an optional aside beside it, then the content.
-// Centred on phones, left-aligned from tablet width up.
+// Every section below the hero shares this frame: a numbered mono label
+// led by a single ember pixel, a title, an optional aside under it, then
+// the content. Left-aligned at every width, like a plain document.
 export default function Section({
   id,
   index,
@@ -21,30 +21,24 @@ export default function Section({
   const titleId = `${id}-title`;
 
   return (
-    <section
-      id={id}
-      aria-labelledby={titleId}
-      className="pt-20 pb-24 sm:pt-28 sm:pb-32 lg:pt-32 lg:pb-36"
-    >
-      <div className="reveal grid gap-8 text-center sm:text-left lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:items-end lg:gap-20">
-        <div>
-          <p className="eyebrow flex items-center justify-center gap-3 sm:justify-start">
-            <span className="text-ember">{index}</span>
-            <span aria-hidden className="draw h-px w-10 bg-ember" />
-            {kicker}
-          </p>
-          <h2
-            id={titleId}
-            className="mt-5 text-title font-medium text-balance"
-          >
-            {title}
-          </h2>
-        </div>
+    <section id={id} aria-labelledby={titleId} className="py-16 sm:py-20 lg:py-24">
+      <header className="reveal max-w-[44rem]">
+        <p className="eyebrow flex items-center gap-2.5">
+          <span aria-hidden className="size-1.5 bg-ember" />
+          <span className="text-ember">{index}</span>
+          <span aria-hidden className="text-faint">
+            /
+          </span>
+          {kicker}
+        </p>
+        <h2 id={titleId} className="mt-4 text-title font-medium text-balance">
+          {title}
+        </h2>
         {aside && (
-          <p className="text-lede text-pretty text-muted lg:pb-1">{aside}</p>
+          <p className="mt-4 text-lede text-pretty text-muted">{aside}</p>
         )}
-      </div>
-      <div className="mt-14 sm:mt-20">{children}</div>
+      </header>
+      <div className="mt-10 sm:mt-12">{children}</div>
     </section>
   );
 }

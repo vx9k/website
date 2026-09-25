@@ -10,23 +10,20 @@ export default function Stack({ t }: { t: Dictionary }) {
         {stack.map((g) => (
           <div
             key={g.group}
-            className="reveal grid gap-x-10 gap-y-3 border-t border-line py-7 text-center sm:grid-cols-[10rem_minmax(0,1fr)_auto] sm:items-baseline sm:py-9 sm:text-left"
+            className="reveal grid gap-x-8 gap-y-2 border-t border-line py-6 sm:grid-cols-[9rem_minmax(0,1fr)] sm:items-baseline"
           >
             <dt className="eyebrow">{groups[g.group]}</dt>
             <dd>
-              <ul className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-subhead font-medium sm:justify-start">
+              <ul className="flex flex-wrap gap-x-3 gap-y-1 text-subhead font-medium">
                 {g.items.map((item) => (
                   <li
                     key={item}
-                    className="after:ml-4 after:font-normal after:text-faint after:content-['/'] last:after:content-none"
+                    className="after:ml-3 after:font-normal after:text-faint after:content-['/'] last:after:content-none"
                   >
                     {item}
                   </li>
                 ))}
               </ul>
-            </dd>
-            <dd aria-hidden className="eyebrow hidden text-faint! sm:block">
-              {String(g.items.length).padStart(2, "0")}
             </dd>
           </div>
         ))}

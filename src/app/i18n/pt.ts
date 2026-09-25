@@ -107,7 +107,7 @@ const pt: Dictionary = {
     },
     site: {
       eyebrow: "Este site",
-      body: "Um export estático de Next.js servido pelo Cloudflare Workers. A fumaça cor de brasa no topo da página é um shader WebGPU que recorre ao WebGL2 e, se preciso, a CSS puro. A página avisa quando você fica offline, tem um modo papel para telas de tinta eletrônica e está em inglês, espanhol e português.",
+      body: "Um export estático de Next.js servido pelo Cloudflare Workers. As montanhas no topo da página são pixel art: geradas no build do site e entregues como um único SVG, sem scripts. A página avisa quando você fica offline, tem um modo papel para telas de tinta eletrônica e está em inglês, espanhol e português.",
     },
   },
   stack: {

@@ -15,15 +15,13 @@ export default function Principles({ t }: { t: Dictionary }) {
         {items.map((p, i) => (
           <li
             key={p.title}
-            className="group reveal grid gap-x-10 gap-y-3 border-t border-line py-9 text-center sm:grid-cols-[4rem_minmax(0,1fr)] sm:text-left md:py-11 lg:grid-cols-[4rem_minmax(0,0.9fr)_minmax(0,1.1fr)]"
+            className="reveal grid gap-x-8 gap-y-2 border-t border-line py-7 sm:grid-cols-[3rem_minmax(0,1fr)] md:grid-cols-[3rem_minmax(0,0.8fr)_minmax(0,1.2fr)]"
           >
-            <span aria-hidden className="eyebrow pt-2 text-ember! transition-transform duration-300 ease-out-soft sm:group-hover:translate-x-1">
+            <span aria-hidden className="eyebrow pt-1 text-ember!">
               {String(i + 1).padStart(2, "0")}
             </span>
-            <h3 className="text-subhead font-medium text-balance transition-transform duration-300 ease-out-soft sm:group-hover:translate-x-1">
-              {p.title}
-            </h3>
-            <p className="mx-auto max-w-[36rem] text-[1.05rem] leading-7 text-pretty text-muted sm:col-start-2 sm:mx-0 lg:col-start-auto lg:pt-1">
+            <h3 className="text-subhead font-medium text-balance">{p.title}</h3>
+            <p className="max-w-[36rem] leading-7 text-pretty text-muted sm:col-start-2 md:col-start-auto md:pt-0.5">
               {p.body}
             </p>
           </li>
