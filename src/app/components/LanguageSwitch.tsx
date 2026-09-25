@@ -2,9 +2,11 @@
 
 import { localeKeys, locales, type Locale } from "../i18n/locales";
 
-// Remembers an explicit choice so the site root (public/index.html) stops
-// guessing from the browser's languages on later visits.
+// Remembers an explicit choice so the site root stops guessing from the
+// browser's languages on later visits. The Worker at "/" (src/worker.ts)
+// reads the cookie; the 404 page reads localStorage.
 function remember(lang: Locale) {
+  document.cookie = `vx-lang=${lang}; path=/; max-age=31536000; samesite=lax; secure`;
   try {
     localStorage.setItem("vx-lang", lang);
   } catch {

@@ -1,8 +1,10 @@
-// Cloudflare Workers config. The site is a static export, so there's no
-// Worker script: Cloudflare serves the files in out/ directly.
+// Cloudflare Workers config. The site is a static export served from
+// out/. The only Worker code is src/worker.ts, which runs for "/" alone
+// and redirects to /en, /es or /pt; everything else skips it.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "website",
+  "main": "src/worker.ts",
   "compatibility_date": "2026-09-25",
   // kthread.dev is attached as a Custom Domain (Cloudflare manages its DNS
   // record and certificate). www.kthread.dev 301s here via a zone
@@ -12,7 +14,8 @@
     "directory": "./out",
     // Unknown paths get out/404.html with a real 404 status.
     "not_found_handling": "404-page",
-    "html_handling": "auto-trailing-slash"
+    "html_handling": "auto-trailing-slash",
+    "run_worker_first": ["/"]
   },
   // Every non-production branch gets its own Preview URL (posted on its
   // PR). Empty because previews use the same settings as production.
