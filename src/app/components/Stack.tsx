@@ -1,30 +1,15 @@
 import { stack } from "../content";
 import type { Dictionary } from "../i18n";
-import Section from "./SectionHeading";
+import Section from "./Section";
 
 export default function Stack({ t }: { t: Dictionary }) {
-  const { kicker, title, groups } = t.stack;
   return (
-    <Section id="stack" index="03" kicker={kicker} title={title}>
-      <dl className="rule-b">
-        {stack.map((g) => (
-          <div
-            key={g.group}
-            className="reveal grid gap-x-8 gap-y-2 rule-t py-6 sm:grid-cols-[9rem_minmax(0,1fr)] sm:items-baseline"
-          >
-            <dt className="eyebrow">{groups[g.group]}</dt>
-            <dd>
-              <ul className="flex flex-wrap gap-x-3 gap-y-1 text-subhead font-medium">
-                {g.items.map((item) => (
-                  <li
-                    key={item}
-                    className="after:ml-3 after:font-normal after:text-line after:content-['/'] last:after:content-none"
-                  >
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </dd>
+    <Section id="stack" title={t.stack.title}>
+      <dl>
+        {stack.map(({ group, items }) => (
+          <div key={group} className="rule grid grid-cols-[7rem_minmax(0,1fr)] gap-4 py-2.5">
+            <dt className="eyebrow pt-0.5">{t.stack.groups[group]}</dt>
+            <dd>{items.join(", ")}</dd>
           </div>
         ))}
       </dl>
