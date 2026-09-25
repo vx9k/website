@@ -1,6 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
+import CanopyField from "./components/CanopyField";
+import OfflineBanner from "./components/OfflineBanner";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -27,14 +29,20 @@ export const metadata: Metadata = {
     "Portfolio of a systems engineer working across POSIX-compliant software and minimal, portable systems tooling.",
 };
 
-// Runs before paint so the page never flashes the wrong theme/contrast/motion
-// on load. Kept tiny and dependency-free since this is a static export.
+export const viewport: Viewport = {
+  themeColor: "#0a0f0b",
+  colorScheme: "dark",
+};
+
+// Runs before paint so the contrast/motion settings never flash on load.
+// Also marks the page as JS-capable so scroll reveals only hide content
+// when there is a script around to show it again.
 const bootScript = `
 (function () {
+  var root = document.documentElement;
+  root.classList.add("js");
   try {
     var s = JSON.parse(localStorage.getItem("vx-settings") || "{}");
-    var root = document.documentElement;
-    if (s.theme === "dark") root.setAttribute("data-theme", "dark");
     if (s.contrast === "high") root.setAttribute("data-contrast", "high");
     if (s.motion === "reduced") root.setAttribute("data-motion", "reduced");
   } catch (e) {}
@@ -45,13 +53,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable} h-full antialiased`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
-      <body className="min-h-full flex flex-col overflow-x-hidden bg-background text-ink transition-colors duration-300">
+      <body className="min-h-full flex flex-col overflow-x-hidden bg-background text-ink">
+        <CanopyField />
         {children}
+        <OfflineBanner />
       </body>
     </html>
   );
