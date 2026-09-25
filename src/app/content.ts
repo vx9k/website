@@ -3,7 +3,6 @@
 
 export const links = {
   github: "https://github.com/vx9k",
-  site: "https://kthread.dev",
   suite: "https://github.com/vx9k/4suite",
   website: "https://github.com/vx9k/website",
 };

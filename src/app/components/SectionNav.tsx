@@ -28,34 +28,31 @@ function useActiveSection() {
   return active;
 }
 
-/** Numbered section links in the header, from tablet width up. */
+/** Section links in the header, from tablet width up. */
 export default function SectionNav() {
   const active = useActiveSection();
 
   return (
     <nav aria-label="Sections" className="hidden md:block">
-      <ul className="flex items-center">
-        {sections.slice(1).map((s, i) => {
+      <ul className="flex items-center gap-1 lg:gap-3">
+        {sections.slice(1).map((s) => {
           const current = active === s.id;
           return (
             <li key={s.id}>
               <a
                 href={`#${s.id}`}
                 aria-current={current ? "location" : undefined}
-                className={`eyebrow inline-flex min-h-11 items-center gap-2 px-3 transition-colors hover:text-ink! ${
-                  current ? "text-ink!" : ""
+                className={`relative inline-flex min-h-11 items-center px-3 text-[0.95rem] font-medium tracking-[-0.01em] transition-colors ${
+                  current ? "text-ink" : "text-muted hover:text-ink"
                 }`}
               >
+                {s.label}
                 <span
                   aria-hidden
-                  className={`size-1.5 transition-colors ${
-                    current ? "bg-moss" : "bg-line-strong"
+                  className={`absolute inset-x-3 bottom-2 h-px bg-ember transition-opacity ${
+                    current ? "opacity-100" : "opacity-0"
                   }`}
                 />
-                <span aria-hidden className="text-faint">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                {s.label}
               </a>
             </li>
           );

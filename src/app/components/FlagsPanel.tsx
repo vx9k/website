@@ -100,8 +100,8 @@ export default function FlagsPanel() {
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((v) => !v)}
-        className={`eyebrow inline-flex min-h-11 items-center gap-2.5 border px-3 text-ink! transition-colors hover:border-moss ${
-          open ? "border-moss" : "border-line-strong"
+        className={`inline-flex min-h-11 items-center gap-2.5 rounded-xs border px-4 text-[0.95rem] font-medium text-ink transition-colors hover:border-line-strong hover:bg-raised ${
+          open ? "border-line-strong bg-raised" : "border-line"
         }`}
       >
         <svg
@@ -126,7 +126,7 @@ export default function FlagsPanel() {
         role="group"
         aria-label="Display settings"
         hidden={!open}
-        className="glass glass-dense ticks absolute top-[calc(100%+0.6rem)] right-0 z-50 w-[min(21rem,calc(100vw-2.5rem))]"
+        className="glass glass-dense absolute top-[calc(100%+0.6rem)] right-0 z-50 w-[min(21rem,calc(100vw-2.5rem))]"
       >
         <p className="eyebrow border-b border-line px-4 py-3">Display</p>
         <ul className="p-1">
@@ -141,7 +141,7 @@ export default function FlagsPanel() {
                   aria-checked={on}
                   aria-describedby={noteId}
                   onClick={() => toggle(o.key)}
-                  className="flex min-h-14 w-full items-center gap-4 px-3 py-2.5 text-left transition-colors hover:bg-moss-wash"
+                  className="flex min-h-14 w-full items-center gap-4 px-3 py-2.5 text-left transition-colors hover:bg-ember-wash"
                 >
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm text-ink">{o.label}</span>
@@ -156,14 +156,14 @@ export default function FlagsPanel() {
                   </span>
                   <span
                     aria-hidden
-                    className={`relative inline-flex h-5 w-9 shrink-0 items-center border transition-colors ${
+                    className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-xs border transition-colors ${
                       on
-                        ? "border-moss bg-moss"
+                        ? "border-ember bg-ember"
                         : "border-line-strong bg-transparent"
                     }`}
                   >
                     <span
-                      className={`absolute size-3 transition-[left,background-color] ${
+                      className={`absolute size-3 rounded-[2px] transition-[left,background-color] ${
                         on ? "left-[1.1rem] bg-on-accent" : "left-[0.2rem] bg-muted"
                       }`}
                     />

@@ -10,8 +10,8 @@ export default function manifest(): MetadataRoute.Manifest {
       "vx is a systems engineer writing POSIX-minded software and minimal boot tooling in C.",
     start_url: "/",
     display: "standalone",
-    background_color: "#070b08",
-    theme_color: "#070b08",
+    background_color: "#0c0808",
+    theme_color: "#0c0808",
     icons: [
       { src: "/icon.svg", sizes: "any", type: "image/svg+xml" },
       { src: "/apple-icon.png", sizes: "180x180", type: "image/png" },

@@ -2,8 +2,8 @@
 // CanopyField, so none of this reaches visitors who can't or shouldn't
 // run it (reduced motion, e-ink, high contrast, Save-Data, no GPU).
 //
-// One shader, written in WGSL and GLSL: a slow domain-warped fog with a
-// diagonal shaft of light, plus a soft glow that drifts toward the pointer.
+// One shader, written in WGSL and GLSL: slow domain-warped ember smoke with
+// a diagonal shaft of warm light, plus a glow that drifts toward the pointer.
 
 const GLSL_VERTEX = `#version 300 es
 void main() {
@@ -44,17 +44,17 @@ void main() {
   vec2 q = vec2(fbm(p + t), fbm(p + vec2(5.2, 1.3) - t));
   float n = fbm(p + 1.6 * q + vec2(0.0, t * 2.0));
 
-  vec3 shade = vec3(0.018, 0.03, 0.022);
-  vec3 pine = vec3(0.045, 0.1, 0.066);
-  vec3 moss = vec3(0.07, 0.16, 0.1);
-  vec3 col = mix(shade, pine, smoothstep(0.2, 0.8, n));
-  col = mix(col, moss, smoothstep(0.55, 0.95, n) * 0.5);
+  vec3 soot = vec3(0.03, 0.012, 0.011);
+  vec3 oxblood = vec3(0.15, 0.035, 0.03);
+  vec3 ember = vec3(0.42, 0.1, 0.065);
+  vec3 col = mix(soot, oxblood, smoothstep(0.2, 0.8, n));
+  col = mix(col, ember, smoothstep(0.55, 0.95, n) * 0.55);
 
   float shaft = smoothstep(0.55, 1.0, sin((uv.x - uv.y * 0.8) * 2.6 + uTime * 0.04) * 0.5 + 0.5);
-  col += vec3(0.9, 0.74, 0.45) * shaft * 0.03 * (0.4 + n);
+  col += vec3(1.0, 0.55, 0.4) * shaft * 0.035 * (0.4 + n);
 
   vec2 d = vec2((uv.x - uPointer.x) * aspect, uv.y - uPointer.y);
-  col += vec3(0.35, 0.75, 0.5) * exp(-dot(d, d) * 5.0) * 0.045;
+  col += vec3(0.95, 0.32, 0.22) * exp(-dot(d, d) * 5.0) * 0.05;
 
   col *= 1.0 - 0.35 * pow(length(uv - 0.5), 2.0);
   fragColor = vec4(col, 1.0);
@@ -106,17 +106,17 @@ fn fs(@builtin(position) c: vec4<f32>) -> @location(0) vec4<f32> {
   let q = vec2<f32>(fbm(p + t), fbm(p + vec2<f32>(5.2, 1.3) - t));
   let n = fbm(p + 1.6 * q + vec2<f32>(0.0, t * 2.0));
 
-  let shade = vec3<f32>(0.018, 0.03, 0.022);
-  let pine = vec3<f32>(0.045, 0.1, 0.066);
-  let moss = vec3<f32>(0.07, 0.16, 0.1);
-  var col = mix(shade, pine, vec3<f32>(smoothstep(0.2, 0.8, n)));
-  col = mix(col, moss, vec3<f32>(smoothstep(0.55, 0.95, n) * 0.5));
+  let soot = vec3<f32>(0.03, 0.012, 0.011);
+  let oxblood = vec3<f32>(0.15, 0.035, 0.03);
+  let ember = vec3<f32>(0.42, 0.1, 0.065);
+  var col = mix(soot, oxblood, vec3<f32>(smoothstep(0.2, 0.8, n)));
+  col = mix(col, ember, vec3<f32>(smoothstep(0.55, 0.95, n) * 0.55));
 
   let shaft = smoothstep(0.55, 1.0, sin((uv.x - uv.y * 0.8) * 2.6 + u.time * 0.04) * 0.5 + 0.5);
-  col = col + vec3<f32>(0.9, 0.74, 0.45) * shaft * 0.03 * (0.4 + n);
+  col = col + vec3<f32>(1.0, 0.55, 0.4) * shaft * 0.035 * (0.4 + n);
 
   let d = vec2<f32>((uv.x - u.pointer.x) * aspect, uv.y - u.pointer.y);
-  col = col + vec3<f32>(0.35, 0.75, 0.5) * exp(-dot(d, d) * 5.0) * 0.045;
+  col = col + vec3<f32>(0.95, 0.32, 0.22) * exp(-dot(d, d) * 5.0) * 0.05;
 
   col = col * (1.0 - 0.35 * pow(length(uv - vec2<f32>(0.5)), 2.0));
   return vec4<f32>(col, 1.0);
