@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { Pixels } from "../pixel";
 
-// A small campfire for the footer. Two flame frames swap in steps, so it
+// A small campfire at the foot of the screen. Two flame frames swap in steps, so it
 // flickers like a sprite. Tapping it stokes the fire: the flicker speeds
 // up and sparks jump out. With motion off it holds its first frame and
 // the sparks simply show for a moment.
@@ -47,7 +47,8 @@ export default function Campfire({ label }: { label: string }) {
       onClick={stoke}
       aria-label={label}
       title={label}
-      className="-my-2 inline-flex min-h-11 min-w-11 items-end justify-center"
+      data-poke
+      className="inline-flex min-h-11 min-w-11 items-end justify-center"
     >
       {/* 7×15 art pixels at 3px each. */}
       <svg
@@ -58,10 +59,10 @@ export default function Campfire({ label }: { label: string }) {
         focusable="false"
         className="campfire h-[45px] w-[21px]"
       >
-        <path className="fill-accent" d={draw(0, FLAME_A)} />
-        <path className="flame-alt fill-accent" d={draw(0, FLAME_B)} />
-        <path className="fill-cream" d={draw(2, CORE)} />
-        <path className="fill-line" d={draw(5, LOGS)} />
+        <path className="fill-line" d={draw(0, FLAME_A)} />
+        <path className="flame-alt fill-line" d={draw(0, FLAME_B)} />
+        <path className="fill-accent" d={draw(2, CORE)} />
+        <path className="fill-ink" d={draw(5, LOGS)} />
         {SPARKS.map(([x, y, dx], n) => (
           <rect
             key={n}
@@ -69,7 +70,7 @@ export default function Campfire({ label }: { label: string }) {
             y={TOP - 1 + y - 3}
             width={1}
             height={1}
-            className={`spark ${n % 2 ? "fill-accent" : "fill-ink"}`}
+            className={`spark ${n % 2 ? "fill-line" : "fill-ink"}`}
             style={{ ["--dx" as string]: `${dx}px`, ["--n" as string]: n }}
           />
         ))}

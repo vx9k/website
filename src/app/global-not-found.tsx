@@ -59,44 +59,59 @@ export default function GlobalNotFound() {
       <body className="flex min-h-dvh flex-col overflow-x-clip text-ink antialiased">
         <main
           id="main"
-          className="shell flex flex-1 items-center pt-[max(3rem,env(safe-area-inset-top))] pb-8"
+          className="console flex flex-1 flex-col justify-center py-[max(1.5rem,env(safe-area-inset-top))]"
         >
-          {localeKeys.map((l) => {
-            const t = getDictionary(l).notFound;
-            return (
-              <div key={l} className={`w-full max-w-2xl ${visibility[l]}`}>
-                <a href={`/${l}`} className="inline-flex min-h-11 items-center">
-                  <PixelMark className="h-[15px] w-[33px]" />
-                  <span className="sr-only">vx</span>
-                </a>
+          <div className="notch bg-bezel p-[clamp(0.5rem,1.6vw,1.5rem)]">
+            <div className="lcd notch">
+              <div className="shell pt-10 pb-4">
+                {localeKeys.map((l) => {
+                  const t = getDictionary(l).notFound;
+                  return (
+                    <div
+                      key={l}
+                      className={`w-full max-w-2xl ${visibility[l]}`}
+                    >
+                      <a
+                        href={`/${l}`}
+                        className="inline-flex min-h-11 items-center"
+                      >
+                        <span className="px-frame inline-flex bg-bezel px-2 py-2 [--frame:var(--bezel)]">
+                          <PixelMark className="h-[15px] w-[33px]" />
+                        </span>
+                        <span className="sr-only">vx</span>
+                      </a>
 
-                <p className="eyebrow mt-10 flex items-center gap-2.5">
-                  <span aria-hidden className="size-[6px] bg-accent" />
-                  <span>404</span>
-                  <span aria-hidden>
-                    /
-                  </span>
-                  {t.eyebrow}
-                </p>
-                <h1 className="mt-4 text-title font-medium">{t.title}</h1>
+                      <p className="eyebrow mt-10 flex items-center gap-2.5">
+                        <span aria-hidden className="size-[6px] bg-ink" />
+                        <span>404</span>
+                        <span aria-hidden>/</span>
+                        {t.eyebrow}
+                      </p>
+                      <h1 className="mt-4 text-title font-medium">{t.title}</h1>
 
-                <p className="mt-6 max-w-lg leading-7">{t.body}</p>
+                      <p className="mt-6 max-w-lg leading-7">{t.body}</p>
 
-                <a href={`/${l}`} className="group btn btn-solid mt-10">
-                  {t.back}
-                  <span
-                    aria-hidden
-                    className="transition-transform group-hover:-translate-x-0.5"
-                  >
-                    ←︎
-                  </span>
-                </a>
+                      <a href={`/${l}`} className="group btn btn-solid mt-10">
+                        {t.back}
+                        <span
+                          aria-hidden
+                          className="transition-transform group-hover:-translate-x-0.5"
+                        >
+                          ←︎
+                        </span>
+                      </a>
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })}
+              {/* A different range from the home page's: same generator, new seed. */}
+              <PixelScene
+                seed={404}
+                className="aspect-[200/72] max-h-[24rem] min-h-44"
+              />
+            </div>
+          </div>
         </main>
-        {/* A different range from the home page's: same generator, new seed. */}
-        <PixelScene seed={404} className="aspect-[200/72] max-h-[28rem] min-h-44" />
       </body>
     </html>
   );

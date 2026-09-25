@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 // Every section below the hero shares this frame: a numbered mono label
-// led by a single rust pixel, a title, an optional aside under it, then
+// led by a single ink pixel, a title, an optional aside under it, then
 // the content. Left-aligned at every width, like a plain document.
 export default function Section({
   id,
@@ -21,10 +21,10 @@ export default function Section({
   const titleId = `${id}-title`;
 
   return (
-    <section id={id} aria-labelledby={titleId} className="py-16 sm:py-20 lg:py-24">
+    <section id={id} aria-labelledby={titleId} className="pt-12 pb-14 sm:pt-16 sm:pb-16">
       <header className="reveal max-w-[44rem]">
         <p className="eyebrow flex items-center gap-2.5">
-          <span aria-hidden className="size-[6px] bg-accent" />
+          <span aria-hidden className="size-[6px] bg-ink" />
           <span>{index}</span>
           <span aria-hidden>
             /

@@ -2,7 +2,7 @@
 
 Source for [kthread.dev](https://kthread.dev), the personal site of [vx](https://github.com/vx9k).
 
-It's a single static page built with Next.js and Tailwind CSS, exported to plain HTML and served from Cloudflare Workers at [kthread.dev](https://kthread.dev). Everything is pixel art in the four-colour Dustbyte palette: the mountains under the headline are generated at build time as a single SVG, and the sun, the cabin and the campfire respond to a click or a tap. The site keeps working offline, and a Display menu offers daylight, reduced motion and larger text.
+It's a single static page built with Next.js and Tailwind CSS, exported to plain HTML and served from Cloudflare Workers at [kthread.dev](https://kthread.dev). The page is a retro handheld console in the four-colour Mist GB palette: the mountains on its screen are generated at build time as a single SVG, the sun, the cabin and the campfire respond to a click or a tap, and pressing Play drops a little character onto the page to walk it with the arrow keys (or an on-screen pad on phones), using the headings, buttons and stairs as platforms. The site keeps working offline, and a Display menu offers daylight, reduced motion and larger text.
 
 ## Running it
 
@@ -27,13 +27,13 @@ src/app/
 ├── page.tsx            the home page, assembled from the sections below
 ├── layout.tsx          metadata and the script that applies the theme and flags before paint
 ├── content.ts          all the facts on the page: projects, principles, stack, links
-├── globals.css         the palette, themes, pixel primitives and motion
+├── globals.css         the palette, themes, console shell, pixel primitives and motion
 ├── not-found.tsx       the 404 page
 ├── manifest.ts         web app manifest
 ├── icon.svg            favicon
 ├── apple-icon.png      home-screen icon
 └── components/
-    ├── Header.tsx          masthead with the language switch and the Display menu
+    ├── Header.tsx          the console's top edge: language, Display menu, Play
     ├── Hero.tsx            headline, facts and calls to action
     ├── Principles.tsx      ┐
     ├── Work.tsx            │ page sections, each wrapped in the shared
@@ -47,7 +47,10 @@ src/app/
     ├── PixelScene.tsx      pixel-art mountains, generated at build time from a seed
     ├── SceneControls.tsx   buttons over the sun/moon (day and night) and the cabin (its light)
     ├── PixelMark.tsx       the pixel "vx" mark
-    └── Campfire.tsx        the footer's pixel campfire; tap it to stoke it
+    ├── Campfire.tsx        the campfire at the foot of the screen; tap it to stoke it
+    ├── Stairs.tsx          stairs between sections, for the game
+    ├── ConsoleControls.tsx the console's controls: Start plays, Select swaps the palette
+    └── game/               the playable page: physics engine, character, HUD, touch pad
 ```
 
 Other files at the root:
@@ -64,7 +67,7 @@ Other files at the root:
 
 Most text lives in `src/app/content.ts`. Change a project, principle or stack entry there and every section that uses it updates. Keep it factual: everything on the page should be checkable against the public repos.
 
-For anything visual, read the design and accessibility sections of [`AGENTS.md`](AGENTS.md) first. Every change has to work by night and by day, and with reduced motion.
+For anything visual, read the design and accessibility sections of [`AGENTS.md`](AGENTS.md) first. Every change has to work by day and by night, and with reduced motion, and the game reads the layout, so press Play and walk over anything you changed.
 
 ## Deploying
 

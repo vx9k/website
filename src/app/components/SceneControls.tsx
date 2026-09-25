@@ -13,7 +13,7 @@ type Box = { x: number; y: number; w: number; h: number };
 const SWAP_MS = 450; // matches the sink/surface animations in globals.css
 
 function isDay() {
-  return document.documentElement.getAttribute("data-theme") === "day";
+  return document.documentElement.getAttribute("data-theme") !== "night";
 }
 
 function calm() {

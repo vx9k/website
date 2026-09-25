@@ -1,11 +1,12 @@
 import { fill, Pixels, random, ridge } from "../pixel";
+import PlayCharacter from "./game/PlayCharacter";
 import SceneControls, { type SceneText } from "./SceneControls";
 
 // A pixel-art mountain range, generated at build time from a seed and
 // shipped as a handful of SVG paths. Each grid cell is one pixel in the
 // viewBox; crispEdges keeps them square at any size. Night shows a moon,
 // stars and a lit cabin; day shows the sun. Colours come from the
-// Dustbyte tokens in globals.css.
+// palette tokens in globals.css.
 //
 // With `text`, the sun/moon and the cabin become buttons (SceneControls):
 // tap the sky's disc to switch day and night, tap the cabin for its light.
@@ -25,10 +26,13 @@ export default function PixelScene({
   seed = 7,
   className = "",
   text,
+  play,
 }: {
   seed?: number;
   className?: string;
   text?: SceneText;
+  /** Label for the character waiting at the foot of the range. */
+  play?: string;
 }) {
   const rand = random(seed);
 
@@ -191,6 +195,13 @@ export default function PixelScene({
           />
         )}
       </svg>
+      {play && (
+        // Just right of the cabin, which keeps it inside the part of the
+        // scene that phones still show.
+        <div style={{ ["--gx" as string]: cabin ? cabin[0] + CABIN[0].length + 8 : 70 }}>
+          <PlayCharacter label={play} />
+        </div>
+      )}
       {text && (
         <SceneControls
           text={text}

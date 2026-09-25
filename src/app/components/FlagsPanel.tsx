@@ -30,7 +30,7 @@ function systemWantsLessMotion() {
 function current(): Flags {
   const saved = window.__vxFlags?.read() ?? {};
   return {
-    day: document.documentElement.getAttribute("data-theme") === "day",
+    day: document.documentElement.getAttribute("data-theme") !== "night",
     motion: !!saved.motion,
     large: !!saved.large,
   };
@@ -94,7 +94,7 @@ export default function FlagsPanel({ text }: { text: FlagsText }) {
         >
           <path d="M0 1h7v1H0zM4 0h1v3H4zM0 5h7v1H0zM1 4h1v3H1z" />
         </svg>
-        {text.button}
+        <span className="sr-only sm:not-sr-only">{text.button}</span>
       </button>
 
       <div

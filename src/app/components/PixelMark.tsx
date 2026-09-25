@@ -17,8 +17,9 @@ export default function PixelMark({ className = "" }: { className?: string }) {
       focusable="false"
       className={className}
     >
-      <path className="fill-ink" d={v.path()} />
-      <path className="fill-accent" d={x.path()} />
+      {/* Drawn on the bezel-coloured badge, so it uses fixed palette colours. */}
+      <path className="fill-[var(--mint)]" d={v.path()} />
+      <path className="fill-[var(--teal)]" d={x.path()} />
     </svg>
   );
 }
