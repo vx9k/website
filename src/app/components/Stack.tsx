@@ -12,7 +12,7 @@ export default function Stack() {
           >
             <dt className="eyebrow">{g.group}</dt>
             <dd>
-              <ul className="flex flex-wrap gap-x-4 gap-y-1 text-[clamp(1.35rem,1.1rem+1vw,2rem)] leading-snug font-medium tracking-[-0.035em]">
+              <ul className="flex flex-wrap gap-x-4 gap-y-1 text-subhead font-medium">
                 {g.items.map((item) => (
                   <li
                     key={item}

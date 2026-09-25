@@ -14,15 +14,13 @@ export default function Principles() {
         {principles.map((p, i) => (
           <li
             key={p.title}
-            className="reveal grid gap-x-10 gap-y-4 border-t border-line py-10 sm:grid-cols-[4.5rem_minmax(0,1fr)] md:grid-cols-[4.5rem_minmax(0,16rem)_minmax(0,1fr)] md:py-12"
+            className="reveal grid gap-x-10 gap-y-3 border-t border-line py-9 sm:grid-cols-[4rem_minmax(0,1fr)] md:py-11 lg:grid-cols-[4rem_minmax(0,0.9fr)_minmax(0,1.1fr)]"
           >
-            <span aria-hidden className="eyebrow pt-1.5 text-moss!">
-              P.{String(i + 1).padStart(2, "0")}
+            <span aria-hidden className="eyebrow pt-2 text-ember!">
+              {String(i + 1).padStart(2, "0")}
             </span>
-            <h3 className="text-2xl leading-tight font-medium tracking-[-0.03em] text-balance">
-              {p.title}
-            </h3>
-            <p className="max-w-[36rem] text-[1.05rem] leading-8 text-pretty text-muted sm:col-start-2 md:col-start-auto md:pt-0.5">
+            <h3 className="text-subhead font-medium text-balance">{p.title}</h3>
+            <p className="max-w-[36rem] text-[1.05rem] leading-7 text-pretty text-muted sm:col-start-2 lg:col-start-auto lg:pt-1">
               {p.body}
             </p>
           </li>

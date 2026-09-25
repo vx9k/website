@@ -1,19 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
 import "./globals.css";
 import CanopyField from "./components/CanopyField";
 import OfflineBanner from "./components/OfflineBanner";
 
-// Both are variable: one file each covers every weight.
-const geist = Geist({
-  variable: "--font-geist",
+// Instrument Sans is variable (weight and width), so one file covers
+// every weight the page uses. Plex Mono is static; only 400 and 500 load.
+const instrument = Instrument_Sans({
+  variable: "--font-instrument",
   subsets: ["latin"],
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
   subsets: ["latin"],
+  weight: ["400", "500"],
   display: "swap",
 });
 
@@ -41,7 +43,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#070b08",
+  themeColor: "#0c0808",
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
@@ -73,7 +75,7 @@ const bootScript = `(function () {
     set("data-display", eink, "eink");
     set("data-text", !!s.large, "large");
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", eink ? "#ffffff" : d.hasAttribute("data-contrast") ? "#000000" : "#070b08");
+    if (meta) meta.setAttribute("content", eink ? "#ffffff" : d.hasAttribute("data-contrast") ? "#000000" : "#0c0808");
   }
   window.__vxFlags = { read: read, apply: apply };
   apply();
@@ -88,12 +90,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       dir="ltr"
       suppressHydrationWarning
-      className={`${geist.variable} ${geistMono.variable}`}
+      className={`${instrument.variable} ${plexMono.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
-      <body className="flex min-h-dvh flex-col overflow-x-clip bg-bg text-ink antialiased">
+      <body className="flex min-h-dvh flex-col overflow-x-clip text-ink antialiased">
         <a
           href="#main"
           className="glass eyebrow fixed top-3 left-3 z-[60] -translate-y-24 px-5 py-3.5 text-ink! focus-visible:translate-y-0"
@@ -101,14 +103,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           Skip to content
         </a>
         <CanopyField />
-        <div
-          aria-hidden
-          className="no-print pointer-events-none fixed inset-0 -z-10 eink:hidden hc:hidden"
-        >
-          <div className="shell h-full">
-            <div className="grid-lines h-full" />
-          </div>
-        </div>
         {children}
         <OfflineBanner />
       </body>

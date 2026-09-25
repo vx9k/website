@@ -60,24 +60,29 @@ src/app/
 
 ## Design direction
 
-The reference points are helsing.ai, Palantir and Black Forest Labs: dark, square, gridded and quiet, with glass surfaces over a forest-green GPU background.
+The reference is [bfl.ai](https://bfl.ai): a full-bleed cinematic hero, large tightly tracked sans headlines, small mono labels, 3px corners and hairline structure. It's made distinct by a red palette, with the ember-smoke GPU shader standing in for BFL's hero video.
+
+**Tokens** (in `globals.css`, redefined for every display mode):
+- Surfaces: `--bg` `#0c0808`, `--surface` `#140e0e` (cards), `--raised`.
+- Text: `--ink`, `--muted`, `--faint`. These are solid colours, all AA on `--bg` and `--surface`. Don't use opacity for text.
+- **One accent: `--ember`** (`#ef5b45`) for highlights, active states, status and the focus ring. `--blush` is only the primary button fill. `--sun` is reserved for warnings (the offline banner).
+- `--radius: 3px` on everything: buttons, chips, cards, menus.
 
 **Do:**
-- Square corners everywhere. No `rounded-*` at all.
-- Use Geist for text: large sizes, weight 500, tight negative tracking (about −0.045em on titles, −0.055em on the hero). Use Geist Mono, uppercase and tracked out, for small labels only, via the `eyebrow` utility.
-- Structure with hairlines. Sections use `<Section>`, which gives the full-bleed rule, crosshairs and a 1/4 : 3/4 index/content split that lines up with the background grid. Keep new layouts on that grid.
-- Use spec-sheet tables (`dl` rows with hairlines) for facts, and square flags for status, where the glyph carries meaning as well as colour.
-- Use **one accent: moss.** `--sun` is reserved for warnings (the offline banner).
-- Use the `glass` + `ticks` utilities for the few raised panels, and `glass-dense` for menus over content. Each backdrop blur costs GPU time, so keep them rare.
-- Use `.btn` / `.btn-solid` for buttons: square, mono and uppercase, with an arrow that moves on hover.
+- Type: Instrument Sans at weight 500 for headings, using the scale in `@theme` (`text-display`, `text-title`, `text-subhead`, `text-lede`; tracking and line height are built in). IBM Plex Mono, uppercase and lightly tracked, only for small labels, via `eyebrow` and `chip`.
+- Use the `<Section>` frame for every section below the hero: a numbered mono label, a big title with an optional aside, then the content. Separate sections with space; hairlines go inside lists and cards.
+- Use `card` for raised content, `chip` for statuses and short facts (the glyph carries meaning, not just colour), and spec tables (`dl` rows with hairlines) for facts.
+- Buttons: `.btn` (dark, hairline) and `.btn-solid` (blush), in sentence case with an arrow.
+- The shader shows only behind the hero. Everything below sits on solid `bg-bg`, and `<body>` must stay transparent or it hides the shader.
 
 **Don't:**
-- Pills, rounded chips, tag clouds, or pill badges.
+- Pills, `rounded-full` on anything that isn't a dot, or radii other than `--radius`.
+- A second accent colour, gradients on text, or purple/blue "AI" gradients.
 - Terminal or hacker clichés: fake shells, `$` prompts, boot logs, blinking cursors, `>_` logos, CLI-flag labels, kernel-panic jokes.
-- Soft serifs, gradient text, purple/blue "AI" gradients, or a second accent colour.
+- The earlier Helsing/Palantir motifs: blueprint grid lines, crosshairs, corner ticks, square-cut everything.
 - Three equal feature cards in a row.
 
-Design-oriented agent skills live in `.claude/skills/` (for example `redesign-existing-projects` and `industrial-brutalist-ui`). Use them for visual work, but this section wins where they disagree.
+Design-oriented agent skills live in `.claude/skills/`. Use them for visual work, but this section wins where they disagree.
 
 ## Display modes and accessibility
 
@@ -91,8 +96,8 @@ Target WCAG 2.2 AA. An inline script in `layout.tsx` runs before paint and sets 
 | `data-text="large"` | toggle | root font size 125% |
 
 Use the Tailwind variants `eink:` and `hc:` for mode-specific styles. For every visual change:
-- Colours come from the CSS tokens in `globals.css` (`--ink`, `--muted`, `--line`, `--moss`, …), and each mode redefines them. New tokens need a value in every mode block, including print and the no-JS `prefers-contrast` fallback.
-- Decoration (grid lines, crosshairs, ticks, grain, glows, tinted fills) must disappear or turn solid in e-ink and high contrast.
+- Colours come from the CSS tokens in `globals.css` (`--ink`, `--muted`, `--line`, `--ember`, …), and each mode redefines them. New tokens need a value in every mode block, including print and the no-JS `prefers-contrast` fallback.
+- Decoration (the shader, grain, glows, tinted fills) must disappear or turn solid in e-ink and high contrast.
 - Check it with each mode on. To preview a mode without clicking, set `localStorage["vx-flags"]` to `{"eink":true}` or `{"contrast":true}` and reload.
 - Keep semantic landmarks, `aria-labelledby` on sections, the skip link, visible `:focus-visible` rings, 44px minimum touch targets and `aria-hidden` on purely decorative glyphs.
 - Motion uses `transform`/`opacity` only and must be covered by the reduced-motion rules.

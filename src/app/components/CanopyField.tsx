@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Renderer } from "./canopy-gpu";
 
-// The forest behind the page. Always renders a CSS gradient first; a GPU
+// The ember smoke behind the hero. Always renders a CSS gradient first; a GPU
 // shader fades in on top only when it's worth running:
 //   - WebGPU, else WebGL2, and never a software renderer
 //   - not with reduced motion, high contrast, e-ink, or Save-Data

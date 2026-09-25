@@ -35,7 +35,7 @@ export default function OfflineBanner() {
           <span
             aria-hidden
             className={`size-1.5 shrink-0 ${
-              offline ? "bg-sun" : "bg-moss"
+              offline ? "bg-sun" : "bg-ember"
             }`}
           />
           <span className="font-mono text-xs text-ink">

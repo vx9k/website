@@ -17,31 +17,34 @@
 @custom-variant eink (&:where([data-display="eink"], [data-display="eink"] *));
 @custom-variant hc (&:where([data-contrast="high"], [data-contrast="high"] *));
 
+/* Warm near-black with one ember accent. Text steps are solid colours
+   (not opacity) so every one of them passes AA on --bg and --surface. */
 :root {
   color-scheme: dark;
-  --bg: #070b08;
-  --surface: #0c130e;
-  --raised: #111b14;
-  --ink: #eaf0e7;
-  --muted: #a3b39f;
-  --faint: #7d8c79;
-  --line: rgb(234 240 231 / 0.1);
-  --line-strong: rgb(234 240 231 / 0.2);
-  --moss: #86d6a1;
-  --moss-deep: #2e6a45;
-  --moss-wash: rgb(134 214 161 / 0.12);
+  --bg: #0c0808;
+  --surface: #140e0e;
+  --raised: #1b1413;
+  --ink: #f5f1f0;
+  --muted: #a8a09e;
+  --faint: #877f7d;
+  --line: rgb(245 241 240 / 0.08);
+  --line-strong: rgb(245 241 240 / 0.16);
+  --ember: #ef5b45;
+  --ember-deep: #7a2117;
+  --ember-wash: rgb(239 91 69 / 0.12);
+  --blush: #f4d6cf;
+  --on-blush: #2a0d09;
   --sun: #e6c27a;
   --sun-wash: rgb(230 194 122 / 0.12);
-  --on-accent: #07130b;
-  --glass: rgb(12 20 15 / 0.58);
-  --glass-dense: rgb(10 17 13 / 0.94);
-  --glass-edge: rgb(214 236 220 / 0.11);
-  --glass-shine: rgb(255 255 255 / 0.045);
-  --glass-blur: blur(22px) saturate(140%);
-  --shadow: 0 40px 80px -40px rgb(2 8 4 / 0.9);
-  --grid: rgb(234 240 231 / 0.05);
-  --tick: rgb(234 240 231 / 0.45);
-  --ring: var(--moss);
+  --on-accent: #1a0806;
+  --glass: rgb(16 10 10 / 0.62);
+  --glass-dense: rgb(16 10 10 / 0.95);
+  --glass-edge: rgb(255 236 232 / 0.09);
+  --glass-shine: rgb(255 255 255 / 0.04);
+  --glass-blur: blur(20px) saturate(140%);
+  --shadow: 0 40px 80px -40px rgb(8 2 2 / 0.9);
+  --radius: 3px;
+  --ring: var(--ember);
 }
 
 :root[data-contrast="high"] {
@@ -53,9 +56,11 @@
   --faint: #d9d9d9;
   --line: #fff;
   --line-strong: #fff;
-  --moss: #a6ffc8;
-  --moss-deep: #a6ffc8;
-  --moss-wash: transparent;
+  --ember: #ff9c8c;
+  --ember-deep: #ff9c8c;
+  --ember-wash: transparent;
+  --blush: #fff;
+  --on-blush: #000;
   --sun: #ffe0a0;
   --sun-wash: transparent;
   --on-accent: #000;
@@ -65,8 +70,6 @@
   --glass-shine: transparent;
   --glass-blur: none;
   --shadow: none;
-  --grid: transparent;
-  --tick: #fff;
   --ring: #ffff00;
 }
 
@@ -78,6 +81,8 @@
     --muted: #f2f2f2;
     --faint: #d9d9d9;
     --line: #fff;
+    --blush: #fff;
+    --on-blush: #000;
     --glass: #000;
     --glass-dense: #000;
     --glass-edge: #fff;
@@ -98,9 +103,11 @@
   --faint: #000;
   --line: #000;
   --line-strong: #000;
-  --moss: #000;
-  --moss-deep: #000;
-  --moss-wash: transparent;
+  --ember: #000;
+  --ember-deep: #000;
+  --ember-wash: transparent;
+  --blush: #000;
+  --on-blush: #fff;
   --sun: #000;
   --sun-wash: transparent;
   --on-accent: #fff;
@@ -110,8 +117,6 @@
   --glass-shine: transparent;
   --glass-blur: none;
   --shadow: none;
-  --grid: transparent;
-  --tick: #000;
   --ring: #000;
 }
 
@@ -136,25 +141,36 @@
   --color-faint: var(--faint);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
-  --color-moss: var(--moss);
-  --color-moss-deep: var(--moss-deep);
-  --color-moss-wash: var(--moss-wash);
+  --color-ember: var(--ember);
+  --color-ember-deep: var(--ember-deep);
+  --color-ember-wash: var(--ember-wash);
+  --color-blush: var(--blush);
+  --color-on-blush: var(--on-blush);
   --color-sun: var(--sun);
   --color-sun-wash: var(--sun-wash);
   --color-on-accent: var(--on-accent);
+  --radius-xs: var(--radius);
+  --radius-sm: var(--radius);
 
-  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+  --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
 }
 
 @theme {
-  /* Fluid type: scales smoothly from a 320px phone to a wide desktop. */
-  --text-display: clamp(2.75rem, 0.9rem + 7.4vw, 8.25rem);
-  --text-display--line-height: 0.93;
-  --text-title: clamp(2rem, 1.2rem + 3.2vw, 4.25rem);
-  --text-title--line-height: 1;
-  --text-lede: clamp(1.075rem, 1rem + 0.35vw, 1.3rem);
-  --text-lede--line-height: 1.6;
+  /* Fluid type, after bfl.ai's scale: 500 weight, tight tracking, short
+     line height on anything display-sized. */
+  --text-display: clamp(2.75rem, 0.4rem + 5.9vw, 6.75rem);
+  --text-display--line-height: 0.92;
+  --text-display--letter-spacing: -0.05em;
+  --text-title: clamp(2.5rem, 0.833rem + 3.472vw, 5rem);
+  --text-title--line-height: 0.95;
+  --text-title--letter-spacing: -0.05em;
+  --text-subhead: clamp(1.25rem, 0.75rem + 1.0417vw, 2rem);
+  --text-subhead--line-height: 1.2;
+  --text-subhead--letter-spacing: -0.035em;
+  --text-lede: clamp(1.125rem, 0.875rem + 0.5208vw, 1.5rem);
+  --text-lede--line-height: 1.35;
+  --text-lede--letter-spacing: -0.01em;
   --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -164,15 +180,15 @@
 
 html {
   background: var(--bg);
-  scroll-padding-top: 4.5rem;
+  scroll-padding-top: 5rem;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  scrollbar-color: var(--moss-deep) transparent;
+  scrollbar-color: var(--ember-deep) transparent;
 }
 
 body {
   font-family: var(--font-sans);
-  font-feature-settings: "kern", "liga", "ss01";
+  font-feature-settings: "kern", "liga";
   text-rendering: optimizeLegibility;
 }
 
@@ -183,13 +199,14 @@ body {
 }
 
 ::selection {
-  background: var(--moss);
+  background: var(--ember);
   color: var(--on-accent);
 }
 
 :focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 3px;
+  border-radius: var(--radius);
 }
 
 [data-display="eink"] :focus-visible,
@@ -220,19 +237,19 @@ body::before {
 
 @utility shell {
   width: 100%;
-  max-width: 78rem;
+  max-width: 80rem;
   margin-inline: auto;
   padding-inline: clamp(1.25rem, 4vw, 3rem);
 }
 
-/* Glass: a frosted panel with square corners and a lit top edge. Used
-   only on a handful of large surfaces, since every backdrop blur costs GPU
-   time. Pair with `ticks` for the corner registration marks. */
+/* Frosted panel with a lit top edge. Used only on a handful of surfaces,
+   since every backdrop blur costs GPU time. */
 @utility glass {
   background:
     linear-gradient(180deg, var(--glass-shine), transparent 40%),
     var(--glass);
   border: 1px solid var(--glass-edge);
+  border-radius: var(--radius);
   box-shadow:
     inset 0 1px 0 var(--glass-shine),
     var(--shadow);
@@ -254,50 +271,39 @@ body::before {
   -webkit-backdrop-filter: var(--glass-blur);
 }
 
-/* Registration marks on each corner, drawn over the border. */
-@utility ticks {
-  position: relative;
-  &::after {
-    content: "";
-    position: absolute;
-    inset: -1px;
-    pointer-events: none;
-    --t: linear-gradient(var(--tick), var(--tick));
-    background:
-      var(--t) top left / 12px 1px no-repeat,
-      var(--t) top left / 1px 12px no-repeat,
-      var(--t) top right / 12px 1px no-repeat,
-      var(--t) top right / 1px 12px no-repeat,
-      var(--t) bottom left / 12px 1px no-repeat,
-      var(--t) bottom left / 1px 12px no-repeat,
-      var(--t) bottom right / 12px 1px no-repeat,
-      var(--t) bottom right / 1px 12px no-repeat;
-  }
+/* A plain raised card: solid surface, hairline edge, 3px corners. */
+@utility card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
 }
 
-/* Small technical label: mono, uppercase, tracked out. */
+/* Small technical label: mono, uppercase, lightly tracked. */
 @utility eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 500;
   line-height: 1.4;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
-/* A hairline that runs the full width of the viewport, whatever box it's
-   drawn in. body clips horizontal overflow, so it never scrolls. */
-@utility rule-bleed {
-  position: relative;
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 100vw;
-    translate: -50% 0;
-    border-top: 1px solid var(--line);
-  }
+/* A mono tag in a hairline box, for statuses and short facts. */
+@utility chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 /* Links that read as links: underline always present, thickening on hover. */
@@ -311,15 +317,18 @@ body::before {
     text-decoration-color 0.2s,
     text-decoration-thickness 0.2s;
   &:hover {
-    color: var(--moss);
+    color: var(--ember);
     text-decoration-color: currentColor;
     text-decoration-thickness: 2px;
   }
 }
 
 [data-display="eink"] .glass,
-[data-contrast="high"] .glass {
+[data-contrast="high"] .glass,
+[data-display="eink"] .card,
+[data-contrast="high"] .card {
   border-width: 2px;
+  border-color: var(--ink);
 }
 
 [data-display="eink"] .glass-bar,
@@ -327,22 +336,22 @@ body::before {
   border-bottom-width: 2px;
 }
 
-/* Buttons: square, mono, uppercase. The arrow slides on hover and the
-   whole thing sinks a pixel on press. */
+/* Buttons, after bfl.ai: 3px corners, sentence case, medium weight, an
+   arrow that moves on hover, and a one-pixel press. Solid is the blush
+   primary; plain is dark glass with a hairline. */
 @layer components {
   .btn {
     display: inline-flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 1.75rem;
-    min-height: 3rem;
-    padding-inline: 1.1rem;
+    gap: 0.75rem;
+    min-height: 3.125rem;
+    padding-inline: 1.5rem;
     border: 1px solid var(--line-strong);
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
+    border-radius: var(--radius);
+    background: rgb(20 13 12 / 0.72);
+    font-size: 1rem;
     font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    letter-spacing: -0.005em;
     color: var(--ink);
     transition:
       background-color 0.2s,
@@ -350,57 +359,32 @@ body::before {
       color 0.2s,
       translate 0.1s;
     &:hover {
-      border-color: var(--moss);
-      color: var(--moss);
+      border-color: rgb(245 241 240 / 0.32);
+      background: rgb(36 24 22 / 0.85);
     }
     &:active {
       translate: 0 1px;
     }
   }
   .btn.btn-solid {
-    background: var(--moss);
-    border-color: var(--moss);
-    color: var(--on-accent);
+    background: var(--blush);
+    border-color: var(--blush);
+    color: var(--on-blush);
     &:hover {
       background: var(--ink);
       border-color: var(--ink);
-      color: var(--bg);
     }
   }
   [data-display="eink"] .btn,
   [data-contrast="high"] .btn {
     border-width: 2px;
     border-color: var(--ink);
+    background: var(--bg);
   }
-}
-
-/* Crosshair where a section rule meets a grid line. */
-.cross {
-  position: absolute;
-  top: -5px;
-  width: 11px;
-  height: 11px;
-  pointer-events: none;
-  background:
-    linear-gradient(var(--tick), var(--tick)) center / 11px 1px no-repeat,
-    linear-gradient(var(--tick), var(--tick)) center / 1px 11px no-repeat;
-  translate: -5px 0;
-}
-
-/* The blueprint grid behind the page: faint lines on the container edges
-   and the index column. */
-.grid-lines {
-  background:
-    linear-gradient(var(--grid), var(--grid)) left / 1px 100% no-repeat,
-    linear-gradient(var(--grid), var(--grid)) right / 1px 100% no-repeat;
-}
-
-@media (width >= 64rem) {
-  .grid-lines {
-    background:
-      linear-gradient(var(--grid), var(--grid)) left / 1px 100% no-repeat,
-      linear-gradient(var(--grid), var(--grid)) 25% 0 / 1px 100% no-repeat,
-      linear-gradient(var(--grid), var(--grid)) right / 1px 100% no-repeat;
+  [data-display="eink"] .btn.btn-solid,
+  [data-contrast="high"] .btn.btn-solid {
+    background: var(--blush);
+    color: var(--on-blush);
   }
 }
 
@@ -418,7 +402,8 @@ body::before {
 
 @media (forced-colors: active) {
   .glass,
-  .glass-bar {
+  .glass-bar,
+  .card {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     border: 1px solid CanvasText;
@@ -426,21 +411,17 @@ body::before {
   body::before {
     display: none;
   }
-  .ticks::after,
-  .cross {
-    display: none;
-  }
   .wordmark {
     color: CanvasText;
   }
 }
 
-/* The CSS forest shown before (or instead of) the GPU shader. */
+/* The CSS ember smoke shown before (or instead of) the GPU shader. */
 .canopy-fallback {
   background:
-    radial-gradient(ellipse 70% 55% at 15% -5%, rgb(134 214 161 / 0.13), transparent 65%),
-    radial-gradient(ellipse 60% 45% at 95% 105%, rgb(230 194 122 / 0.07), transparent 60%),
-    radial-gradient(ellipse 90% 70% at 60% 45%, rgb(20 48 32 / 0.55), transparent 70%),
+    radial-gradient(ellipse 70% 60% at 20% 10%, rgb(239 91 69 / 0.16), transparent 65%),
+    radial-gradient(ellipse 60% 50% at 90% 80%, rgb(160 40 28 / 0.22), transparent 60%),
+    radial-gradient(ellipse 90% 70% at 55% 45%, rgb(70 16 12 / 0.6), transparent 70%),
     var(--bg);
   background-size: 140% 140%;
   animation: canopy-drift 60s ease-in-out infinite alternate;
@@ -567,13 +548,14 @@ body::before {
     --faint: #222;
     --line: #000;
     --line-strong: #000;
-    --moss: #000;
+    --ember: #000;
+    --blush: #fff;
+    --on-blush: #000;
     --sun: #000;
     --on-accent: #fff;
     --glass: #fff;
     --glass-dense: #fff;
     --glass-edge: #000;
-    --tick: #000;
     --glass-blur: none;
     --shadow: none;
   }

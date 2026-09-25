@@ -10,12 +10,17 @@ export default function Home() {
   return (
     <>
       <Header />
-      <main id="main" tabIndex={-1} className="shell flex-1 focus:outline-none">
+      <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
         <Hero />
-        <Principles />
-        <Work />
-        <Stack />
-        <Contact />
+        {/* Solid from here down, so the shader only shows behind the hero. */}
+        <div className="relative bg-bg">
+          <div className="shell">
+            <Principles />
+            <Work />
+            <Stack />
+            <Contact />
+          </div>
+        </div>
       </main>
       <Footer />
     </>
