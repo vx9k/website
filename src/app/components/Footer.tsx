@@ -4,10 +4,9 @@ export default function Footer() {
   return (
     <footer className="overflow-hidden">
       <div className="shell">
-        <div className="eyebrow grid gap-3 border-t border-line pt-8 sm:grid-cols-3 sm:items-center">
+        <div className="eyebrow flex items-center justify-between gap-6 border-t border-line pt-8">
           <p>© {new Date().getFullYear()} vx</p>
-          <p className="sm:text-center">Static · works offline · no trackers</p>
-          <p className="sm:text-right">
+          <p>
             <a
               href={links.website}
               className="inline-flex min-h-11 items-center text-ink transition-colors hover:text-ember sm:min-h-0"
