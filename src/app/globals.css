@@ -1,72 +1,46 @@
 @import "tailwindcss";
 
+/* Dark-only, forest-moody. There is no light theme. */
 :root {
-  --background: #f6f3ec;
-  --surface: #eee8d9;
-  --ink: #211e1a;
-  --muted: #6e6858;
-  --hairline: #ddd4bf;
-  --clay: #c1592f;
-  --clay-soft: #ecd3c1;
+  color-scheme: dark;
+  --background: #0a0f0b;
+  --surface: #0e1512;
+  --glass: rgba(22, 34, 26, 0.45);
+  --glass-border: rgba(210, 230, 215, 0.12);
+  --ink: #e9ede6;
+  --muted: #93a38f;
+  --hairline: rgba(233, 237, 230, 0.1);
+  --moss: #6fbf8b;
+  --moss-soft: rgba(111, 191, 139, 0.16);
+  --sunbeam: #d8b36a;
 }
 
-/* Automatic system preference default (applies unless data-theme="light" is explicitly set) */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --background: #1b1815;
-    --surface: #242019;
-    --ink: #f3eee3;
-    --muted: #a99f8c;
-    --hairline: #3a3428;
-    --clay: #e58553;
-    --clay-soft: #4a2e1e;
-  }
-
-  :root:not([data-theme="light"])[data-contrast="high"] {
-    --ink: #ffffff;
-    --muted: #e6e6e6;
-    --hairline: #ffffff;
-    --background: #000000;
-    --surface: #111111;
-  }
-}
-
-[data-theme="dark"] {
-  --background: #1b1815;
-  --surface: #242019;
-  --ink: #f3eee3;
-  --muted: #a99f8c;
-  --hairline: #3a3428;
-  --clay: #e58553;
-  --clay-soft: #4a2e1e;
-}
-
-/* High contrast sharpens text/border contrast on top of whichever theme
-   is active, rather than being a third palette to maintain. */
+/* High contrast turns glass off outright: blur and transparency reduce
+   text contrast, so this falls back to opaque, high-contrast surfaces. */
 [data-contrast="high"] {
-  --ink: #000000;
-  --muted: #2b2b2b;
-  --hairline: #000000;
-  --background: #ffffff;
-  --surface: #f0f0f0;
-}
-
-[data-theme="dark"][data-contrast="high"] {
-  --ink: #ffffff;
-  --muted: #e6e6e6;
-  --hairline: #ffffff;
   --background: #000000;
-  --surface: #111111;
+  --surface: #000000;
+  --glass: #000000;
+  --glass-border: #ffffff;
+  --ink: #ffffff;
+  --muted: #f0f0f0;
+  --hairline: #ffffff;
+  --moss: #9fffc6;
+  --moss-soft: rgba(159, 255, 198, 0.2);
+  --sunbeam: #ffe3a3;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
+  --color-glass: var(--glass);
+  --color-glass-border: var(--glass-border);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-hairline: var(--hairline);
-  --color-clay: var(--clay);
-  --color-clay-soft: var(--clay-soft);
+  --color-moss: var(--moss);
+  --color-moss-soft: var(--moss-soft);
+  --color-sunbeam: var(--sunbeam);
   --font-display: var(--font-fraunces);
   --font-sans: var(--font-plex-sans);
   --font-mono: var(--font-plex-mono);
@@ -77,11 +51,37 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid var(--clay);
+  outline: 2px solid var(--moss);
   outline-offset: 2px;
 }
 
-/* ---- One-time hero boot sequence (init -> 4rc -> ready) ---- */
+::selection {
+  background: var(--moss-soft);
+  color: var(--ink);
+}
+
+/* Apple-style glass surface. */
+.glass {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+}
+
+[data-contrast="high"] .glass {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+@media (forced-colors: active) {
+  .glass {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-color: CanvasText;
+  }
+}
+
+/* ---- One-time hero entrance ---- */
 @keyframes fade-up {
   from {
     opacity: 0;
@@ -113,8 +113,10 @@ body {
   animation: cursor-pulse 1s step-end infinite;
 }
 
-/* ---- Scroll-triggered reveal for section content ---- */
-.reveal {
+/* ---- Scroll-triggered reveal ----
+   Only hidden once the boot script has marked the page as having JS, so a
+   failed or blocked script never leaves content invisible. */
+.js .reveal {
   opacity: 0;
   transform: translateY(16px);
   transition:
@@ -122,15 +124,49 @@ body {
     transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.reveal.is-visible {
+.js .reveal.is-visible {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* Explicit in-app "reduce motion" setting, independent of the OS one. */
+/* ---- Canopy background: DOM/CSS fallback when no hardware GPU ---- */
+.canopy-fallback {
+  background:
+    radial-gradient(
+      ellipse 80% 60% at 20% -10%,
+      rgba(111, 191, 139, 0.12),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 70% 50% at 90% 110%,
+      rgba(216, 179, 106, 0.06),
+      transparent 60%
+    ),
+    var(--background);
+  background-size: 200% 200%;
+  animation: canopy-drift 40s ease-in-out infinite alternate;
+}
+
+@keyframes canopy-drift {
+  from {
+    background-position:
+      0% 0%,
+      100% 100%,
+      0 0;
+  }
+  to {
+    background-position:
+      15% 10%,
+      85% 90%,
+      0 0;
+  }
+}
+
+/* In-app "reduce motion" setting, independent of the OS one. */
 [data-motion="reduced"] .fade-up,
 [data-motion="reduced"] .cursor-pulse,
-[data-motion="reduced"] .reveal {
+[data-motion="reduced"] .reveal,
+[data-motion="reduced"] .canopy-fallback {
   animation: none !important;
   transition: none !important;
   opacity: 1 !important;
@@ -140,7 +176,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .fade-up,
   .cursor-pulse,
-  .reveal {
+  .reveal,
+  .canopy-fallback {
     animation: none !important;
     transition: none !important;
     opacity: 1 !important;

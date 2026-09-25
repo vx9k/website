@@ -10,7 +10,7 @@ export default function ProcessNav() {
   return (
     <nav
       aria-label="Section navigation"
-      className="sticky top-10 hidden self-start pt-2 lg:block"
+      className="glass sticky top-24 mt-10 hidden self-start rounded-2xl p-4 lg:block"
     >
       <p className="font-mono text-[11px] text-muted">
         PID&nbsp;&nbsp;COMM&nbsp;&nbsp;&nbsp;&nbsp;STAT
@@ -20,10 +20,10 @@ export default function ProcessNav() {
           <li key={s.pid}>
             <a
               href={s.href}
-              className="group flex items-center gap-2 font-mono text-[11px] text-muted transition-colors hover:text-clay"
+              className="group flex items-center gap-2 font-mono text-[11px] text-muted transition-colors hover:text-moss"
             >
               <span>{s.pid}</span>
-              <span className="text-ink group-hover:text-clay">
+              <span className="text-ink group-hover:text-moss">
                 {s.comm}
               </span>
               <span className="ml-auto">R</span>

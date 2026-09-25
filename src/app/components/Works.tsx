@@ -28,17 +28,17 @@ const components = [
 
 export default function Works() {
   return (
-    <section id="works" className="py-14 sm:py-20">
+    <section id="works" className="scroll-mt-24 py-12 sm:py-16">
       <h2 className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl">
         Work
       </h2>
 
-      <Reveal className="mt-10 max-w-2xl rounded-2xl border border-hairline bg-surface p-6 sm:p-8">
+      <Reveal className="glass mt-8 max-w-2xl rounded-2xl p-5 sm:p-8">
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
           <h3 className="font-mono text-lg">4suite</h3>
           <a
             href="https://github.com/vx9k/4suite"
-            className="text-sm text-muted underline decoration-hairline underline-offset-4 transition-colors hover:text-clay hover:decoration-clay"
+            className="text-sm text-muted underline decoration-hairline underline-offset-4 transition-colors hover:text-moss hover:decoration-moss"
           >
             github.com/vx9k/4suite
           </a>

@@ -15,15 +15,14 @@ const principles = [
   },
 ];
 
+const delays = ["", "delay-100", "delay-200"];
+
 export default function Principles() {
   return (
-    <section
-      id="principles"
-      className="mt-10 max-w-2xl rounded-2xl border border-hairline bg-surface p-6 sm:p-8"
-    >
-      <div className="grid grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-8">
+    <section id="principles" className="scroll-mt-24 py-10 sm:py-14">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {principles.map((p, i) => (
-          <Reveal key={p.title} className={i === 1 ? "delay-100" : i === 2 ? "delay-200" : ""}>
+          <Reveal key={p.title} className={`glass rounded-2xl p-6 ${delays[i]}`}>
             <h3 className="font-[family-name:var(--font-display)] text-xl leading-snug">
               {p.title}
             </h3>

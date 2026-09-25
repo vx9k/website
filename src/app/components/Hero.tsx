@@ -2,9 +2,9 @@ import BootStatus from "./BootStatus";
 
 export default function Hero() {
   return (
-    <section id="top" className="py-10 sm:py-14">
+    <section id="top" className="scroll-mt-24 py-10 sm:py-16">
       <p
-        className="fade-up font-mono text-sm text-muted"
+        className="fade-up glass inline-block rounded-full px-4 py-1.5 font-mono text-sm text-muted"
         style={{ animationDelay: "0s" }}
       >
         vx — systems engineer
@@ -32,13 +32,13 @@ export default function Hero() {
       >
         <a
           href="#works"
-          className="rounded-full bg-ink px-6 py-3 text-sm font-medium text-background transition-colors hover:bg-clay"
+          className="rounded-full bg-moss px-6 py-3 text-sm font-medium text-background transition-colors hover:bg-ink"
         >
           See my work
         </a>
         <a
           href="https://github.com/vx9k"
-          className="text-sm font-medium text-muted underline decoration-hairline underline-offset-4 transition-colors hover:text-clay hover:decoration-clay"
+          className="text-sm font-medium text-muted underline decoration-hairline underline-offset-4 transition-colors hover:text-moss hover:decoration-moss"
         >
           GitHub
         </a>
