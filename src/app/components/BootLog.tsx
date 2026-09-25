@@ -2,7 +2,7 @@ import { bootLog } from "../content";
 
 const TAGS = {
   OK: { label: "  OK  ", tone: "text-moss" },
-  WIP: { label: " WIP  ", tone: "text-sun" },
+  WIP: { label: " WIP  ", tone: "text-ink" },
   "--": { label: "  --  ", tone: "text-faint" },
   "": { label: "  ..  ", tone: "text-faint" },
 } as const;
@@ -14,15 +14,14 @@ export default function BootLog() {
 
   return (
     <figure
-      className="rise glass relative isolate overflow-hidden rounded-[1.75rem]"
+      className="rise glass ticks isolate self-start"
       style={{ ["--i" as string]: 3 }}
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-24 -right-24 -z-10 size-64 rounded-full bg-moss-wash blur-3xl eink:hidden hc:hidden"
-      />
-      <figcaption className="flex items-center justify-between gap-4 border-b border-line px-5 py-3.5 font-mono text-xs text-muted">
-        <span>tty1 · 4suite boot</span>
+      <figcaption className="eyebrow flex items-center justify-between gap-4 border-b border-line px-5 py-3">
+        <span className="flex items-center gap-2.5">
+          <span aria-hidden className="size-1.5 bg-moss" />
+          tty1 / 4suite boot
+        </span>
         <span aria-hidden className="text-faint">
           dmesg
         </span>
@@ -34,7 +33,7 @@ export default function BootLog() {
       </figcaption>
       <pre
         aria-hidden
-        className="px-5 py-5 font-mono text-[0.78rem] leading-[1.9] whitespace-pre-wrap text-muted sm:px-6 sm:text-[0.84rem]"
+        className="px-5 py-5 font-mono text-[0.76rem] leading-[1.9] whitespace-pre-wrap text-muted sm:text-[0.8rem]"
       >
         {bootLog.map((line, i) => {
           const tag = TAGS[line.tag];

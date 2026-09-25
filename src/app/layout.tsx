@@ -1,30 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import CanopyField from "./components/CanopyField";
 import OfflineBanner from "./components/OfflineBanner";
 
-// Fraunces is variable: loading it without fixed weights ships one file
-// that covers every weight, plus its "soft" and optical-size axes.
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+// Both are variable: one file each covers every weight.
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin"],
-  style: ["normal", "italic"],
-  axes: ["SOFT", "opsz"],
   display: "swap",
 });
 
-const plexSans = IBM_Plex_Sans({
-  variable: "--font-plex-sans",
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  display: "swap",
-});
-
-const plexMono = IBM_Plex_Mono({
-  variable: "--font-plex-mono",
-  subsets: ["latin"],
-  weight: ["400", "500"],
   display: "swap",
 });
 
@@ -99,7 +88,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       dir="ltr"
       suppressHydrationWarning
-      className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable}`}
+      className={`${geist.variable} ${geistMono.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
@@ -107,11 +96,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-dvh flex-col overflow-x-clip bg-bg text-ink antialiased">
         <a
           href="#main"
-          className="glass fixed top-3 left-3 z-[60] -translate-y-24 rounded-full px-5 py-3 font-mono text-sm text-ink focus-visible:translate-y-0"
+          className="glass eyebrow fixed top-3 left-3 z-[60] -translate-y-24 px-5 py-3.5 text-ink! focus-visible:translate-y-0"
         >
           Skip to content
         </a>
         <CanopyField />
+        <div
+          aria-hidden
+          className="no-print pointer-events-none fixed inset-0 -z-10 eink:hidden hc:hidden"
+        >
+          <div className="shell h-full">
+            <div className="grid-lines h-full" />
+          </div>
+        </div>
         {children}
         <OfflineBanner />
       </body>

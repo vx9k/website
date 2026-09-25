@@ -9,11 +9,11 @@ export const links = {
 };
 
 export const sections = [
-  { id: "top", label: "Home", comm: "init" },
-  { id: "principles", label: "Principles", comm: "principles" },
-  { id: "work", label: "Work", comm: "work" },
-  { id: "stack", label: "Stack", comm: "stack" },
-  { id: "contact", label: "Contact", comm: "contact" },
+  { id: "top", label: "Home" },
+  { id: "principles", label: "Principles" },
+  { id: "work", label: "Work" },
+  { id: "stack", label: "Stack" },
+  { id: "contact", label: "Contact" },
 ] as const;
 
 export const principles = [
