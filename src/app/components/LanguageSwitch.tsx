@@ -47,7 +47,7 @@ export default function LanguageSwitch({
                 <span className="sr-only"> {name}</span>
                 <span
                   aria-hidden
-                  className={`absolute inset-x-3 bottom-1.5 h-[var(--px)] bg-accent ${
+                  className={`absolute inset-x-3 bottom-1.5 h-[var(--px)] bg-ink ${
                     current ? "opacity-100" : "opacity-0"
                   }`}
                 />

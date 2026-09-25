@@ -62,7 +62,7 @@ export default function SectionNav({
                     shapeRendering="crispEdges"
                     aria-hidden
                     focusable="false"
-                    className={`hidden h-[10px] w-[6px] fill-accent lg:block ${
+                    className={`hidden h-[10px] w-[6px] fill-ink lg:block ${
                       current ? "opacity-100" : "opacity-0 group-hover:opacity-40"
                     }`}
                   >
@@ -73,7 +73,7 @@ export default function SectionNav({
                   </span>
                   <span
                     className={`px-0.5 underline-offset-[0.35em] group-hover:bg-ink group-hover:text-bg ${
-                      current ? "underline decoration-accent decoration-[length:var(--px)] lg:no-underline" : ""
+                      current ? "underline decoration-ink decoration-[length:var(--px)] lg:no-underline" : ""
                     }`}
                   >
                     {labels[id]}

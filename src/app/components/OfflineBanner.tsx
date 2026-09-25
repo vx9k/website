@@ -39,7 +39,7 @@ export default function OfflineBanner({
           <span
             aria-hidden
             className={`size-[9px] shrink-0 ${
-              offline ? "border-[length:var(--px)] border-accent" : "bg-accent"
+              offline ? "border-[length:var(--px)] border-ink" : "bg-ink"
             }`}
           />
           <span className="font-label text-xs">

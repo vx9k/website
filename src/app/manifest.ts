@@ -10,8 +10,8 @@ export default function manifest(): MetadataRoute.Manifest {
       "vx writes minimal init systems and boot tooling in C, small enough to read in one sitting.",
     start_url: "/",
     display: "standalone",
-    background_color: "#372a39",
-    theme_color: "#372a39",
+    background_color: "#5ab9a8",
+    theme_color: "#5ab9a8",
     icons: [
       { src: "/icon.svg", sizes: "any", type: "image/svg+xml" },
       { src: "/apple-icon.png", sizes: "180x180", type: "image/png" },

@@ -22,12 +22,12 @@ const silkscreen = Silkscreen({
 
 export const fontVariables = `${pixelify.variable} ${silkscreen.variable}`;
 
-// Dustbyte's plum and cream, for the browser chrome at night and by day.
-export const themeColors = { night: "#372a39", day: "#f5e9bf" };
+// The console's case colour, for the browser chrome by day and at night.
+export const themeColors = { day: "#5ab9a8", night: "#1e606e" };
 
 export const viewport: Viewport = {
-  themeColor: themeColors.night,
-  colorScheme: "dark light",
+  themeColor: themeColors.day,
+  colorScheme: "light dark",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -36,9 +36,9 @@ export const viewport: Viewport = {
 // Runs before first paint. Combines the visitor's saved flags with their
 // system preferences and writes the result onto <html> as data attributes,
 // which is all the CSS looks at. Exposed as window.__vxFlags so the Display
-// menu and the sun in the hero reuse exactly this logic.
+// menu, the sun in the hero and the game reuse exactly this logic.
 //
-//   day     saved true/false wins; unset follows prefers-color-scheme
+//   day     saved true/false wins; unset is day unless the system asks for dark
 //   motion  saved true, or prefers-reduced-motion
 //   large   saved true
 export const bootScript = `(function () {
@@ -54,8 +54,8 @@ export const bootScript = `(function () {
   function set(name, on, value) { on ? d.setAttribute(name, value) : d.removeAttribute(name); }
   function apply() {
     var s = read();
-    var day = typeof s.day === "boolean" ? s.day : mq("(prefers-color-scheme: light)");
-    set("data-theme", day, "day");
+    var day = typeof s.day === "boolean" ? s.day : !mq("(prefers-color-scheme: dark)");
+    set("data-theme", !day, "night");
     set("data-motion", !!s.motion || mq("(prefers-reduced-motion: reduce)"), "reduced");
     set("data-text", !!s.large, "large");
     var meta = document.querySelector('meta[name="theme-color"]');
@@ -63,7 +63,7 @@ export const bootScript = `(function () {
   }
   window.__vxFlags = { read: read, save: save, apply: apply };
   apply();
-  ["(prefers-color-scheme: light)", "(prefers-reduced-motion: reduce)"].forEach(function (q) {
+  ["(prefers-color-scheme: dark)", "(prefers-reduced-motion: reduce)"].forEach(function (q) {
     try { window.matchMedia(q).addEventListener("change", apply); } catch (e) {}
   });
 })();`;

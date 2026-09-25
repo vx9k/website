@@ -22,7 +22,7 @@ pnpm wrangler dev  # serve out/ through the Workers runtime, as in production
 pnpm lint        # currently broken: typescript-eslint doesn't support TypeScript 7 yet
 ```
 
-There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler dev`) and looking at it in a browser at desktop and phone widths, by night and by day, and with reduced motion on. Click and tap every interactive sprite you touched.
+There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler dev`) and looking at it in a browser at desktop and phone widths, by day and by night, and with reduced motion on. Click and tap every interactive sprite you touched, and if you changed anything on the screen, press Play and walk over it: the game reads the layout.
 
 ## Stack
 
@@ -45,17 +45,25 @@ src/app/
   global-not-found.tsx  exported as 404.html; carries all three languages
   content.ts          language-neutral data (links, section ids, suite tree, tool names)
   i18n/               en.ts (source of truth), es.ts, pt.ts, locales.ts
-  globals.css         the palette, themes, pixel primitives, the scene's styles, motion
+  globals.css         the palette, themes, console shell, pixel primitives, the scene, motion
   pixel.ts            build-time pixel helpers: seeded PRNG, sprites, ridges, path merging
   components/
     SectionHeading.tsx  <Section>: the shared frame every section below the hero uses
     PixelScene.tsx      the hero's pixel-art mountains, generated at build time from a seed
-    SceneControls.tsx   the buttons over the scene: sun/moon swaps day and night, the cabin's light
-    Campfire.tsx        the footer's campfire; tap it to stoke it
-    PixelMark.tsx       the pixel "vx" mark in the header (icon.svg draws the same grid)
+    SceneControls.tsx   the buttons over the scene: sun/moon swaps the palette, the cabin's light
+    Stairs.tsx          brick stairs between sections, ledges for the game
+    Campfire.tsx        the campfire at the foot of the screen; tap it to stoke it
+    ConsoleControls.tsx the console's lower half: D-pad, A/B, Start (play), Select (palette)
+    PixelMark.tsx       the pixel "vx" mark on its badge (icon.svg draws the same grid)
     FlagsPanel.tsx      the "Display" menu (daylight, motion, text size)
-    SectionNav.tsx      side menu with active-section tracking
+    SectionNav.tsx      side menu with a pixel pointer and active-section tracking
     LanguageSwitch.tsx  EN / ES / PT links; saves the choice in localStorage["vx-lang"]
+    game/
+      engine.ts         the physics: gravity, one-way ledges, bouncing bodies, particles
+      Game.tsx          the playable page: character, ball, gems, HUD, touch pad, camera
+      Sprite.tsx        the character's frames, the gem and the ball, as pixel rows
+      control.ts        start/stop events, so Play buttons don't import the engine
+      PlayButton.tsx, PlayCharacter.tsx   the ways to start playing
 ```
 
 ## Languages
@@ -75,49 +83,62 @@ src/app/
 
 ## Design direction
 
-Pixel art, retro, and minimal. The layout follows [suckless.org](https://suckless.org): a plain masthead, a side menu beside a single column of content that reads like a document, and nothing in the layout that's only there for show. The character comes from everything being drawn in pixels, in four colours: a pixel-art mountain range under the hero, pixel type, stepped frames, chunky buttons that press down, and small sprites you can play with.
+A retro handheld console, minimal inside. The page *is* the console: the header is the top edge of the case, the content sits on a screen set into a dark bezel, and the footer is the lower half with a D-pad, A/B, Start and Select. On the screen, the layout stays as plain as [suckless.org](https://suckless.org): a side menu with a pointer beside a single column that reads like a document. The character comes from pixels everywhere, four colours, dialogue boxes, and a page you can play.
 
-**Palette.** Four colours, [Dustbyte](https://lospec.com/palette-list/dustbyte) by polyphrog, and nothing else: no tints, no opacity for colour, no gradients, no fifth colour.
+**Palette.** Four colours, [Mist GB](https://lospec.com/palette-list/mist-gb) by Kerrie Lake, and nothing else: no tints, no fifth colour, no gradients except the ones that draw pixel patterns.
 
-| Token | Colour | Night | Day |
-| --- | --- | --- | --- |
-| `--plum` | `#372a39` | `--bg` | `--ink` |
-| `--cream` | `#f5e9bf` | `--ink` | `--bg` |
-| `--sage` | `#788374` | `--line` | `--line` |
-| `--rust` | `#aa644d` | `--accent` | `--accent` |
+| Token | Day (default) | Night (palette swap) |
+| --- | --- | --- |
+| `--bg` (the screen) | mint `#c4f0c2` | brown `#2d1b00` |
+| `--ink` (text) | brown | mint |
+| `--soft` (secondary text, labels) | deep `#1e606e` | teal `#5ab9a8` |
+| `--line` (rules, frames) | deep | teal |
+| `--accent` (fills) / `--on-accent` | teal / brown | deep / mint |
+| `--plastic` (the case) / `--on-plastic` | teal / brown | deep / mint |
+| `--bezel` / `--on-bezel` | brown / mint | brown / mint |
 
-Contrast decides what each colour may do. Only plum and cream pass AA for text against each other (11.1:1), so **all text is `--ink` on `--bg`**, at every size. Sage (3.4:1 on plum, 3.3:1 on cream) draws lines, frames and control edges, and may colour purely decorative glyphs. Rust (3.7:1 on cream, 3.0:1 on plum) is fills, marks, the button lip and the hero's highlight block; text on rust is cream and display-sized only. Hierarchy comes from size, weight and typeface, never from a paler text colour.
+Contrast decides what each pairing may do. Brown on mint (13.1:1), brown on teal (7.1:1) and deep on mint (5.6:1) carry text; the tokens above are arranged so every `--ink`, `--soft` and `--on-*` pairing is one of them. Deep on teal (3.0:1) is for edges and large text only. Brown on deep (2.3:1) and teal on mint (1.9:1) are decoration only: never text, never the only edge of a control.
 
-**Type.** Pixelify Sans for everything, headings at 600 and body at 400, using the scale in `@theme` (`text-display`, `text-title`, `text-subhead`, `text-lede`). Silkscreen, uppercase, only for small labels via `eyebrow` and `chip`. No negative tracking on pixel faces, and ligatures stay off.
+**Type.** Pixelify Sans for headings (600) and body (400), using the scale in `@theme`. Silkscreen, uppercase, for small labels via `eyebrow` and `chip`. No negative tracking, and ligatures stay off.
 
-**Pixel primitives** (in `globals.css`). `--px` is one art pixel of the interface, 3px; frames, rules, underlines and offsets are multiples of it.
-- `px-frame`: a stepped outline one art pixel wide, with the corner pixels left empty. It's how boxes are drawn: cards, chips, menus, the banner. It sits outside the element, so give framed things room (`m-[var(--px)]`). Set `--frame` to recolour it.
-- `.btn` and `.btn-solid`: a stepped frame on a rust or sage lip; pressing (click or tap) drops the button onto its lip. Sentence case, with an arrow.
-- `rule-t` / `rule-b`: dashed pixel rules, two art pixels on and two off. They separate list rows and spec rows; sections are separated by space.
-- `link`: a rust underline one art pixel thick. Hover on any text link or menu item inverts it into an ink block.
-- `px-switch`: the square-knobbed switch in the Display menu.
-- Pixel cursors (arrow and hand) are set on `html` and on interactive elements.
+**The console** (in `globals.css`).
+- `console`: the one centred column that the case's top edge, the bezel and the controls share, so they line up at every width. Don't put page chrome outside it.
+- `notch`: corners cut in two pixel steps, for the bezel and the screen.
+- `lcd`: the screen, with a one-pixel edge line drawn on top of its content.
+- Things on the case use `--plastic`/`--on-plastic` and `.btn-case`; things on the screen use the screen tokens.
 
-**Pixel art.** Inline SVG built with `Pixels` in `pixel.ts`: one viewBox unit per art pixel, `shapeRendering="crispEdges"`, and a whole number of screen pixels per art pixel wherever the size is fixed (the header mark and the campfire are 3px per pixel). Colour it with the palette tokens or `--px-*`, never literal colours. Sprite motion moves in whole pixels with `steps()`, and frame swaps are hard cuts.
+**Pixel primitives.** `--px` is one art pixel of the interface, 3px; frames, rules, underlines and offsets are multiples of it.
+- `dialog`: the RPG dialogue box (stepped ink frame, gap, inner line). For grouped content: cards, the lede, the HUD.
+- `px-frame`: a stepped outline one pixel wide with empty corner pixels, for small boxes (chips, badges, menus). Set `--frame` to recolour it.
+- `.btn`, `.btn-solid`, `.btn-case`: chunky buttons on a lip; pressing drops the button onto it. Sentence case, with an arrow or a pixel icon.
+- `rule-t` / `rule-b`: dashed pixel rules for list and spec rows. Sections are separated by space and stairs.
+- `link` and menu items invert into an ink block on hover. Pixel cursors are set on `html` and on interactive elements.
+- The dot-matrix grid over the scene (hairline gaps between art pixels, from 64rem up) is the one texture on the page.
 
-**Interactive sprites.** Anything in the art that responds to a click also responds to a tap and to the keyboard, because it's a real `<button>`: at least 44px square, with an `aria-label` from the dictionaries, a `title` for mouse users, and the ink focus square. Over the scene, buttons are positioned in grid units (`--gx`, `--gy`, `--gw`, `--gh`) and `.scene-button` turns those into CSS with container query units, matching the SVG's `slice` scaling. What exists today:
-- the sun or moon: sinks behind the ridge and brings up the other, swapping day and night (saved like the Display menu's switch)
-- the cabin: switches its window light, and the chimney smoke with it
-- the campfire: stoking it speeds the flicker and throws sparks
+**Pixel art.** Inline SVG built with `Pixels` in `pixel.ts`, or rows of characters (see `game/Sprite.tsx`): one viewBox unit per art pixel, `shapeRendering="crispEdges"`, and a whole number of screen pixels per art pixel wherever the size is fixed. Colour it with tokens, never literal colours (the badge behind the mark is the one exception, since it is always bezel-coloured). Sprite motion moves in whole pixels with `steps()`; frame swaps and fades are hard cuts or dithers, never smooth.
 
-Interactions are small, reversible and optional: nothing on the page depends on finding them, and the hint under the scene says they exist. Every one needs a visible result with motion off.
+**Interactive sprites.** Anything that responds to a click also responds to a tap and to the keyboard, because it's a real `<button>`: at least 44px square, an `aria-label` from the dictionaries, a `title` for mouse users, and the ink focus square. Over the scene, buttons are placed in grid units (`--gx`, `--gy`, `--gw`, `--gh`) and `.scene-button` turns them into CSS with container query units, matching the SVG's `slice` scaling. Today: the sun or moon (swaps the palette), the cabin (its light), the campfire (stoke it), the waiting character (play), and Start and Select on the console.
+
+**The game** (`components/game/`). Press Play, tap the character in the scene or press Start, and a character drops onto the page.
+- `engine.ts` is a small hand-written engine: gravity, one-way ledges (solid from above, passable from below), bouncing bodies and particles. No physics library.
+- The page is the level. Ledges are read from the layout: every line of `main h1, h2, h3`, `.btn`, `.chip`, `.dialog`, `.rule-t` (top), `.rule-b` (bottom), anything with `data-solid`, and the ground under the mountains. They're re-read twice a second, so layout changes are picked up. Add `data-solid` to make something new walkable, and keep vertical gaps climbable with a double jump (about 150px).
+- `Stairs` between sections lead down the page, alternating direction.
+- Arrow keys or WASD move, Up/Space jumps (twice for a double jump), Down drops through a ledge, X/E/Enter pokes anything with `data-poke` or a `.scene-button` nearby, Esc stops. **Keys belong to the game only while it runs**; otherwise the page scrolls as normal.
+- On touch screens a pad (D-pad, A, B) is pinned to the bottom while playing. The camera follows the character; landing bumps the ledge's element; gems are placed over ledges down the screen; there's a ball to kick.
+- It must never be required: all content is readable without playing, the HUD's Stop button and Esc always end it, and focus moves to the game's status region on start so Space can't press a button behind it.
 
 **Do:**
-- Use the `<Section>` frame for every section below the hero: a Silkscreen label led by one rust pixel, a title with an optional aside under it, then the content. Everything is left-aligned at every width.
-- Use `px-frame` boxes for grouped content, `chip` for statuses and short facts (the glyph carries meaning, not just colour: filled, half and empty squares), and spec tables (`dl` rows with dashed rules) for facts.
-- Keep the art sparse: one scene, a few sprites, each with a reason to be there.
+- Use the `<Section>` frame for every section below the hero: a Silkscreen label led by one ink pixel, a title with an optional aside, then the content. Everything is left-aligned.
+- Use `dialog` boxes for grouped content, `chip` for statuses and short facts (the glyph carries meaning: filled, half and empty squares), and spec tables (`dl` rows with dashed rules) for facts.
+- Keep the art sparse and purposeful: one scene, a few sprites, each with a reason to exist.
 
 **Don't:**
-- Rounded corners of any kind, pills, blur, soft shadows, gradients (other than the ones that draw pixel rules), or opacity used as a colour.
-- Colours outside the four, or grey text.
-- Terminal or hacker clichés: fake shells, `$` prompts, boot logs, blinking text cursors, `>_` logos, CLI-flag labels, kernel-panic jokes. Retro here means pixel art and games, not terminals.
+- Rounded corners, pills, blur, soft shadows, or opacity used as a colour.
+- Colours outside the four, or text on a pairing the contrast table rules out.
+- Console trademarks or logos (no real brand names, logos or labels); the console is our own, the "VX·9K".
+- Terminal or hacker clichés: fake shells, `$` prompts, boot logs, blinking text cursors, `>_` logos, CLI-flag labels, kernel-panic jokes. Retro here means handheld games, not terminals.
 - Smooth, eased motion on sprites, or animation that moves layout.
-- Three equal feature cards in a row.
+- Taking over keys, scroll or focus outside the game.
 
 Design-oriented agent skills live in `.claude/skills/`. Use them for visual work, but this section wins where they disagree.
 
@@ -127,21 +148,22 @@ Target WCAG 2.2 AA. An inline script (`bootScript` in `document.ts`) runs before
 
 | Attribute | Trigger | Effect |
 | --- | --- | --- |
-| `data-theme="day"` | the sun/moon, the Display menu, `prefers-color-scheme: light` | cream paper, plum ink, the sun instead of the moon |
+| `data-theme="night"` | the sun/moon, Select, the Display menu, `prefers-color-scheme: dark` | the palette swap: brown screen, mint ink, the moon |
 | `data-motion="reduced"` | Display menu, `prefers-reduced-motion` | no animation; sprites hold their first frame |
 | `data-text="large"` | Display menu | root font size 125% |
+| `data-playing` | set by the game while it runs | the `playing:` variant; smooth scrolling off |
 
-A saved `day` choice wins over the system; with none saved, the theme follows the system. There is no high-contrast, e-ink or print mode. The one concession to forced colours (Windows contrast themes) is a small rule in `globals.css` that hides the scene and gives frames a real border.
+A saved `day` choice wins over the system; with none saved, the page is day unless the system asks for dark. There is no high-contrast, e-ink or print mode; forced colours (Windows contrast themes) get a small rule that hides the art and gives frames a real border.
 
 For every visual change:
-- Colours come from the tokens, and both themes must work. A new token needs a night value in `:root` and, if it differs, a day value in `[data-theme="day"]`. The `day:` Tailwind variant is there for one-offs.
-- Check it by night and by day. To preview without clicking, set `localStorage["vx-flags"]` to `{"day":true}` or `{"motion":true}` and reload.
+- Colours come from the tokens, and both palettes must work. A new token needs a day value in `:root` and, if it differs, a night value in `[data-theme="night"]`. The `night:` Tailwind variant is there for one-offs.
+- Check it by day and by night. To preview without clicking, set `localStorage["vx-flags"]` to `{"day":false}` or `{"motion":true}` and reload.
 - Keep semantic landmarks, `aria-labelledby` on sections, the skip link, visible `:focus-visible` squares, 44px minimum touch targets and `aria-hidden` on purely decorative art.
-- Motion uses `transform`/`opacity` only and must be covered by the reduced-motion rules.
+- Motion uses `transform`/`opacity` (and, for dithers, discrete `mask-image` steps) and must be covered by the reduced-motion rules. The game still runs with motion reduced, but without particles, bumps or camera easing.
 
 ## Performance
 
-The page is static and small; keep it that way. No new runtime dependencies without a strong reason. The pixel art is generated at build time and ships as a few SVG paths; its motion is a handful of CSS animations that the reduced-motion rules switch off. The only script it needs is the small client component for the buttons over the scene and the campfire. Keep any new effects to that standard: no canvas, no runtime rendering, no animation libraries.
+The page is static and small; keep it that way. No new runtime dependencies without a strong reason: the physics engine is a few hundred lines of our own. The pixel art is generated at build time and ships as SVG paths; its motion is CSS that the reduced-motion rules switch off. The game's loop only runs while playing, moves elements with `transform` only, and reads the layout twice a second rather than every frame. Keep any new effect to that standard: no canvas, no animation libraries, nothing running while nobody is playing.
 
 ## Code style
 

@@ -7,7 +7,7 @@ type WorkText = Dictionary["work"];
 // Mono chips whose glyph (full, half, empty square) carries the status
 // without relying on colour.
 const STATUS: Record<Status, { chip: string; glyph: string }> = {
-  shipping: { chip: "[--frame:var(--accent)]", glyph: "bg-accent" },
+  shipping: { chip: "[--frame:var(--ink)]", glyph: "bg-current" },
   "in progress": {
     chip: "",
     glyph: "border-2 border-current bg-[linear-gradient(90deg,currentColor_50%,transparent_50%)]",
@@ -94,7 +94,7 @@ export default function Work({ t }: { t: Dictionary }) {
       title={w.title}
       aside={w.aside}
     >
-      <article aria-labelledby="suite-title" className="reveal px-frame m-[var(--px)]">
+      <article aria-labelledby="suite-title" className="reveal dialog">
         <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 rule-b px-5 sm:px-8">
           <p className="eyebrow py-3">
             <span>01</span>
@@ -145,7 +145,7 @@ export default function Work({ t }: { t: Dictionary }) {
 
       <article
         aria-labelledby="site-title"
-        className="reveal px-frame m-[var(--px)] mt-10"
+        className="reveal dialog mt-10"
       >
         <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 rule-b px-5 sm:px-8">
           <p className="eyebrow py-3">
