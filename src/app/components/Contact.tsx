@@ -4,7 +4,7 @@ import Section from "./SectionHeading";
 export default function Contact() {
   return (
     <Section id="contact" index="04" kicker="Contact" title="Say hello">
-      <figure className="reveal max-w-[52rem]">
+      <figure className="reveal mx-auto max-w-[60rem] text-center sm:mx-0 sm:text-left">
         <blockquote className="text-[clamp(1.75rem,1rem+2.4vw,3.25rem)] leading-[1.1] font-medium tracking-[-0.04em] text-balance">
           <p>
             <span aria-hidden className="text-ember">
@@ -19,7 +19,7 @@ export default function Contact() {
         </blockquote>
       </figure>
 
-      <div className="reveal mt-12 flex flex-wrap gap-3 sm:mt-16">
+      <div className="reveal mt-12 flex flex-wrap justify-center gap-3 sm:mt-16 sm:justify-start">
         <a href={links.github} className="group btn btn-solid">
           github.com/vx9k
           <span

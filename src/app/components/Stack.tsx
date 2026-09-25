@@ -8,11 +8,11 @@ export default function Stack() {
         {stack.map((g) => (
           <div
             key={g.group}
-            className="reveal grid gap-x-10 gap-y-3 border-t border-line py-7 sm:grid-cols-[10rem_minmax(0,1fr)_auto] sm:items-baseline sm:py-9"
+            className="reveal grid gap-x-10 gap-y-3 border-t border-line py-7 text-center sm:grid-cols-[10rem_minmax(0,1fr)_auto] sm:items-baseline sm:py-9 sm:text-left"
           >
             <dt className="eyebrow">{g.group}</dt>
             <dd>
-              <ul className="flex flex-wrap gap-x-4 gap-y-1 text-subhead font-medium">
+              <ul className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-subhead font-medium sm:justify-start">
                 {g.items.map((item) => (
                   <li
                     key={item}

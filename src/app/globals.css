@@ -159,10 +159,10 @@
 @theme {
   /* Fluid type, after bfl.ai's scale: 500 weight, tight tracking, short
      line height on anything display-sized. */
-  --text-display: clamp(2.75rem, 0.4rem + 5.9vw, 6.75rem);
+  --text-display: clamp(2.75rem, 0.4rem + 5.9vw, 8.5rem);
   --text-display--line-height: 0.92;
   --text-display--letter-spacing: -0.05em;
-  --text-title: clamp(2.5rem, 0.833rem + 3.472vw, 5rem);
+  --text-title: clamp(2.5rem, 0.833rem + 3.472vw, 6rem);
   --text-title--line-height: 0.95;
   --text-title--letter-spacing: -0.05em;
   --text-subhead: clamp(1.25rem, 0.75rem + 1.0417vw, 2rem);
@@ -235,11 +235,17 @@ body::before {
    Components
    ------------------------------------------------------------------------ */
 
+/* Page frame. It uses nearly the whole viewport and hugs the left edge
+   from tablet width up, so wide screens gain room instead of margins. On
+   phones it is full width, and components centre their own content. */
 @utility shell {
   width: 100%;
-  max-width: 80rem;
+  max-width: 120rem;
   margin-inline: auto;
-  padding-inline: clamp(1.25rem, 4vw, 3rem);
+  padding-inline: clamp(1.25rem, 4vw, 4.5rem);
+  @media (width >= 40rem) {
+    margin-inline: 0;
+  }
 }
 
 /* Frosted panel with a lit top edge. Used only on a handful of surfaces,
@@ -512,6 +518,67 @@ body::before {
   }
 }
 
+/* A hairline that draws itself from the left as its section scrolls in.
+   Without scroll timelines it is simply drawn. */
+@keyframes draw {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .draw {
+    transform-origin: left;
+    animation: draw linear both;
+    animation-timeline: view();
+    animation-range: entry 20% entry 90%;
+  }
+}
+
+/* The hero's rotating phrase. Every phrase sits in the same grid cell, so
+   the headline is always as tall as its longest phrase and nothing below
+   it moves. Only the first phrase is visible by default: that is what
+   reduced motion, e-ink and print show, and what screen readers read. */
+.rotator {
+  display: grid;
+}
+
+.rotator > * {
+  grid-area: 1 / 1;
+}
+
+.rotator > :not(:first-child) {
+  opacity: 0;
+}
+
+@keyframes rotate-phrase {
+  0% {
+    opacity: 0;
+    transform: translateY(0.25em);
+  }
+  4%,
+  30% {
+    opacity: 1;
+    transform: none;
+  }
+  34%,
+  100% {
+    opacity: 0;
+    transform: translateY(-0.25em);
+  }
+}
+
+/* Three phrases, four seconds each. Hovering the headline holds the
+   current phrase, and the Display menu's motion switch stops it. */
+.rotator > * {
+  animation: rotate-phrase 12s var(--ease-out-soft) infinite both;
+  animation-delay: calc(var(--n, 0) * 4s + 0.6s);
+}
+
+.rotator:hover > * {
+  animation-play-state: paused;
+}
+
 /* The in-app setting, the system setting, e-ink panels and slow-refresh
    displays all switch motion off entirely. */
 [data-motion="reduced"] *,
@@ -562,6 +629,10 @@ body::before {
   body::before,
   .no-print {
     display: none !important;
+  }
+  /* Print the first phrase, never a frame caught mid-fade. */
+  .rotator > * {
+    animation: none !important;
   }
   a[href^="http"]::after {
     content: " (" attr(href) ")";

@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="overflow-hidden">
       <div className="shell">
-        <div className="eyebrow flex items-center justify-between gap-6 border-t border-line pt-8">
+        <div className="eyebrow flex flex-col items-center justify-between gap-2 border-t border-line pt-8 sm:flex-row sm:gap-6">
           <p>© {new Date().getFullYear()} vx</p>
           <p>
             <a
@@ -17,7 +17,7 @@ export default function Footer() {
         </div>
         <p
           aria-hidden
-          className="wordmark -mt-[0.12em] -mb-[0.2em] text-[clamp(8rem,4rem+26vw,26rem)] leading-[0.8] font-semibold tracking-[-0.06em] select-none"
+          className="reveal wordmark text-center sm:text-left -mt-[0.12em] -mb-[0.2em] text-[clamp(8rem,4rem+26vw,26rem)] leading-[0.8] font-semibold tracking-[-0.06em] select-none"
         >
           vx
         </p>

@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 
 // Every section below the hero shares this frame: a numbered mono label,
 // a large title with an optional aside beside it, then the content.
+// Centred on phones, left-aligned from tablet width up.
 export default function Section({
   id,
   index,
@@ -25,10 +26,11 @@ export default function Section({
       aria-labelledby={titleId}
       className="pt-20 pb-24 sm:pt-28 sm:pb-32 lg:pt-32 lg:pb-36"
     >
-      <div className="reveal grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-end lg:gap-20">
+      <div className="reveal grid gap-8 text-center sm:text-left lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:items-end lg:gap-20">
         <div>
-          <p className="eyebrow flex items-center gap-3">
+          <p className="eyebrow flex items-center justify-center gap-3 sm:justify-start">
             <span className="text-ember">{index}</span>
+            <span aria-hidden className="draw h-px w-10 bg-ember" />
             {kicker}
           </p>
           <h2

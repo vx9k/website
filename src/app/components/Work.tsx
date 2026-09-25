@@ -87,7 +87,7 @@ export default function Work() {
       index="02"
       kicker="Work"
       title="Selected work"
-      aside="Small programs, each doing one job. Laid out the way they run."
+      aside="Small programs that each do one job, laid out the way they run."
     >
       <article aria-labelledby="suite-title" className="reveal card">
         <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 border-b border-line px-5 sm:px-8">
@@ -159,10 +159,10 @@ export default function Work() {
               website
             </h3>
             <p className="mt-5 max-w-[34rem] leading-7 text-pretty text-muted">
-              A static Next.js export on Cloudflare Workers. The ember smoke behind
-              the hero is a WebGPU shader with WebGL2 and plain CSS fallbacks, it
-              keeps working offline, and it has a paper mode for e-ink
-              screens.
+              A static Next.js export served from Cloudflare Workers. The ember
+              smoke behind the hero is a WebGPU shader that falls back to
+              WebGL2, then to plain CSS. The page tells you when you go offline,
+              and it has a paper mode for e-ink screens.
             </p>
           </div>
           <Spec

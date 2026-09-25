@@ -18,7 +18,7 @@ export const sections = [
 export const principles = [
   {
     title: "Standards over shortcuts",
-    body: "POSIX interfaces over vendor extensions. If a program only runs on one platform, that's a design decision worth questioning.",
+    body: "POSIX interfaces over vendor extensions. If a program runs on only one platform, someone decided that, and the decision needs a reason.",
   },
   {
     title: "One job, done predictably",

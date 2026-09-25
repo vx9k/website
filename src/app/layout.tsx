@@ -20,7 +20,7 @@ const plexMono = IBM_Plex_Mono({
 });
 
 const description =
-  "vx is a systems engineer writing POSIX-compliant software and minimal, portable boot tooling in C.";
+  "vx writes minimal init systems and boot tooling in C, small enough to read in one sitting.";
 
 export const metadata: Metadata = {
   title: {

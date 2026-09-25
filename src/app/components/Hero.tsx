@@ -8,6 +8,14 @@ const facts = [
   { k: "Source", v: "github.com/vx9k" },
 ];
 
+// The headline's ending rotates through what the principles below ask of
+// the code. The first phrase is the one that stays when motion is off.
+const phrases = [
+  "outlast the machine it runs on.",
+  "fit in one reader's head.",
+  "do one job, predictably.",
+];
+
 // Full-bleed, like a video hero: the ember shader behind the page shows
 // through here, and fades into the solid page below.
 export default function Hero() {
@@ -25,22 +33,33 @@ export default function Hero() {
       <div className="shell relative pb-10 sm:pb-14">
         <h1
           id="hero-title"
-          className="rise max-w-[15ch] text-display font-medium text-balance"
+          className="rise mx-auto max-w-[16ch] text-center text-display font-medium text-balance sm:mx-0 sm:max-w-[20ch] sm:text-left"
           style={{ ["--i" as string]: 0 }}
         >
-          I write software meant to{" "}
-          <span className="text-ember">outlast</span> the machine it runs on.
+          <span className="sr-only">
+            I write software meant to {phrases[0]}
+          </span>
+          <span aria-hidden>
+            I write software meant to
+            <span className="rotator justify-items-center text-ember sm:justify-items-start">
+              {phrases.map((p, n) => (
+                <span key={p} style={{ ["--n" as string]: n }}>
+                  {p}
+                </span>
+              ))}
+            </span>
+          </span>
         </h1>
 
         <div
-          className="rise mt-8 flex flex-col gap-8 sm:mt-10 lg:flex-row lg:items-end lg:justify-between"
+          className="rise mt-8 flex flex-col items-center gap-8 text-center sm:mt-10 sm:items-start sm:text-left lg:flex-row lg:items-end lg:justify-between"
           style={{ ["--i" as string]: 1 }}
         >
           <p className="max-w-[34rem] text-lede text-pretty text-muted">
-            Minimal init systems and POSIX-minded C: code small enough to read
-            in one sitting, written to a standard instead of a moment.
+            I write minimal init systems in C. The code is small enough to
+            read in one sitting and sticks to POSIX interfaces where it can.
           </p>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap justify-center gap-3 sm:justify-start">
             <a href="#work" className="group btn btn-solid">
               See the work
               <span
@@ -63,11 +82,15 @@ export default function Hero() {
         </div>
 
         <dl
-          className="rise mt-14 grid grid-cols-2 gap-x-6 gap-y-5 border-t border-line pt-6 sm:mt-20 lg:grid-cols-4"
+          className="rise mt-14 grid grid-cols-2 gap-x-6 gap-y-5 border-t border-line pt-6 text-center sm:mt-20 sm:text-left lg:grid-cols-4"
           style={{ ["--i" as string]: 2 }}
         >
-          {facts.map((t) => (
-            <div key={t.k}>
+          {facts.map((t, i) => (
+            <div
+              key={t.k}
+              className="rise"
+              style={{ ["--i" as string]: 3 + i }}
+            >
               <dt className="eyebrow text-faint!">{t.k}</dt>
               <dd className="mt-1.5 text-[0.95rem] font-medium text-ink">
                 {t.v}
