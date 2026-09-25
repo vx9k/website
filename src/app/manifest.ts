@@ -1,13 +1,13 @@
 import type { MetadataRoute } from "next";
+import en from "./i18n/en";
 
 export const dynamic = "force-static";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "vx — systems engineer",
+    name: en.meta.title,
     short_name: "vx",
-    description:
-      "vx writes minimal init systems and boot tooling in C, small enough to read in one sitting.",
+    description: en.meta.description,
     start_url: "/",
     display: "standalone",
     background_color: "#5ab9a8",

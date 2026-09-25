@@ -1,7 +1,6 @@
-// Each locale is a URL segment (/en, /es, /pt) mapped to the BCP 47 tag
-// used for <html lang> and hreflang. The site root picks one of these for
-// the visitor; see src/worker.ts. Kept apart from the dictionaries so
-// client components can import it without pulling in every translation.
+// Each locale is a URL segment mapped to the BCP 47 tag used for <html lang>
+// and hreflang. Kept apart from the dictionaries so client code can import
+// it without pulling in every translation.
 export const locales = {
   en: { tag: "en-US", short: "EN", name: "English", og: "en_US" },
   es: { tag: "es-419", short: "ES", name: "Español", og: "es_LA" },

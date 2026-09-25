@@ -1,21 +1,18 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Scene from "./components/Scene";
+import Screen from "./components/Screen";
 import { bootScript, fontVariables } from "./document";
-import PixelMark from "./components/PixelMark";
-import PixelScene from "./components/PixelScene";
 import { getDictionary, localeKeys, locales } from "./i18n";
 
 export { viewport } from "./document";
 
-export const metadata: Metadata = {
-  title: "Page not found · vx",
-};
+export const metadata: Metadata = { title: "Page not found · vx" };
 
-// Exported as 404.html, which Cloudflare serves for any unknown path, so
-// it can't know the language on the server. It carries all three copies
-// and this script picks one before paint: the language in the URL (/es/…),
-// then a saved choice, then the browser's languages. Without JavaScript,
-// English shows.
+// Exported as 404.html, which Cloudflare serves for any unknown path, so it
+// can't know the language on the server. It carries all three copies and
+// this script picks one before paint: the language in the URL (/es/…), a
+// saved choice, then the browser's languages. Without JavaScript, English.
 const pickScript = `(function () {
   var known = ${JSON.stringify(localeKeys)};
   var tags = ${JSON.stringify(Object.fromEntries(localeKeys.map((l) => [l, locales[l].tag])))};
@@ -38,78 +35,41 @@ const pickScript = `(function () {
   document.title = titles[l];
 })();`;
 
-// Shown for the chosen language only; English is the no-JS default.
+// Only the chosen language shows; English is the no-JS default.
 const visibility = {
-  en: "block in-data-[lang=es]:hidden in-data-[lang=pt]:hidden",
+  en: "in-data-[lang=es]:hidden in-data-[lang=pt]:hidden",
   es: "hidden in-data-[lang=es]:block",
   pt: "hidden in-data-[lang=pt]:block",
 };
 
 export default function GlobalNotFound() {
   return (
-    <html
-      lang="en-US"
-      dir="ltr"
-      suppressHydrationWarning
-      className={fontVariables}
-    >
+    <html lang="en-US" dir="ltr" suppressHydrationWarning className={fontVariables}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: bootScript + pickScript }} />
       </head>
-      <body className="flex min-h-dvh flex-col overflow-x-clip text-ink antialiased">
-        <main
-          id="main"
-          className="console flex flex-1 flex-col justify-center py-[max(1.5rem,env(safe-area-inset-top))]"
-        >
-          <div className="notch bg-bezel p-[clamp(0.5rem,1.6vw,1.5rem)]">
-            <div className="lcd notch">
-              <div className="shell pt-10 pb-4">
+      <body className="min-h-dvh overflow-x-clip antialiased">
+        <main id="main" className="console flex min-h-dvh flex-col justify-center py-6">
+          <div className="notch bg-bezel p-[clamp(0.5rem,2vw,1.5rem)]">
+            <Screen>
+              {/* Same generator, another seed: different hills. */}
+              <Scene seed={404} />
+              <div className="art-inset pt-8 pb-12">
                 {localeKeys.map((l) => {
                   const t = getDictionary(l).notFound;
                   return (
-                    <div
-                      key={l}
-                      className={`w-full max-w-2xl ${visibility[l]}`}
-                    >
-                      <a
-                        href={`/${l}`}
-                        className="inline-flex min-h-11 items-center"
-                      >
-                        <span className="px-frame inline-flex bg-bezel px-2 py-2 [--frame:var(--bezel)]">
-                          <PixelMark className="h-[15px] w-[33px]" />
-                        </span>
-                        <span className="sr-only">vx</span>
-                      </a>
-
-                      <p className="eyebrow mt-10 flex items-center gap-2.5">
-                        <span aria-hidden className="size-[6px] bg-ink" />
-                        <span>404</span>
-                        <span aria-hidden>/</span>
-                        {t.eyebrow}
-                      </p>
-                      <h1 className="mt-4 text-title font-medium">{t.title}</h1>
-
-                      <p className="mt-6 max-w-lg leading-7">{t.body}</p>
-
-                      <a href={`/${l}`} className="group btn btn-solid mt-10">
-                        {t.back}
-                        <span
-                          aria-hidden
-                          className="transition-transform group-hover:-translate-x-0.5"
-                        >
-                          ←︎
-                        </span>
+                    <div key={l} lang={locales[l].tag} className={visibility[l]}>
+                      <p className="eyebrow">404</p>
+                      <h1 className="mt-3 text-title font-semibold">{t.title}</h1>
+                      <p className="mt-4 max-w-[34rem] text-pretty">{t.body}</p>
+                      <a href={`/${l}`} className="btn mt-8">
+                        <span aria-hidden>←</span> {t.back}
                       </a>
                     </div>
                   );
                 })}
               </div>
-              {/* A different range from the home page's: same generator, new seed. */}
-              <PixelScene
-                seed={404}
-                className="aspect-[200/72] max-h-[24rem] min-h-44"
-              />
-            </div>
+            </Screen>
           </div>
         </main>
       </body>

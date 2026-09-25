@@ -22,11 +22,11 @@ pnpm wrangler dev  # serve out/ through the Workers runtime, as in production
 pnpm lint        # currently broken: typescript-eslint doesn't support TypeScript 7 yet
 ```
 
-There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler dev`) and looking at it in a browser at desktop and phone widths, by day and by night, and with reduced motion on. Click and tap every interactive sprite you touched, and if you changed anything on the screen, press Play and walk over it: the game reads the layout.
+There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler dev`; restart it after a rebuild) and looking at it in a browser at desktop and phone widths, by day and by night, and with reduced motion on. Click and tap every pixel button you touched.
 
 ## Stack
 
-- **Next.js 16, App Router, `output: "export"`.** Fully static and served as Cloudflare Workers static assets (`wrangler.jsonc`), so there are no Next.js server features: no route handlers, no server actions, no `next/image` optimisation, no middleware. The one exception is `src/worker.ts`, a plain Worker that handles `/`. `experimental.useOffline` powers the offline banner.
+- **Next.js 16, App Router, `output: "export"`.** Fully static and served as Cloudflare Workers static assets (`wrangler.jsonc`), so there are no Next.js server features: no route handlers, no server actions, no `next/image` optimisation, no middleware. The one exception is `src/worker.ts`, a plain Worker that handles `/`.
 - **React 19 with the React Compiler.** Don't hand-write `useMemo`/`useCallback` for performance.
 - **Tailwind CSS v4.** Configured in CSS (`@theme`, `@utility`, `@custom-variant` in `globals.css`). There's no `tailwind.config.*`.
 - **TypeScript 7**, strict. `@/*` maps to `src/*`.
@@ -40,31 +40,26 @@ There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler 
 src/worker.ts         runs for "/" only: redirects to /en, /es or /pt
 src/app/
   [lang]/layout.tsx   root layout per language: <html lang>, metadata, hreflang
-  [lang]/page.tsx     the page: Header, Hero, Principles, Work, Stack, Contact, Footer
-  document.ts         fonts, viewport, theme colours and the pre-paint theme and flags script
+  [lang]/page.tsx     the page: case top edge, bezel and screen, controls
+  document.ts         fonts, viewport and the pre-paint theme script
   global-not-found.tsx  exported as 404.html; carries all three languages
-  content.ts          language-neutral data (links, section ids, suite tree, tool names)
+  content.ts          language-neutral data (links, section ids, suite, specs, stack)
   i18n/               en.ts (source of truth), es.ts, pt.ts, locales.ts
-  globals.css         the palette, themes, console shell, pixel primitives, the scene, motion
-  pixel.ts            build-time pixel helpers: seeded PRNG, sprites, ridges, path merging
+  globals.css         the palette, the console, pixel primitives, the wind
+  pixels.ts           build-time pixel helpers: seeded PRNG, sprites, paths, blobs
   components/
-    SectionHeading.tsx  <Section>: the shared frame every section below the hero uses
-    PixelScene.tsx      the hero's pixel-art mountains, generated at build time from a seed
-    SceneControls.tsx   the buttons over the scene: sun/moon swaps the palette, the cabin's light
-    Stairs.tsx          brick stairs between sections, ledges for the game
-    Campfire.tsx        the campfire at the foot of the screen; tap it to stoke it
-    ConsoleControls.tsx the console's lower half: D-pad, A/B, Start (play), Select (palette)
-    PixelMark.tsx       the pixel "vx" mark on its badge (icon.svg draws the same grid)
-    FlagsPanel.tsx      the "Display" menu (daylight, motion, text size)
-    SectionNav.tsx      side menu with a pixel pointer and active-section tracking
-    LanguageSwitch.tsx  EN / ES / PT links; saves the choice in localStorage["vx-lang"]
-    game/
-      engine.ts         the physics: gravity, one-way ledges, bouncing bodies, particles
-      Game.tsx          the playable page: character, ball, gems, HUD, touch pad, camera
-      Sprite.tsx        the character's frames, the gem and the ball, as pixel rows
-      control.ts        start/stop events, so Play buttons don't import the engine
-      PlayButton.tsx, PlayCharacter.tsx   the ways to start playing
+    Scene.tsx         the landscape: hills, pines, the big tree, windsock, sky
+    PixelButton.tsx   the one client button: theme, gust or shake
+    Screen.tsx        the screen set into the bezel, with its edge line
+    Intro.tsx         the dialogue box, lede, facts and section menu
+    Section.tsx       the frame every section below the intro uses
+    Work.tsx, Principles.tsx, Stack.tsx, Contact.tsx
+    Controls.tsx      the lower half: D-pad (drawing), A (gust), B (palette)
+    Mark.tsx          the pixel "vx" badge (icon.svg draws the same grid)
+    LanguageLinks.tsx EN / ES / PT; remembers the choice for "/" and the 404
 ```
+
+The page is deliberately flat: server components that render static markup, one short client button, and one boot script. There is no game, no settings menu and no app state. Keep it that way; a new idea should fit in CSS and a data attribute before it earns a component with state.
 
 ## Languages
 
@@ -77,13 +72,13 @@ src/app/
 ## Content rules
 
 - **Only true claims.** Everything in `content.ts` and the dictionaries comes from the public repos on github.com/vx9k. Don't invent projects, stats, clients, dates or testimonials. If something is planned, label it planned.
-- Copy goes in the dictionaries in `src/app/i18n/`, never inline in a component. Language-neutral data (links, names, statuses) goes in `content.ts`.
-- **Say "systems engineer" once at most** in visible copy (and its translations). It's currently the Role row in the hero.
+- Copy goes in the dictionaries in `src/app/i18n/`, never inline in a component. Language-neutral data (links, names, statuses, spec values) goes in `content.ts`.
+- **Say "systems engineer" once at most** in visible copy (and its translations). It's currently the Role row in the intro.
 - Write plainly: sentence case, active voice, no exclamation marks, and none of the marketing words ("elevate", "seamless", "unleash", "next-gen" and so on).
 
 ## Design direction
 
-A retro handheld console, minimal inside. The page *is* the console: the header is the top edge of the case, the content sits on a screen set into a dark bezel, and the footer is the lower half with a D-pad, A/B, Start and Select. On the screen, the layout stays as plain as [suckless.org](https://suckless.org): a side menu with a pointer beside a single column that reads like a document. The character comes from pixels everywhere, four colours, dialogue boxes, and a page you can play.
+A retro handheld console, minimal inside. The page *is* the console: the header is the top edge of the case, the content sits on a screen set into a dark bezel, and the footer is the lower half with a D-pad and A/B. On the screen, one left-aligned column that reads like a document, as plain as [suckless.org](https://suckless.org). The character comes from pixels, four colours, a dialogue box and a small landscape with wind in it.
 
 **Palette.** Four colours, [Mist GB](https://lospec.com/palette-list/mist-gb) by Kerrie Lake, and nothing else: no tints, no fifth colour, no gradients except the ones that draw pixel patterns.
 
@@ -93,43 +88,41 @@ A retro handheld console, minimal inside. The page *is* the console: the header 
 | `--ink` (text) | brown | mint |
 | `--soft` (secondary text, labels) | deep `#1e606e` | teal `#5ab9a8` |
 | `--line` (rules, frames) | deep | teal |
-| `--accent` (fills) / `--on-accent` | teal / brown | deep / mint |
+| `--accent` (fills) | teal | deep |
 | `--plastic` (the case) / `--on-plastic` | teal / brown | deep / mint |
 | `--bezel` / `--on-bezel` | brown / mint | brown / mint |
+| `--sky`, `--far`, `--near`, `--fore`, `--sun` (the scene) | mint, teal, deep, brown, teal | brown, deep, teal, mint, mint |
 
 Contrast decides what each pairing may do. Brown on mint (13.1:1), brown on teal (7.1:1) and deep on mint (5.6:1) carry text; the tokens above are arranged so every `--ink`, `--soft` and `--on-*` pairing is one of them. Deep on teal (3.0:1) is for edges and large text only. Brown on deep (2.3:1) and teal on mint (1.9:1) are decoration only: never text, never the only edge of a control.
 
-**Type.** Pixelify Sans for headings (600) and body (400), using the scale in `@theme`. Silkscreen, uppercase, for small labels via `eyebrow` and `chip`. No negative tracking, and ligatures stay off.
+**Type.** Pixelify Sans for headings (600) and body (400). Silkscreen, uppercase, for small labels via `eyebrow` and `chip`. No negative tracking, and ligatures stay off.
 
 **The console** (in `globals.css`).
 - `console`: the one centred column that the case's top edge, the bezel and the controls share, so they line up at every width. Don't put page chrome outside it.
-- `notch`: corners cut in two pixel steps, for the bezel and the screen.
-- `lcd`: the screen, with a one-pixel edge line drawn on top of its content.
-- Things on the case use `--plastic`/`--on-plastic` and `.btn-case`; things on the screen use the screen tokens.
+- `notch`: corners cut in two pixel steps, for the bezel and the screen. `Screen` nests two of them to draw the screen's edge line.
+- `art` / `art-inset`: the scene's width is the widest multiple of 160px that fits, so every art pixel is a whole number of screen pixels; `art-inset` pads the text column to the same left edge.
 
-**Pixel primitives.** `--px` is one art pixel of the interface, 3px; frames, rules, underlines and offsets are multiples of it.
-- `dialog`: the RPG dialogue box (stepped ink frame, gap, inner line). For grouped content: cards, the lede, the HUD.
-- `px-frame`: a stepped outline one pixel wide with empty corner pixels, for small boxes (chips, badges, menus). Set `--frame` to recolour it.
-- `.btn`, `.btn-solid`, `.btn-case`: chunky buttons on a lip; pressing drops the button onto it. Sentence case, with an arrow or a pixel icon.
-- `rule-t` / `rule-b`: dashed pixel rules for list and spec rows. Sections are separated by space and stairs.
-- `link` and menu items invert into an ink block on hover. Pixel cursors are set on `html` and on interactive elements.
-- The dot-matrix grid over the scene (hairline gaps between art pixels, from 64rem up) is the one texture on the page.
+**Pixel primitives.** `--px` is one art pixel of the interface, 3px; frames, rules and offsets are multiples of it.
+- `dialog`: the RPG dialogue box (stepped ink frame, gap, inner line). For grouped content: the intro and the project cards.
+- `frame`: a stepped outline one pixel wide with empty corner pixels. Set `--frame` to recolour it. `chip` is a small label inside one.
+- `btn`: a chunky ink button on a lip; pressing drops it onto the lip. `link`: a pixel underline that inverts into an ink block on hover.
+- `rule`: a dashed pixel rule along the top of a row, for spec tables and lists. Sections are separated by space.
 
-**Pixel art.** Inline SVG built with `Pixels` in `pixel.ts`, or rows of characters (see `game/Sprite.tsx`): one viewBox unit per art pixel, `shapeRendering="crispEdges"`, and a whole number of screen pixels per art pixel wherever the size is fixed. Colour it with tokens, never literal colours (the badge behind the mark is the one exception, since it is always bezel-coloured). Sprite motion moves in whole pixels with `steps()`; frame swaps and fades are hard cuts or dithers, never smooth.
+**Pixel art.** Inline SVG built at build time with the helpers in `pixels.ts` (sprites as rows of characters, blobs, skylines): one viewBox unit per art pixel, `shapeRendering="crispEdges"`, and a whole number of screen pixels per art pixel wherever the size is fixed. Colour it with tokens (the `fill-*` utilities), never literal colours; the vx badge is the one exception. Motion moves in whole pixels with `steps()`; frame swaps are hard cuts, never smooth.
 
-**Interactive sprites.** Anything that responds to a click also responds to a tap and to the keyboard, because it's a real `<button>`: at least 44px square, an `aria-label` from the dictionaries, a `title` for mouse users, and the ink focus square. Over the scene, buttons are placed in grid units (`--gx`, `--gy`, `--gw`, `--gh`) and `.scene-button` turns them into CSS with container query units, matching the SVG's `slice` scaling. Today: the sun or moon (swaps the palette), the cabin (its light), the campfire (stoke it), the waiting character (play), and Start and Select on the console.
+**The wind** (bottom of `globals.css`). One clock (`--cycle`) drives the whole scene. Anything that sways sits in `<Sway x={…}>` and is delayed by its x at `--speed` per art pixel, so each gust crosses from left to right: the streaks in the sky arrive, the pine tops and the tree's crown lean a pixel, the grass bends, the windsock fills and two leaves blow off. To add something to the wind, wrap it in `Sway` with its x; don't add a second clock.
 
-**The game** (`components/game/`). Press Play, tap the character in the scene or press Start, and a character drops onto the page.
-- `engine.ts` is a small hand-written engine: gravity, one-way ledges (solid from above, passable from below), bouncing bodies and particles. No physics library.
-- The page is the level. Ledges are read from the layout: every line of `main h1, h2, h3`, `.btn`, `.chip`, `.dialog`, `.rule-t` (top), `.rule-b` (bottom), anything with `data-solid`, and the ground under the mountains. They're re-read twice a second, so layout changes are picked up. Add `data-solid` to make something new walkable, and keep vertical gaps climbable with a double jump (about 150px).
-- `Stairs` between sections lead down the page, alternating direction.
-- Arrow keys or WASD move, Up/Space jumps (twice for a double jump), Down drops through a ledge, X/E/Enter pokes anything with `data-poke` or a `.scene-button` nearby, Esc stops. **Keys belong to the game only while it runs**; otherwise the page scrolls as normal.
-- On touch screens a pad (D-pad, A, B) is pinned to the bottom while playing. The camera follows the character; landing bumps the ledge's element; gems are placed over ledges down the screen; there's a ball to kick.
-- It must never be required: all content is readable without playing, the HUD's Stop button and Esc always end it, and focus moves to the game's status region on start so Space can't press a button behind it.
+**Pixel buttons.** A real `<button>` (`PixelButton`) over the sprite, at least 44px square, with an `aria-label` from the dictionaries and a matching `title`. Over the scene they're placed in art-pixel units (`--cx`, `--cy`, `--w`, `--h`) by `.scene-button`, and hovering shows menu-cursor brackets. Each one only sets an attribute on `<html>`, and CSS does the rest:
+
+| Button | Does | Attribute |
+| --- | --- | --- |
+| Sun or moon, B | swaps the palette (saved as `localStorage["vx-theme"]`) | `data-theme="night"` |
+| Windsock, A | a three-second gust: everything flutters, fast streaks, sock full | `data-gust` |
+| The big tree | the crown rattles and five leaves fall and stay on the ground | `data-shaken` |
 
 **Do:**
-- Use the `<Section>` frame for every section below the hero: a Silkscreen label led by one ink pixel, a title with an optional aside, then the content. Everything is left-aligned.
-- Use `dialog` boxes for grouped content, `chip` for statuses and short facts (the glyph carries meaning: filled, half and empty squares), and spec tables (`dl` rows with dashed rules) for facts.
+- Use `<Section>` for every section below the intro: a title led by one ink pixel, an optional aside, then the content. Everything is left-aligned.
+- Use `dialog` boxes for grouped content, `chip` for statuses (the glyph carries meaning: filled, half and empty squares), and spec tables (`dl` rows with `rule`) for facts.
 - Keep the art sparse and purposeful: one scene, a few sprites, each with a reason to exist.
 
 **Don't:**
@@ -138,36 +131,27 @@ Contrast decides what each pairing may do. Brown on mint (13.1:1), brown on teal
 - Console trademarks or logos (no real brand names, logos or labels); the console is our own, the "VX·9K".
 - Terminal or hacker clichés: fake shells, `$` prompts, boot logs, blinking text cursors, `>_` logos, CLI-flag labels, kernel-panic jokes. Retro here means handheld games, not terminals.
 - Smooth, eased motion on sprites, or animation that moves layout.
-- Taking over keys, scroll or focus outside the game.
+- Game mechanics, app state or settings panels. The page is a document with a few toys on it.
 
 Design-oriented agent skills live in `.claude/skills/`. Use them for visual work, but this section wins where they disagree.
 
 ## Themes and accessibility
 
-Target WCAG 2.2 AA. An inline script (`bootScript` in `document.ts`) runs before paint and sets attributes on `<html>` from saved flags (`localStorage["vx-flags"]`) and system preferences. CSS reads only those attributes:
-
-| Attribute | Trigger | Effect |
-| --- | --- | --- |
-| `data-theme="night"` | the sun/moon, Select, the Display menu, `prefers-color-scheme: dark` | the palette swap: brown screen, mint ink, the moon |
-| `data-motion="reduced"` | Display menu, `prefers-reduced-motion` | no animation; sprites hold their first frame |
-| `data-text="large"` | Display menu | root font size 125% |
-| `data-playing` | set by the game while it runs | the `playing:` variant; smooth scrolling off |
-
-A saved `day` choice wins over the system; with none saved, the page is day unless the system asks for dark. There is no high-contrast, e-ink or print mode; forced colours (Windows contrast themes) get a small rule that hides the art and gives frames a real border.
+Target WCAG 2.2 AA. An inline script (`bootScript` in `document.ts`) runs before paint and sets `data-theme` on `<html>`: a saved choice wins, and without one the page follows `prefers-color-scheme`. The CSS reads only that attribute for the palette. Reduced motion is read straight from `prefers-reduced-motion` in CSS: nothing animates, and the buttons still show their result as a still (a sent gust holds the trees leaning and the sock full; shaken leaves are already on the ground). Forced colours (Windows contrast themes) hide the art and give boxes a real border.
 
 For every visual change:
 - Colours come from the tokens, and both palettes must work. A new token needs a day value in `:root` and, if it differs, a night value in `[data-theme="night"]`. The `night:` Tailwind variant is there for one-offs.
-- Check it by day and by night. To preview without clicking, set `localStorage["vx-flags"]` to `{"day":false}` or `{"motion":true}` and reload.
+- Check it by day and by night. To preview night without clicking, set `localStorage["vx-theme"]` to `"night"` and reload.
 - Keep semantic landmarks, `aria-labelledby` on sections, the skip link, visible `:focus-visible` squares, 44px minimum touch targets and `aria-hidden` on purely decorative art.
-- Motion uses `transform`/`opacity` (and, for dithers, discrete `mask-image` steps) and must be covered by the reduced-motion rules. The game still runs with motion reduced, but without particles, bumps or camera easing.
+- Motion uses `transform` and `visibility` and must be covered by the reduced-motion rules.
 
 ## Performance
 
-The page is static and small; keep it that way. No new runtime dependencies without a strong reason: the physics engine is a few hundred lines of our own. The pixel art is generated at build time and ships as SVG paths; its motion is CSS that the reduced-motion rules switch off. The game's loop only runs while playing, moves elements with `transform` only, and reads the layout twice a second rather than every frame. Keep any new effect to that standard: no canvas, no animation libraries, nothing running while nobody is playing.
+The page is static and small; keep it that way. No runtime dependencies beyond Next and React. The pixel art is generated at build time and ships as SVG paths; its motion is CSS; the only script is the boot script and the button handlers. Keep any new effect to that standard: no canvas, no animation libraries, nothing running in JavaScript on a timer.
 
 ## Code style
 
 - Match the surrounding code: small components, Tailwind classes inline, and comments that explain *why* in plain sentences.
-- Server components by default. Add `"use client"` only for state, effects or browser APIs.
+- Server components by default. Add `"use client"` only for event handlers or browser APIs.
 - Use semantic HTML over `div`s, and remove unused code and CSS when deleting a feature.
 - Commit messages: a short imperative summary line, then a body that explains the change.

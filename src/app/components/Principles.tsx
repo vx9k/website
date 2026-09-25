@@ -1,29 +1,20 @@
 import type { Dictionary } from "../i18n";
-import Section from "./SectionHeading";
+import Section from "./Section";
 
 export default function Principles({ t }: { t: Dictionary }) {
-  const { kicker, title, aside, items } = t.principles;
+  const p = t.principles;
   return (
-    <Section
-      id="principles"
-      index="01"
-      kicker={kicker}
-      title={title}
-      aside={aside}
-    >
-      <ol className="rule-b">
-        {items.map((p, i) => (
-          <li
-            key={p.title}
-            className="reveal grid gap-x-8 gap-y-2 rule-t py-7 sm:grid-cols-[3rem_minmax(0,1fr)] md:grid-cols-[3rem_minmax(0,0.8fr)_minmax(0,1.2fr)]"
-          >
-            <span aria-hidden className="eyebrow pt-1.5">
+    <Section id="principles" title={p.title} aside={p.aside}>
+      <ol>
+        {p.items.map((item, i) => (
+          <li key={item.title} className="rule grid grid-cols-[3rem_minmax(0,1fr)] gap-2 py-5">
+            <span aria-hidden className="eyebrow pt-1">
               {String(i + 1).padStart(2, "0")}
             </span>
-            <h3 className="text-subhead font-medium text-balance">{p.title}</h3>
-            <p className="max-w-[36rem] leading-7 text-pretty sm:col-start-2 md:col-start-auto md:pt-0.5">
-              {p.body}
-            </p>
+            <div>
+              <h3 className="text-lg font-semibold">{item.title}</h3>
+              <p className="mt-1.5 text-pretty">{item.body}</p>
+            </div>
           </li>
         ))}
       </ol>

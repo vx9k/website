@@ -2,7 +2,7 @@
 
 Source for [kthread.dev](https://kthread.dev), the personal site of [vx](https://github.com/vx9k).
 
-It's a single static page built with Next.js and Tailwind CSS, exported to plain HTML and served from Cloudflare Workers at [kthread.dev](https://kthread.dev). The page is a retro handheld console in the four-colour Mist GB palette: the mountains on its screen are generated at build time as a single SVG, the sun, the cabin and the campfire respond to a click or a tap, and pressing Play drops a little character onto the page to walk it with the arrow keys (or an on-screen pad on phones), using the headings, buttons and stairs as platforms. The site keeps working offline, and a Display menu offers daylight, reduced motion and larger text.
+It's a single static page built with Next.js and Tailwind CSS, exported to plain HTML and served from Cloudflare Workers at [kthread.dev](https://kthread.dev). The page is a retro handheld console in the four-colour Mist GB palette. At the top of its screen is a small pixel-art landscape, generated at build time as SVG: pines on two ranges of hills, a big tree and a windsock, with a wind made of CSS that sends gusts across it from left to right. The sun (or moon) swaps the palette, the windsock sends a gust, and the tree drops its leaves when you shake it. Below that, it's a plain document in English, Spanish and Portuguese.
 
 ## Running it
 
@@ -23,34 +23,17 @@ pnpm wrangler dev   # serves out/ through the Workers runtime at http://localhos
 ## Structure
 
 ```
-src/app/
-├── page.tsx            the home page, assembled from the sections below
-├── layout.tsx          metadata and the script that applies the theme and flags before paint
-├── content.ts          all the facts on the page: projects, principles, stack, links
-├── globals.css         the palette, themes, console shell, pixel primitives and motion
-├── not-found.tsx       the 404 page
-├── manifest.ts         web app manifest
-├── icon.svg            favicon
-├── apple-icon.png      home-screen icon
-└── components/
-    ├── Header.tsx          the console's top edge: language, Display menu, Play
-    ├── Hero.tsx            headline, facts and calls to action
-    ├── Principles.tsx      ┐
-    ├── Work.tsx            │ page sections, each wrapped in the shared
-    ├── Stack.tsx           │ <Section> frame from SectionHeading.tsx
-    ├── Contact.tsx         ┘
-    ├── Footer.tsx
-    ├── SectionHeading.tsx  <Section>: rule, index column and title layout
-    ├── SectionNav.tsx      side menu that tracks the section on screen
-    ├── FlagsPanel.tsx      the Display menu
-    ├── OfflineBanner.tsx   notice shown when the connection drops
-    ├── PixelScene.tsx      pixel-art mountains, generated at build time from a seed
-    ├── SceneControls.tsx   buttons over the sun/moon (day and night) and the cabin (its light)
-    ├── PixelMark.tsx       the pixel "vx" mark
-    ├── Campfire.tsx        the campfire at the foot of the screen; tap it to stoke it
-    ├── Stairs.tsx          stairs between sections, for the game
-    ├── ConsoleControls.tsx the console's controls: Start plays, Select swaps the palette
-    └── game/               the playable page: physics engine, character, HUD, touch pad
+src/
+├── worker.ts             runs for "/" only: sends visitors to /en, /es or /pt
+└── app/
+    ├── [lang]/layout.tsx metadata, hreflang and the pre-paint theme script
+    ├── [lang]/page.tsx   the page: case, bezel, screen and controls
+    ├── global-not-found.tsx  the 404 page, in all three languages
+    ├── content.ts        language-neutral facts: links, projects, stack
+    ├── i18n/             the copy in English, Spanish and Portuguese
+    ├── globals.css       the palette, pixel primitives and the wind
+    ├── pixels.ts         build-time helpers that turn sprites into SVG paths
+    └── components/       the scene, the sections and the console parts
 ```
 
 Other files at the root:
@@ -61,13 +44,13 @@ Other files at the root:
 | `.agents/skills/`, `.claude/skills/` | Design skills for coding agents, pinned in `skills-lock.json`. |
 | `wrangler.jsonc` | Cloudflare Workers config: serves `out/` as static assets on kthread.dev, with `404.html` for unknown paths. |
 | `public/_headers` | Response headers, such as long-term caching for hashed assets. |
-| `next.config.ts` | Static export, React Compiler, offline support. |
+| `next.config.ts` | Static export and the React Compiler. |
 
 ## Editing content
 
-Most text lives in `src/app/content.ts`. Change a project, principle or stack entry there and every section that uses it updates. Keep it factual: everything on the page should be checkable against the public repos.
+Facts that read the same in every language live in `src/app/content.ts`; the copy lives in `src/app/i18n/`, one file per language. Keep it factual: everything on the page should be checkable against the public repos.
 
-For anything visual, read the design and accessibility sections of [`AGENTS.md`](AGENTS.md) first. Every change has to work by day and by night, and with reduced motion, and the game reads the layout, so press Play and walk over anything you changed.
+For anything visual, read the design and accessibility sections of [`AGENTS.md`](AGENTS.md) first. Every change has to work by day and by night, and with reduced motion.
 
 ## Deploying
 
