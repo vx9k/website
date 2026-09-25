@@ -4,6 +4,10 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "website",
   "compatibility_date": "2026-09-25",
+  // kthread.dev is attached as a Custom Domain (Cloudflare manages its DNS
+  // record and certificate). www.kthread.dev 301s here via a zone
+  // Redirect Rule, not this Worker.
+  "routes": [{ "pattern": "kthread.dev", "custom_domain": true }],
   "assets": {
     "directory": "./out",
     // Unknown paths get out/404.html with a real 404 status.

@@ -2,7 +2,7 @@
 
 Source for [kthread.dev](https://kthread.dev), the personal site of [vx](https://github.com/vx9k).
 
-It's a single static page built with Next.js and Tailwind CSS, exported to plain HTML and served from Cloudflare Workers. The background is a WebGPU shader with WebGL2 and CSS fallbacks. The site keeps working offline, and a Display menu offers high contrast, reduced motion, larger text and a paper mode for e-ink screens.
+It's a single static page built with Next.js and Tailwind CSS, exported to plain HTML and served from Cloudflare Workers at [kthread.dev](https://kthread.dev). The background is a WebGPU shader with WebGL2 and CSS fallbacks. The site keeps working offline, and a Display menu offers high contrast, reduced motion, larger text and a paper mode for e-ink screens.
 
 ## Running it
 
@@ -54,7 +54,7 @@ Other files at the root:
 | --- | --- |
 | `AGENTS.md` | Guide for anyone (or any coding agent) changing the site: design rules, accessibility checks, content rules. `CLAUDE.md` points to it. |
 | `.agents/skills/`, `.claude/skills/` | Design skills for coding agents, pinned in `skills-lock.json`. |
-| `wrangler.jsonc` | Cloudflare Workers config: serves `out/` as static assets, with `404.html` for unknown paths. |
+| `wrangler.jsonc` | Cloudflare Workers config: serves `out/` as static assets on kthread.dev, with `404.html` for unknown paths. |
 | `public/_headers` | Response headers, such as long-term caching for hashed assets. |
 | `next.config.ts` | Static export, React Compiler, offline support. |
 
