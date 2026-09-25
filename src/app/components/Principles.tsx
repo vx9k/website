@@ -1,35 +1,45 @@
-import Reveal from "./Reveal";
-
-const principles = [
-  {
-    title: "Standards over shortcuts",
-    body: "POSIX interfaces over vendor extensions. If a program only runs on one platform, that's a design decision worth questioning.",
-  },
-  {
-    title: "One job, done predictably",
-    body: "An init that only manages processes. A service manager that only manages services. Scope creep is usually the first sign something's about to become unreliable.",
-  },
-  {
-    title: "Small enough to understand fully",
-    body: "Code you can hold in your head beats code you have to trust. If I can't explain why a line is there, it doesn't stay.",
-  },
-];
-
-const delays = ["", "delay-100", "delay-200"];
+import { principles } from "../content";
+import SectionHeading from "./SectionHeading";
 
 export default function Principles() {
   return (
-    <section id="principles" className="scroll-mt-24 py-10 sm:py-14">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+    <section
+      id="principles"
+      aria-labelledby="principles-title"
+      className="border-t border-line py-20 sm:py-28"
+    >
+      <div className="reveal">
+        <SectionHeading
+          id="principles-title"
+          index="01"
+          kicker="principles"
+          title="How I build"
+          aside="Three rules that decide most of my trade-offs before I write a line."
+        />
+      </div>
+
+      <ol className="mt-12 sm:mt-16">
         {principles.map((p, i) => (
-          <Reveal key={p.title} className={`glass rounded-2xl p-6 ${delays[i]}`}>
-            <h3 className="font-[family-name:var(--font-display)] text-xl leading-snug">
+          <li
+            key={p.title}
+            className="reveal grid gap-x-8 gap-y-3 border-t border-line py-9 sm:grid-cols-[5.5rem_minmax(0,1fr)] md:grid-cols-[7rem_minmax(0,17rem)_minmax(0,1fr)] md:py-11"
+          >
+            <span
+              aria-hidden
+              className="font-display text-5xl leading-none font-[300] text-moss sm:row-span-2 md:row-span-1 md:text-6xl"
+              style={{ fontVariationSettings: '"SOFT" 100, "opsz" 144' }}
+            >
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <h3 className="font-display text-2xl leading-snug font-[450] text-balance md:pt-1">
               {p.title}
             </h3>
-            <p className="mt-3 text-base leading-7 text-muted">{p.body}</p>
-          </Reveal>
+            <p className="max-w-[38rem] text-lg leading-8 text-pretty text-muted md:pt-1.5">
+              {p.body}
+            </p>
+          </li>
         ))}
-      </div>
+      </ol>
     </section>
   );
 }

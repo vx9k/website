@@ -29,13 +29,13 @@ export default function OfflineBanner() {
 
   // The live region stays mounted so screen readers announce the change.
   return (
-    <div role="status" aria-live="polite" className="contents">
+    <div role="status" aria-live="polite" className="no-print">
       {visible && (
         <div className="glass fixed inset-x-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-50 mx-auto flex max-w-sm items-center gap-3 rounded-full px-4 py-3 sm:inset-x-auto sm:right-6 sm:mx-0">
           <span
             aria-hidden
             className={`h-2 w-2 shrink-0 rounded-full ${
-              offline ? "bg-sunbeam" : "bg-moss"
+              offline ? "bg-sun" : "bg-moss"
             }`}
           />
           <span className="font-mono text-xs text-ink">

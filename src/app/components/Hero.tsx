@@ -1,49 +1,85 @@
-import BootStatus from "./BootStatus";
+import { links } from "../content";
+import BootLog from "./BootLog";
 
 export default function Hero() {
   return (
-    <section id="top" className="scroll-mt-24 py-10 sm:py-16">
-      <p
-        className="fade-up glass inline-block rounded-full px-4 py-1.5 font-mono text-sm text-muted"
-        style={{ animationDelay: "0s" }}
-      >
-        vx — systems engineer
-      </p>
-
-      <h1
-        className="fade-up mt-5 max-w-xl text-balance font-[family-name:var(--font-display)] text-4xl leading-[1.15] tracking-tight sm:text-5xl sm:leading-[1.15]"
-        style={{ animationDelay: "0.12s" }}
-      >
-        I write software meant to outlast the machine it runs on.
-      </h1>
-
-      <p
-        className="fade-up mt-6 max-w-lg text-lg leading-8 text-muted"
-        style={{ animationDelay: "0.24s" }}
-      >
-        POSIX-compliant systems, minimal init stacks, and the kind of code
-        that's still readable in ten years — because it was written to a
-        standard, not a moment.
-      </p>
-
-      <div
-        className="fade-up mt-8 flex flex-wrap items-center gap-6"
-        style={{ animationDelay: "0.36s" }}
-      >
-        <a
-          href="#works"
-          className="rounded-full bg-moss px-6 py-3 text-sm font-medium text-background transition-colors hover:bg-ink"
+    <section
+      id="top"
+      aria-labelledby="hero-title"
+      className="grid gap-x-12 gap-y-12 pt-14 pb-20 sm:pt-20 sm:pb-28 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-y-14 lg:pt-24 xl:gap-x-16"
+    >
+      <div className="lg:col-span-2">
+        <p
+          className="rise eyebrow inline-flex items-center gap-2.5 rounded-full border border-line px-3.5 py-1.5"
+          style={{ ["--i" as string]: 0 }}
         >
-          See my work
-        </a>
-        <a
-          href="https://github.com/vx9k"
-          className="text-sm font-medium text-muted underline decoration-hairline underline-offset-4 transition-colors hover:text-moss hover:decoration-moss"
+          <span
+            aria-hidden
+            className="size-2 rounded-full bg-moss shadow-[0_0_12px_var(--moss)] eink:shadow-none"
+          />
+          Systems engineer
+        </p>
+
+        <h1
+          id="hero-title"
+          className="rise mt-7 font-display text-display font-[420] tracking-[-0.025em] text-balance"
+          style={{
+            ["--i" as string]: 1,
+            fontVariationSettings: '"SOFT" 30, "opsz" 144',
+          }}
         >
-          GitHub
-        </a>
-        <BootStatus />
+          I write software meant to{" "}
+          <em
+            className="font-[380] text-moss italic"
+            style={{ fontVariationSettings: '"SOFT" 100, "opsz" 144' }}
+          >
+            outlast
+          </em>{" "}
+          the machine it runs on.
+        </h1>
       </div>
+
+      <div className="lg:pt-2">
+        <p
+          className="rise max-w-[36rem] text-lede text-pretty text-muted"
+          style={{ ["--i" as string]: 2 }}
+        >
+          Minimal init systems and POSIX-minded C: code small enough to read
+          in one sitting, written to a standard instead of a moment.
+        </p>
+
+        <div
+          className="rise mt-10 flex flex-wrap items-center gap-3"
+          style={{ ["--i" as string]: 3 }}
+        >
+          <a
+            href="#work"
+            className="group inline-flex min-h-12 items-center gap-2.5 rounded-full bg-moss px-6 font-medium text-on-accent transition-[background-color,box-shadow] hover:shadow-[0_0_0_4px_var(--moss-wash)] eink:border-2 eink:border-ink"
+          >
+            See the work
+            <span
+              aria-hidden
+              className="transition-transform group-hover:translate-y-0.5"
+            >
+              ↓︎
+            </span>
+          </a>
+          <a
+            href={links.github}
+            className="group inline-flex min-h-12 items-center gap-2.5 rounded-full border border-line-strong px-6 text-ink transition-colors hover:border-moss hover:text-moss eink:border-2"
+          >
+            GitHub
+            <span
+              aria-hidden
+              className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            >
+              ↗︎
+            </span>
+          </a>
+        </div>
+      </div>
+
+      <BootLog />
     </section>
   );
 }
