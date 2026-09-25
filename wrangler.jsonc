@@ -9,5 +9,9 @@
     // Unknown paths get out/404.html with a real 404 status.
     "not_found_handling": "404-page",
     "html_handling": "auto-trailing-slash"
-  }
+  },
+  // Every non-production branch gets its own Preview URL (posted on its
+  // PR). Empty because previews use the same settings as production.
+  "preview_urls": true,
+  "previews": {}
 }
