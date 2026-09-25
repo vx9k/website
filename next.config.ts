@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
   experimental: {
     inlineCss: true,
     useOffline: true,
+    // The root layout sits under app/[lang], so the 404 for unmatched
+    // URLs is app/global-not-found.tsx.
+    globalNotFound: true,
   },
 };
 

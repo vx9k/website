@@ -7,7 +7,11 @@ import { useOffline } from "next/offline";
 // next.config.ts): the hook flips to true when a request fails or the
 // browser reports it's offline, and Next retries blocked navigations once
 // the connection is back. This banner just tells the visitor what's going on.
-export default function OfflineBanner() {
+export default function OfflineBanner({
+  text,
+}: {
+  text: { down: string; back: string };
+}) {
   const offline = useOffline();
   const wasOffline = useRef(false);
   const [reconnected, setReconnected] = useState(false);
@@ -39,9 +43,7 @@ export default function OfflineBanner() {
             }`}
           />
           <span className="font-mono text-xs text-ink">
-            {offline
-              ? "You're offline. Pages you've already opened still work."
-              : "Back online."}
+            {offline ? text.down : text.back}
           </span>
         </div>
       )}

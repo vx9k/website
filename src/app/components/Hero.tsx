@@ -1,24 +1,13 @@
 import { links } from "../content";
-
-// Facts only: each line is true of the public repos.
-const facts = [
-  { k: "Role", v: "Systems engineer" },
-  { k: "Focus", v: "Init systems, POSIX C" },
-  { k: "Current", v: "4suite / 4rc" },
-  { k: "Source", v: "github.com/vx9k" },
-];
-
-// The headline's ending rotates through what the principles below ask of
-// the code. The first phrase is the one that stays when motion is off.
-const phrases = [
-  "outlast the machine it runs on.",
-  "fit in one reader's head.",
-  "do one job, predictably.",
-];
+import type { Dictionary } from "../i18n";
 
 // Full-bleed, like a video hero: the ember shader behind the page shows
-// through here, and fades into the solid page below.
-export default function Hero() {
+// through here, and fades into the solid page below. The headline's ending
+// rotates through what the principles below ask of the code, and the facts
+// row is true of the public repos.
+export default function Hero({ t }: { t: Dictionary }) {
+  const { lead, phrases, lede, cta, facts } = t.hero;
+
   return (
     <section
       id="top"
@@ -33,14 +22,14 @@ export default function Hero() {
       <div className="shell relative pb-10 sm:pb-14">
         <h1
           id="hero-title"
-          className="rise mx-auto max-w-[16ch] text-center text-display font-medium text-balance sm:mx-0 sm:max-w-[20ch] sm:text-left"
+          className="rise mx-auto max-w-[16ch] text-center text-display font-medium text-balance sm:mx-0 sm:max-w-[26ch] sm:text-left"
           style={{ ["--i" as string]: 0 }}
         >
           <span className="sr-only">
-            I write software meant to {phrases[0]}
+            {lead} {phrases[0]}
           </span>
           <span aria-hidden>
-            I write software meant to
+            {lead}
             <span className="rotator justify-items-center text-ember sm:justify-items-start">
               {phrases.map((p, n) => (
                 <span key={p} style={{ ["--n" as string]: n }}>
@@ -56,12 +45,11 @@ export default function Hero() {
           style={{ ["--i" as string]: 1 }}
         >
           <p className="max-w-[34rem] text-lede text-pretty text-muted">
-            I write minimal init systems in C. The code is small enough to
-            read in one sitting and sticks to POSIX interfaces where it can.
+            {lede}
           </p>
           <div className="flex flex-wrap justify-center gap-3 sm:justify-start">
             <a href="#work" className="group btn btn-solid">
-              See the work
+              {cta}
               <span
                 aria-hidden
                 className="transition-transform group-hover:translate-y-0.5"

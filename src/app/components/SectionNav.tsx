@@ -3,13 +3,16 @@
 import { useEffect, useState } from "react";
 import { sections } from "../content";
 
-// Tracks which section is in the middle of the viewport.
+// Tracks which section is in the middle of the viewport. The hero counts
+// too, so no link is marked current while it's in view.
+const tracked = ["top", ...sections];
+
 function useActiveSection() {
-  const [active, setActive] = useState<string>(sections[0].id);
+  const [active, setActive] = useState<string>("top");
 
   useEffect(() => {
-    const els = sections
-      .map((s) => document.getElementById(s.id))
+    const els = tracked
+      .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => el !== null);
     if (!("IntersectionObserver" in window) || els.length === 0) return;
 
@@ -29,24 +32,30 @@ function useActiveSection() {
 }
 
 /** Section links in the header, from tablet width up. */
-export default function SectionNav() {
+export default function SectionNav({
+  label,
+  labels,
+}: {
+  label: string;
+  labels: Record<(typeof sections)[number], string>;
+}) {
   const active = useActiveSection();
 
   return (
-    <nav aria-label="Sections" className="hidden md:block">
+    <nav aria-label={label} className="hidden md:block">
       <ul className="flex items-center gap-1 lg:gap-3">
-        {sections.slice(1).map((s) => {
-          const current = active === s.id;
+        {sections.map((id) => {
+          const current = active === id;
           return (
-            <li key={s.id}>
+            <li key={id}>
               <a
-                href={`#${s.id}`}
+                href={`#${id}`}
                 aria-current={current ? "location" : undefined}
                 className={`relative inline-flex min-h-11 items-center px-3 text-[0.95rem] font-medium tracking-[-0.01em] transition-colors ${
                   current ? "text-ink" : "text-muted hover:text-ink"
                 }`}
               >
-                {s.label}
+                {labels[id]}
                 <span
                   aria-hidden
                   className={`absolute inset-x-3 bottom-2 h-px bg-ember transition-opacity ${

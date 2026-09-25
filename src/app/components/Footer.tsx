@@ -1,6 +1,7 @@
 import { links } from "../content";
+import type { Dictionary } from "../i18n";
 
-export default function Footer() {
+export default function Footer({ t }: { t: Dictionary }) {
   return (
     <footer className="overflow-hidden">
       <div className="shell">
@@ -11,7 +12,7 @@ export default function Footer() {
               href={links.website}
               className="inline-flex min-h-11 items-center text-ink transition-colors hover:text-ember sm:min-h-0"
             >
-              Source ↗︎
+              {t.footer.source} ↗︎
             </a>
           </p>
         </div>

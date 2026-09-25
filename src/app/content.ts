@@ -1,5 +1,6 @@
-// Shared site content. Everything here is taken from the public repos on
-// github.com/vx9k, so the page never claims work that doesn't exist.
+// Shared site data that doesn't change between languages. Everything here
+// is taken from the public repos on github.com/vx9k, so the page never
+// claims work that doesn't exist. Translated copy lives in i18n/.
 
 export const links = {
   github: "https://github.com/vx9k",
@@ -7,36 +8,15 @@ export const links = {
   website: "https://github.com/vx9k/website",
 };
 
-export const sections = [
-  { id: "top", label: "Home" },
-  { id: "principles", label: "Principles" },
-  { id: "work", label: "Work" },
-  { id: "stack", label: "Stack" },
-  { id: "contact", label: "Contact" },
-] as const;
-
-export const principles = [
-  {
-    title: "Standards over shortcuts",
-    body: "POSIX interfaces over vendor extensions. If a program runs on only one platform, someone decided that, and the decision needs a reason.",
-  },
-  {
-    title: "One job, done predictably",
-    body: "An init that only manages processes. A service manager that only manages services. Scope creep is usually the first sign something's about to become unreliable.",
-  },
-  {
-    title: "Small enough to understand fully",
-    body: "Code you can hold in your head beats code you have to trust. If I can't explain why a line is there, it doesn't stay.",
-  },
-];
+// Section ids double as URL fragments, so they stay in English in every
+// language; nav labels come from the dictionary under the same key.
+export const sections = ["principles", "work", "stack", "contact"] as const;
 
 export type Status = "shipping" | "in progress" | "planned";
 
 export type Node = {
-  name: string;
+  name: "4init" | "4rc" | "logger" | "user";
   status: Status;
-  body: string;
-  note?: string;
   children?: Node[];
 };
 
@@ -46,22 +26,14 @@ export const suiteTree: Node[] = [
   {
     name: "4init",
     status: "shipping",
-    body: "Minimal PID 1. Blocks signals and reads them through a signalfd, forks 4rc into its own session, then reaps children on every SIGCHLD. The rc path lives in config.h. If it crashes, the kernel panics, same as any init would.",
-    note: "Inspired by rofl0r's minimal init.",
-    children: [
-      {
-        name: "4rc",
-        status: "in progress",
-        body: "The service manager 4init starts. Early days: its own README says it “larps as being functional”.",
-      },
-    ],
+    children: [{ name: "4rc", status: "in progress" }],
   },
-  { name: "logger", status: "planned", body: "Part of the suite's scope. Not started." },
-  { name: "user", status: "planned", body: "Part of the suite's scope. Not started." },
+  { name: "logger", status: "planned" },
+  { name: "user", status: "planned" },
 ];
 
 export const stack = [
-  { group: "Languages", items: ["C", "TypeScript"] },
-  { group: "Web", items: ["Next.js", "React", "Tailwind CSS"] },
-  { group: "Tooling", items: ["clang-format", "Ninja", "pnpm", "Git", "GitHub Actions"] },
-];
+  { group: "languages", items: ["C", "TypeScript"] },
+  { group: "web", items: ["Next.js", "React", "Tailwind CSS"] },
+  { group: "tooling", items: ["clang-format", "Ninja", "pnpm", "Git", "GitHub Actions"] },
+] as const;

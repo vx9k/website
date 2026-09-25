@@ -1,17 +1,18 @@
 import { links } from "../content";
+import type { Dictionary } from "../i18n";
 import Section from "./SectionHeading";
 
-export default function Contact() {
+export default function Contact({ t }: { t: Dictionary }) {
+  const { kicker, title, quote, source } = t.contact;
   return (
-    <Section id="contact" index="04" kicker="Contact" title="Say hello">
+    <Section id="contact" index="04" kicker={kicker} title={title}>
       <figure className="reveal mx-auto max-w-[60rem] text-center sm:mx-0 sm:text-left">
         <blockquote className="text-[clamp(1.75rem,1rem+2.4vw,3.25rem)] leading-[1.1] font-medium tracking-[-0.04em] text-balance">
           <p>
             <span aria-hidden className="text-ember">
               “
             </span>
-            I&apos;d rather ship something small that I fully understand than
-            something large I&apos;m still discovering the edges of.
+            {quote}
             <span aria-hidden className="text-ember">
               ”
             </span>
@@ -30,7 +31,7 @@ export default function Contact() {
           </span>
         </a>
         <a href={links.website} className="group btn">
-          Source for this site
+          {source}
           <span
             aria-hidden
             className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"

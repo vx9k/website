@@ -1,11 +1,12 @@
-import type { Metadata, Viewport } from "next";
+import type { Viewport } from "next";
 import { IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
-import "./globals.css";
-import CanopyField from "./components/CanopyField";
-import OfflineBanner from "./components/OfflineBanner";
+
+// Shared by the root layout and the global 404, which renders its own
+// <html> and so can't inherit anything from the layout.
 
 // Instrument Sans is variable (weight and width), so one file covers
 // every weight the page uses. Plex Mono is static; only 400 and 500 load.
+// The latin subset covers every accented letter Spanish and Portuguese use.
 const instrument = Instrument_Sans({
   variable: "--font-instrument",
   subsets: ["latin"],
@@ -19,28 +20,7 @@ const plexMono = IBM_Plex_Mono({
   display: "swap",
 });
 
-const description =
-  "vx writes minimal init systems and boot tooling in C, small enough to read in one sitting.";
-
-export const metadata: Metadata = {
-  title: {
-    default: "vx — systems engineer",
-    template: "%s · vx",
-  },
-  description,
-  authors: [{ name: "vx", url: "https://github.com/vx9k" }],
-  openGraph: {
-    title: "vx — systems engineer",
-    description,
-    type: "website",
-  },
-  twitter: {
-    card: "summary",
-    title: "vx — systems engineer",
-    description,
-  },
-  formatDetection: { telephone: false, email: false, address: false },
-};
+export const fontVariables = `${instrument.variable} ${plexMono.variable}`;
 
 export const viewport: Viewport = {
   themeColor: "#0c0808",
@@ -54,7 +34,7 @@ export const viewport: Viewport = {
 // system preferences and writes the result onto <html> as data attributes,
 // which is all the CSS looks at. Exposed as window.__vxFlags.apply so the
 // settings panel reuses exactly this logic instead of duplicating it.
-const bootScript = `(function () {
+export const bootScript = `(function () {
   var d = document.documentElement;
   d.classList.add("js");
   function mq(q) { try { return window.matchMedia(q).matches; } catch (e) { return false; } }
@@ -83,29 +63,3 @@ const bootScript = `(function () {
     try { window.matchMedia(q).addEventListener("change", apply); } catch (e) {}
   });
 })();`;
-
-export default function RootLayout({ children }: LayoutProps<"/">) {
-  return (
-    <html
-      lang="en"
-      dir="ltr"
-      suppressHydrationWarning
-      className={`${instrument.variable} ${plexMono.variable}`}
-    >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: bootScript }} />
-      </head>
-      <body className="flex min-h-dvh flex-col overflow-x-clip text-ink antialiased">
-        <a
-          href="#main"
-          className="glass eyebrow fixed top-3 left-3 z-[60] -translate-y-24 px-5 py-3.5 text-ink! focus-visible:translate-y-0"
-        >
-          Skip to content
-        </a>
-        <CanopyField />
-        {children}
-        <OfflineBanner />
-      </body>
-    </html>
-  );
-}

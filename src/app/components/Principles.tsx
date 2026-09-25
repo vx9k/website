@@ -1,17 +1,18 @@
-import { principles } from "../content";
+import type { Dictionary } from "../i18n";
 import Section from "./SectionHeading";
 
-export default function Principles() {
+export default function Principles({ t }: { t: Dictionary }) {
+  const { kicker, title, aside, items } = t.principles;
   return (
     <Section
       id="principles"
       index="01"
-      kicker="Principles"
-      title="How I build"
-      aside="Three rules that decide most of my trade-offs before I write a line."
+      kicker={kicker}
+      title={title}
+      aside={aside}
     >
       <ol className="border-b border-line">
-        {principles.map((p, i) => (
+        {items.map((p, i) => (
           <li
             key={p.title}
             className="group reveal grid gap-x-10 gap-y-3 border-t border-line py-9 text-center sm:grid-cols-[4rem_minmax(0,1fr)] sm:text-left md:py-11 lg:grid-cols-[4rem_minmax(0,0.9fr)_minmax(0,1.1fr)]"

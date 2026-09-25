@@ -10,7 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # vx — portfolio
 
-The personal site of vx ([github.com/vx9k](https://github.com/vx9k)), live at [kthread.dev](https://kthread.dev). It's a single page with a 404. The site is a portfolio, so the bar is high: every change should look deliberate and read well, and every claim on the page must be true.
+The personal site of vx ([github.com/vx9k](https://github.com/vx9k)), live at [kthread.dev](https://kthread.dev). It's a single page with a 404, in three languages: English (US) at `/en`, Spanish (Latin America) at `/es` and Portuguese (Brazil) at `/pt`. The site is a portfolio, so the bar is high: every change should look deliberate and read well, and every claim on the page must be true.
 
 ## Commands
 
@@ -37,25 +37,37 @@ There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler 
 ## Layout of the code
 
 ```
+public/index.html     the site root: picks a language and redirects before paint
 src/app/
-  layout.tsx          fonts, metadata, pre-paint display-mode script, grid overlay
-  page.tsx            the page: Header, Hero, Principles, Work, Stack, Contact, Footer
-  content.ts          all factual content (projects, principles, stack, links)
+  [lang]/layout.tsx   root layout per language: <html lang>, metadata, hreflang
+  [lang]/page.tsx     the page: Header, Hero, Principles, Work, Stack, Contact, Footer
+  document.ts         fonts, viewport and the pre-paint display-mode script
+  global-not-found.tsx  exported as 404.html; carries all three languages
+  content.ts          language-neutral data (links, section ids, suite tree, tool names)
+  i18n/               en.ts (source of truth), es.ts, pt.ts, locales.ts
   globals.css         design tokens, display modes, utilities, motion
-  not-found.tsx       exported as 404.html
   components/
     SectionHeading.tsx  <Section>: the shared frame every section below the hero uses
     CanopyField.tsx     background: CSS gradient, upgraded to a GPU shader when allowed
     canopy-gpu.ts       WebGPU renderer with a WebGL2 fallback, lazy-loaded
     FlagsPanel.tsx      the "Display" menu (contrast, motion, e-ink, text size)
     SectionNav.tsx      header nav with active-section tracking
+    LanguageSwitch.tsx  EN / ES / PT links; saves the choice in localStorage["vx-lang"]
 ```
+
+## Languages
+
+- Every visible string lives in `src/app/i18n/`. `en.ts` defines the shape; `es.ts` and `pt.ts` are typed against it, so a missing key fails the build. Change all three together, and keep them saying the same thing.
+- The root `/` has no server to read `Accept-Language`, so `public/index.html` picks the language: a saved choice first, then the browser's languages, then English. Without JavaScript it sends visitors to `/en`. The 404 page does the same client-side, using the URL prefix first.
+- Client components import `i18n/locales`, never `i18n`, so the dictionaries stay out of the browser bundle. Pass strings down as props.
+- Spanish uses tú and Latin American vocabulary; Portuguese uses você. Neither assigns vx a grammatical gender ("Ingeniería de sistemas", not "Ingeniero"). Quotes from English READMEs stay in English.
+- Check new copy in all three languages at phone width: Spanish and Portuguese run about 20% longer than English.
 
 ## Content rules
 
-- **Only true claims.** Everything in `content.ts` comes from the public repos on github.com/vx9k. Don't invent projects, stats, clients, dates or testimonials. If something is planned, label it planned.
-- Put copy in `content.ts` when it's data (projects, stack, principles). One-off prose can live in its component.
-- **Say "systems engineer" once at most** in visible copy. It's currently the Role row in the hero.
+- **Only true claims.** Everything in `content.ts` and the dictionaries comes from the public repos on github.com/vx9k. Don't invent projects, stats, clients, dates or testimonials. If something is planned, label it planned.
+- Copy goes in the dictionaries in `src/app/i18n/`, never inline in a component. Language-neutral data (links, names, statuses) goes in `content.ts`.
+- **Say "systems engineer" once at most** in visible copy (and its translations). It's currently the Role row in the hero.
 - Write plainly: sentence case, active voice, no exclamation marks, and none of the marketing words ("elevate", "seamless", "unleash", "next-gen" and so on).
 
 ## Design direction

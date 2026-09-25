@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "vx — systems engineer",
     short_name: "vx",
     description:
-      "vx is a systems engineer writing POSIX-minded software and minimal boot tooling in C.",
+      "vx writes minimal init systems and boot tooling in C, small enough to read in one sitting.",
     start_url: "/",
     display: "standalone",
     background_color: "#0c0808",

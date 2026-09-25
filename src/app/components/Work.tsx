@@ -1,5 +1,8 @@
 import { links, suiteTree, type Node, type Status } from "../content";
+import type { Dictionary } from "../i18n";
 import Section from "./SectionHeading";
+
+type WorkText = Dictionary["work"];
 
 // Mono chips whose glyph (full, half, empty square) carries the status
 // without relying on colour.
@@ -12,33 +15,34 @@ const STATUS: Record<Status, { chip: string; glyph: string }> = {
   planned: { chip: "border-dashed text-muted", glyph: "border border-current" },
 };
 
-function StatusChip({ status }: { status: Status }) {
+function StatusChip({ status, label }: { status: Status; label: string }) {
   const s = STATUS[status];
   return (
     <span className={`chip eink:border-ink hc:border-current ${s.chip}`}>
       <span aria-hidden className={`size-2 rounded-[1px] ${s.glyph}`} />
-      {status}
+      {label}
     </span>
   );
 }
 
-function TreeNode({ node }: { node: Node }) {
+function TreeNode({ node, w }: { node: Node; w: WorkText }) {
+  const text: { body: string; note?: string } = w.suite.nodes[node.name];
   return (
     <li>
       <div className="flex min-h-9 flex-wrap items-center gap-x-3 gap-y-1">
         <span className="font-mono text-[0.95rem] font-medium text-ink">
           {node.name}
         </span>
-        <StatusChip status={node.status} />
+        <StatusChip status={node.status} label={w.status[node.status]} />
       </div>
       <p className="mt-1.5 max-w-[34rem] text-[0.95rem] leading-7 text-pretty text-muted">
-        {node.body}
+        {text.body}
       </p>
-      {node.note && <p className="mt-1 text-sm text-faint">{node.note}</p>}
+      {text.note && <p className="mt-1 text-sm text-faint">{text.note}</p>}
       {node.children && (
         <ul className="mt-4 space-y-5">
           {node.children.map((c) => (
-            <TreeNode key={c.name} node={c} />
+            <TreeNode key={c.name} node={c} w={w} />
           ))}
         </ul>
       )}
@@ -80,14 +84,15 @@ function RepoLink({ href, label }: { href: string; label: string }) {
   );
 }
 
-export default function Work() {
+export default function Work({ t }: { t: Dictionary }) {
+  const w = t.work;
   return (
     <Section
       id="work"
       index="02"
-      kicker="Work"
-      title="Selected work"
-      aside="Small programs that each do one job, laid out the way they run."
+      kicker={w.kicker}
+      title={w.title}
+      aside={w.aside}
     >
       <article aria-labelledby="suite-title" className="reveal card">
         <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 border-b border-line px-5 sm:px-8">
@@ -96,7 +101,7 @@ export default function Work() {
             <span aria-hidden className="px-2 text-faint">
               /
             </span>
-            Boot stack
+            {w.suite.eyebrow}
           </p>
           <RepoLink href={links.suite} label="github.com/vx9k/4suite" />
         </header>
@@ -110,26 +115,28 @@ export default function Work() {
               4suite
             </h3>
             <p className="max-w-[28rem] text-lg leading-8 text-pretty text-muted">
-              A self-contained boot stack in C: init, rc, logger and user,
-              each with its own scope and its own README.
+              {w.suite.body}
             </p>
             <div className="mt-auto">
               <Spec
                 rows={[
-                  ["Language", "C"],
-                  ["Target", "Linux"],
-                  ["Build", "Ninja"],
-                  ["License", "MIT"],
+                  [w.spec.language, "C"],
+                  [w.spec.target, w.suite.target],
+                  [w.spec.build, "Ninja"],
+                  [w.spec.license, "MIT"],
                 ]}
               />
+              <p className="mt-4 text-sm leading-6 text-pretty text-faint">
+                {w.suite.platforms}
+              </p>
             </div>
           </div>
 
           <div className="border-t border-line p-5 sm:p-8 lg:border-t-0 lg:border-l lg:p-10">
-            <p className="eyebrow">Components</p>
-            <ul className="tree mt-5 space-y-5" aria-label="4suite components">
+            <p className="eyebrow">{w.suite.components}</p>
+            <ul className="tree mt-5 space-y-5" aria-label={w.suite.componentsLabel}>
               {suiteTree.map((n) => (
-                <TreeNode key={n.name} node={n} />
+                <TreeNode key={n.name} node={n} w={w} />
               ))}
             </ul>
           </div>
@@ -146,7 +153,7 @@ export default function Work() {
             <span aria-hidden className="px-2 text-faint">
               /
             </span>
-            This site
+            {w.site.eyebrow}
           </p>
           <RepoLink href={links.website} label="github.com/vx9k/website" />
         </header>
@@ -159,18 +166,15 @@ export default function Work() {
               website
             </h3>
             <p className="mt-5 max-w-[34rem] leading-7 text-pretty text-muted">
-              A static Next.js export served from Cloudflare Workers. The ember
-              smoke behind the hero is a WebGPU shader that falls back to
-              WebGL2, then to plain CSS. The page tells you when you go offline,
-              and it has a paper mode for e-ink screens.
+              {w.site.body}
             </p>
           </div>
           <Spec
             rows={[
-              ["Language", "TypeScript"],
-              ["Framework", "Next.js"],
-              ["Graphics", "WebGPU, WGSL"],
-              ["Hosting", "Cloudflare Workers"],
+              [w.spec.language, "TypeScript"],
+              [w.spec.framework, "Next.js"],
+              [w.spec.graphics, "WebGPU, WGSL"],
+              [w.spec.hosting, "Cloudflare Workers"],
             ]}
           />
         </div>

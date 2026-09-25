@@ -5,26 +5,21 @@ import { useEffect, useId, useRef, useState } from "react";
 type Key = "contrast" | "motion" | "eink" | "large";
 type Flags = Partial<Record<Key, boolean>>;
 
-const OPTIONS: { key: Key; label: string; hint: string; system?: string }[] = [
-  {
-    key: "contrast",
-    label: "High contrast",
-    hint: "Solid colours, stronger edges",
-    system: "(prefers-contrast: more)",
-  },
-  {
-    key: "motion",
-    label: "Reduce motion",
-    hint: "Turns off animation",
-    system: "(prefers-reduced-motion: reduce)",
-  },
-  {
-    key: "eink",
-    label: "Paper (e-ink)",
-    hint: "Black on white, for e-ink screens",
-    system: "(update: slow)",
-  },
-  { key: "large", label: "Larger text", hint: "Type 25% larger" },
+type Option = { label: string; hint: string };
+
+export type FlagsText = Record<Key, Option> & {
+  button: string;
+  label: string;
+  systemOn: string;
+  note: string;
+};
+
+// The system preference each switch mirrors, if any.
+const OPTIONS: { key: Key; system?: string }[] = [
+  { key: "contrast", system: "(prefers-contrast: more)" },
+  { key: "motion", system: "(prefers-reduced-motion: reduce)" },
+  { key: "eink", system: "(update: slow)" },
+  { key: "large" },
 ];
 
 function systemWants(query?: string) {
@@ -36,7 +31,7 @@ function systemWants(query?: string) {
   }
 }
 
-export default function FlagsPanel() {
+export default function FlagsPanel({ text }: { text: FlagsText }) {
   const [open, setOpen] = useState(false);
   const [flags, setFlags] = useState<Flags>({});
   const [system, setSystem] = useState<Partial<Record<Key, boolean>>>({});
@@ -118,17 +113,17 @@ export default function FlagsPanel() {
           <circle cx="14" cy="6" r="2" />
           <circle cx="6" cy="14" r="2" />
         </svg>
-        Display
+        {text.button}
       </button>
 
       <div
         id={panelId}
         role="group"
-        aria-label="Display settings"
+        aria-label={text.label}
         hidden={!open}
         className="glass glass-dense absolute top-[calc(100%+0.6rem)] right-0 z-50 w-[min(21rem,calc(100vw-2.5rem))]"
       >
-        <p className="eyebrow border-b border-line px-4 py-3">Display</p>
+        <p className="eyebrow border-b border-line px-4 py-3">{text.button}</p>
         <ul className="p-1">
           {OPTIONS.map((o) => {
             const on = !!flags[o.key];
@@ -144,14 +139,14 @@ export default function FlagsPanel() {
                   className="flex min-h-14 w-full items-center gap-4 px-3 py-2.5 text-left transition-colors hover:bg-ember-wash"
                 >
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm text-ink">{o.label}</span>
+                    <span className="block text-sm text-ink">
+                      {text[o.key].label}
+                    </span>
                     <span
                       id={noteId}
                       className="block text-xs text-muted"
                     >
-                      {system[o.key] && !on
-                        ? "on: your system asks for it"
-                        : o.hint}
+                      {system[o.key] && !on ? text.systemOn : text[o.key].hint}
                     </span>
                   </span>
                   <span
@@ -174,8 +169,7 @@ export default function FlagsPanel() {
           })}
         </ul>
         <p className="border-t border-line px-4 py-3 text-xs leading-5 text-muted">
-          Saved on this device. Your system settings for contrast, motion and
-          e-ink screens are followed automatically.
+          {text.note}
         </p>
       </div>
     </div>
