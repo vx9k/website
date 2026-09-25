@@ -1,42 +1,34 @@
 import { stack } from "../content";
-import SectionHeading from "./SectionHeading";
+import Section from "./SectionHeading";
 
 export default function Stack() {
   return (
-    <section
-      id="stack"
-      aria-labelledby="stack-title"
-      className="border-t border-line py-20 sm:py-28"
-    >
-      <div className="reveal">
-        <SectionHeading
-          id="stack-title"
-          index="03"
-          kicker="stack"
-          title="Tools I reach for"
-        />
-      </div>
-
-      <div className="mt-12 grid gap-4 sm:mt-16 md:grid-cols-3">
+    <Section id="stack" index="03" kicker="Stack" title="Tools I reach for">
+      <dl className="border-b border-line">
         {stack.map((g) => (
           <div
             key={g.group}
-            className="reveal rounded-3xl border border-line p-6 sm:p-7 eink:border-2 eink:border-ink"
+            className="reveal grid gap-x-10 gap-y-3 border-t border-line py-7 sm:grid-cols-[10rem_minmax(0,1fr)_auto] sm:items-baseline sm:py-9"
           >
-            <h3 className="eyebrow">{g.group}</h3>
-            <ul className="mt-5 flex flex-wrap gap-2">
-              {g.items.map((item) => (
-                <li
-                  key={item}
-                  className="rounded-full border border-line bg-surface/50 px-3.5 py-1.5 font-mono text-sm text-ink eink:border-ink"
-                >
-                  {item}
-                </li>
-              ))}
-            </ul>
+            <dt className="eyebrow">{g.group}</dt>
+            <dd>
+              <ul className="flex flex-wrap gap-x-4 gap-y-1 text-[clamp(1.35rem,1.1rem+1vw,2rem)] leading-snug font-medium tracking-[-0.035em]">
+                {g.items.map((item) => (
+                  <li
+                    key={item}
+                    className="after:ml-4 after:font-normal after:text-faint after:content-['/'] last:after:content-none"
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </dd>
+            <dd aria-hidden className="eyebrow hidden text-faint! sm:block">
+              {String(g.items.length).padStart(2, "0")}
+            </dd>
           </div>
         ))}
-      </div>
-    </section>
+      </dl>
+    </Section>
   );
 }

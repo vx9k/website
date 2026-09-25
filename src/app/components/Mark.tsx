@@ -7,20 +7,26 @@ export default function Mark({ className = "" }: { className?: string }) {
       focusable="false"
       className={className}
     >
-      <rect width="32" height="32" rx="9" fill="currentColor" opacity="0.14" />
+      <rect
+        width="32"
+        height="32"
+        fill="currentColor"
+        opacity="0.14"
+        className="eink:hidden hc:hidden"
+      />
       <path
         d="M9.5 10.5 15 16l-5.5 5.5"
         fill="none"
         stroke="currentColor"
         strokeWidth="2.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        strokeLinecap="square"
+        strokeLinejoin="miter"
       />
       <path
         d="M17 22h6"
         stroke="currentColor"
         strokeWidth="2.4"
-        strokeLinecap="round"
+        strokeLinecap="square"
       />
     </svg>
   );

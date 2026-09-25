@@ -100,13 +100,15 @@ export default function FlagsPanel() {
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-sm text-ink transition-colors hover:bg-moss-wash"
+        className={`eyebrow inline-flex min-h-11 items-center gap-2.5 border px-3 text-ink! transition-colors hover:border-moss ${
+          open ? "border-moss" : "border-line-strong"
+        }`}
       >
         <svg
           viewBox="0 0 20 20"
           aria-hidden="true"
           focusable="false"
-          className="size-4"
+          className="size-3.5"
           fill="none"
           stroke="currentColor"
           strokeWidth="1.6"
@@ -124,10 +126,10 @@ export default function FlagsPanel() {
         role="group"
         aria-label="Display settings"
         hidden={!open}
-        className="glass absolute top-[calc(100%+0.9rem)] right-0 z-50 w-[min(21rem,calc(100vw-2.5rem))] rounded-3xl p-2"
+        className="glass glass-dense ticks absolute top-[calc(100%+0.6rem)] right-0 z-50 w-[min(21rem,calc(100vw-2.5rem))]"
       >
-        <p className="eyebrow px-3 pt-2.5 pb-2">Display</p>
-        <ul>
+        <p className="eyebrow border-b border-line px-4 py-3">Display</p>
+        <ul className="p-1">
           {OPTIONS.map((o) => {
             const on = !!flags[o.key];
             const noteId = `${panelId}-${o.key}`;
@@ -139,13 +141,13 @@ export default function FlagsPanel() {
                   aria-checked={on}
                   aria-describedby={noteId}
                   onClick={() => toggle(o.key)}
-                  className="flex min-h-14 w-full items-center gap-4 rounded-2xl px-3 py-2.5 text-left transition-colors hover:bg-moss-wash"
+                  className="flex min-h-14 w-full items-center gap-4 px-3 py-2.5 text-left transition-colors hover:bg-moss-wash"
                 >
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm text-ink">{o.label}</span>
                     <span
                       id={noteId}
-                      className="block font-mono text-xs text-muted"
+                      className="block font-mono text-[0.7rem] text-muted"
                     >
                       {system[o.key] && !on
                         ? "on: your system asks for it"
@@ -154,15 +156,15 @@ export default function FlagsPanel() {
                   </span>
                   <span
                     aria-hidden
-                    className={`relative inline-flex h-6 w-10 shrink-0 items-center rounded-full border transition-colors ${
+                    className={`relative inline-flex h-5 w-9 shrink-0 items-center border transition-colors ${
                       on
                         ? "border-moss bg-moss"
                         : "border-line-strong bg-transparent"
                     }`}
                   >
                     <span
-                      className={`absolute size-4 rounded-full transition-[left,background-color] ${
-                        on ? "left-5 bg-on-accent" : "left-1 bg-muted"
+                      className={`absolute size-3 transition-[left,background-color] ${
+                        on ? "left-[1.1rem] bg-on-accent" : "left-[0.2rem] bg-muted"
                       }`}
                     />
                   </span>
@@ -171,7 +173,7 @@ export default function FlagsPanel() {
             );
           })}
         </ul>
-        <p className="px-3 pt-2 pb-2.5 text-xs leading-5 text-muted">
+        <p className="border-t border-line px-4 py-3 text-xs leading-5 text-muted">
           Saved on this device. Your system settings for contrast, motion and
           e-ink screens are followed automatically.
         </p>

@@ -13,25 +13,29 @@ export default function NotFound() {
       id="main"
       className="shell flex flex-1 items-center py-[max(3rem,env(safe-area-inset-top))]"
     >
-      <div className="glass w-full max-w-2xl rounded-[2rem] p-6 sm:p-10">
+      <div className="glass ticks w-full max-w-2xl p-6 sm:p-10">
         <a
           href="/"
-          className="inline-flex min-h-11 items-center gap-2.5 font-mono text-sm text-ink"
+          className="inline-flex min-h-11 items-center gap-3 text-sm font-semibold tracking-[-0.02em] text-ink"
         >
-          <Mark className="size-8 text-moss" />
+          <Mark className="size-7 text-moss" />
           vx
         </a>
 
-        <h1
-          className="mt-8 font-display text-title font-[430] tracking-[-0.02em]"
-          style={{ fontVariationSettings: '"SOFT" 30, "opsz" 96' }}
-        >
-          404: page not found
+        <p className="eyebrow mt-10">
+          <span className="text-moss">404</span>
+          <span aria-hidden className="px-2 text-faint">
+            /
+          </span>
+          Not found
+        </p>
+        <h1 className="mt-4 text-title font-medium tracking-[-0.045em]">
+          Page not found
         </h1>
 
         <pre
           aria-hidden
-          className="mt-6 overflow-hidden rounded-2xl border border-line bg-bg/60 p-5 font-mono text-[0.8rem] leading-7 whitespace-pre-wrap text-muted sm:text-sm"
+          className="mt-6 overflow-hidden border border-line bg-bg/60 p-5 font-mono text-[0.8rem] leading-7 whitespace-pre-wrap text-muted sm:text-sm"
         >
           <span className="text-sun">Kernel panic - not syncing:</span> No
           working init found for this path.{"\n"}
@@ -45,10 +49,10 @@ export default function NotFound() {
 
         <a
           href="/"
-          className="mt-8 inline-flex min-h-12 items-center gap-2.5 rounded-full bg-moss px-6 font-medium text-on-accent eink:border-2 eink:border-ink"
+          className="btn btn-solid mt-8"
         >
-          <span aria-hidden>↻︎</span>
           Reboot to the home page
+          <span aria-hidden>↻︎</span>
         </a>
       </div>
     </main>

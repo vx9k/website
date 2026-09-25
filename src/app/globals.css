@@ -33,11 +33,14 @@
   --sun: #e6c27a;
   --sun-wash: rgb(230 194 122 / 0.12);
   --on-accent: #07130b;
-  --glass: rgb(18 30 22 / 0.5);
-  --glass-edge: rgb(214 236 220 / 0.12);
-  --glass-shine: rgb(255 255 255 / 0.06);
-  --glass-blur: blur(18px) saturate(150%);
-  --shadow: 0 30px 60px -30px rgb(0 0 0 / 0.8);
+  --glass: rgb(12 20 15 / 0.58);
+  --glass-dense: rgb(10 17 13 / 0.94);
+  --glass-edge: rgb(214 236 220 / 0.11);
+  --glass-shine: rgb(255 255 255 / 0.045);
+  --glass-blur: blur(22px) saturate(140%);
+  --shadow: 0 40px 80px -40px rgb(2 8 4 / 0.9);
+  --grid: rgb(234 240 231 / 0.05);
+  --tick: rgb(234 240 231 / 0.45);
   --ring: var(--moss);
 }
 
@@ -57,10 +60,13 @@
   --sun-wash: transparent;
   --on-accent: #000;
   --glass: #000;
+  --glass-dense: #000;
   --glass-edge: #fff;
   --glass-shine: transparent;
   --glass-blur: none;
   --shadow: none;
+  --grid: transparent;
+  --tick: #fff;
   --ring: #ffff00;
 }
 
@@ -73,6 +79,7 @@
     --faint: #d9d9d9;
     --line: #fff;
     --glass: #000;
+    --glass-dense: #000;
     --glass-edge: #fff;
     --glass-blur: none;
     --ring: #ffff00;
@@ -98,10 +105,13 @@
   --sun-wash: transparent;
   --on-accent: #fff;
   --glass: #fff;
+  --glass-dense: #fff;
   --glass-edge: #000;
   --glass-shine: transparent;
   --glass-blur: none;
   --shadow: none;
+  --grid: transparent;
+  --tick: #000;
   --ring: #000;
 }
 
@@ -112,6 +122,7 @@
 @media (prefers-reduced-transparency: reduce) {
   :root {
     --glass: var(--raised);
+    --glass-dense: var(--raised);
     --glass-blur: none;
   }
 }
@@ -132,17 +143,16 @@
   --color-sun-wash: var(--sun-wash);
   --color-on-accent: var(--on-accent);
 
-  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
-  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
 }
 
 @theme {
   /* Fluid type: scales smoothly from a 320px phone to a wide desktop. */
-  --text-display: clamp(2.5rem, 1.35rem + 4.9vw, 5.5rem);
-  --text-display--line-height: 1.02;
-  --text-title: clamp(1.9rem, 1.35rem + 2.2vw, 3.1rem);
-  --text-title--line-height: 1.08;
+  --text-display: clamp(2.75rem, 0.9rem + 7.4vw, 8.25rem);
+  --text-display--line-height: 0.93;
+  --text-title: clamp(2rem, 1.2rem + 3.2vw, 4.25rem);
+  --text-title--line-height: 1;
   --text-lede: clamp(1.075rem, 1rem + 0.35vw, 1.3rem);
   --text-lede--line-height: 1.6;
   --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
@@ -154,7 +164,7 @@
 
 html {
   background: var(--bg);
-  scroll-padding-top: 5.5rem;
+  scroll-padding-top: 4.5rem;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   scrollbar-color: var(--moss-deep) transparent;
@@ -162,7 +172,7 @@ html {
 
 body {
   font-family: var(--font-sans);
-  font-feature-settings: "kern", "liga";
+  font-feature-settings: "kern", "liga", "ss01";
   text-rendering: optimizeLegibility;
 }
 
@@ -180,7 +190,6 @@ body {
 :focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 3px;
-  border-radius: 6px;
 }
 
 [data-display="eink"] :focus-visible,
@@ -216,11 +225,12 @@ body::before {
   padding-inline: clamp(1.25rem, 4vw, 3rem);
 }
 
-/* Glass: Apple-style frosted surface with a lit top edge. Used only on a
-   handful of large surfaces, since every backdrop blur costs GPU time. */
+/* Glass: a frosted panel with square corners and a lit top edge. Used
+   only on a handful of large surfaces, since every backdrop blur costs GPU
+   time. Pair with `ticks` for the corner registration marks. */
 @utility glass {
   background:
-    linear-gradient(180deg, var(--glass-shine), transparent 45%),
+    linear-gradient(180deg, var(--glass-shine), transparent 40%),
     var(--glass);
   border: 1px solid var(--glass-edge);
   box-shadow:
@@ -230,12 +240,64 @@ body::before {
   -webkit-backdrop-filter: var(--glass-blur);
 }
 
+/* Near-opaque glass for menus that sit over busy content, where text
+   behind the panel would otherwise compete with the panel's own. */
+@utility glass-dense {
+  --glass: var(--glass-dense);
+}
+
+/* The same material as a full-width bar with only a bottom edge. */
+@utility glass-bar {
+  background: var(--glass);
+  border-bottom: 1px solid var(--glass-edge);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+/* Registration marks on each corner, drawn over the border. */
+@utility ticks {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    pointer-events: none;
+    --t: linear-gradient(var(--tick), var(--tick));
+    background:
+      var(--t) top left / 12px 1px no-repeat,
+      var(--t) top left / 1px 12px no-repeat,
+      var(--t) top right / 12px 1px no-repeat,
+      var(--t) top right / 1px 12px no-repeat,
+      var(--t) bottom left / 12px 1px no-repeat,
+      var(--t) bottom left / 1px 12px no-repeat,
+      var(--t) bottom right / 12px 1px no-repeat,
+      var(--t) bottom right / 1px 12px no-repeat;
+  }
+}
+
+/* Small technical label: mono, uppercase, tracked out. */
 @utility eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
+  font-size: 0.7rem;
+  line-height: 1.4;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
+}
+
+/* A hairline that runs the full width of the viewport, whatever box it's
+   drawn in. body clips horizontal overflow, so it never scrolls. */
+@utility rule-bleed {
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 100vw;
+    translate: -50% 0;
+    border-top: 1px solid var(--line);
+  }
 }
 
 /* Links that read as links: underline always present, thickening on hover. */
@@ -260,14 +322,116 @@ body::before {
   border-width: 2px;
 }
 
+[data-display="eink"] .glass-bar,
+[data-contrast="high"] .glass-bar {
+  border-bottom-width: 2px;
+}
+
+/* Buttons: square, mono, uppercase. The arrow slides on hover and the
+   whole thing sinks a pixel on press. */
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.75rem;
+    min-height: 3rem;
+    padding-inline: 1.1rem;
+    border: 1px solid var(--line-strong);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+    transition:
+      background-color 0.2s,
+      border-color 0.2s,
+      color 0.2s,
+      translate 0.1s;
+    &:hover {
+      border-color: var(--moss);
+      color: var(--moss);
+    }
+    &:active {
+      translate: 0 1px;
+    }
+  }
+  .btn.btn-solid {
+    background: var(--moss);
+    border-color: var(--moss);
+    color: var(--on-accent);
+    &:hover {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--bg);
+    }
+  }
+  [data-display="eink"] .btn,
+  [data-contrast="high"] .btn {
+    border-width: 2px;
+    border-color: var(--ink);
+  }
+}
+
+/* Crosshair where a section rule meets a grid line. */
+.cross {
+  position: absolute;
+  top: -5px;
+  width: 11px;
+  height: 11px;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--tick), var(--tick)) center / 11px 1px no-repeat,
+    linear-gradient(var(--tick), var(--tick)) center / 1px 11px no-repeat;
+  translate: -5px 0;
+}
+
+/* The blueprint grid behind the page: faint lines on the container edges
+   and the index column. */
+.grid-lines {
+  background:
+    linear-gradient(var(--grid), var(--grid)) left / 1px 100% no-repeat,
+    linear-gradient(var(--grid), var(--grid)) right / 1px 100% no-repeat;
+}
+
+@media (width >= 64rem) {
+  .grid-lines {
+    background:
+      linear-gradient(var(--grid), var(--grid)) left / 1px 100% no-repeat,
+      linear-gradient(var(--grid), var(--grid)) 25% 0 / 1px 100% no-repeat,
+      linear-gradient(var(--grid), var(--grid)) right / 1px 100% no-repeat;
+  }
+}
+
+/* Giant outlined wordmark in the footer. */
+.wordmark {
+  color: transparent;
+  -webkit-text-stroke: 1px var(--line-strong);
+}
+
+[data-display="eink"] .wordmark,
+[data-contrast="high"] .wordmark {
+  color: var(--ink);
+  -webkit-text-stroke: 0;
+}
+
 @media (forced-colors: active) {
-  .glass {
+  .glass,
+  .glass-bar {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     border: 1px solid CanvasText;
   }
   body::before {
     display: none;
+  }
+  .ticks::after,
+  .cross {
+    display: none;
+  }
+  .wordmark {
+    color: CanvasText;
   }
 }
 
@@ -347,7 +511,7 @@ body::before {
 @keyframes rise {
   from {
     opacity: 0;
-    translate: 0 14px;
+    translate: 0 18px;
   }
 }
 
