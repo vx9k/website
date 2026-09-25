@@ -4,7 +4,7 @@ export const metadata: Metadata = {
   title: "Page not found",
 };
 
-// GitHub Pages serves this as 404.html.
+// Exported as 404.html, which Cloudflare serves for any unknown path.
 export default function NotFound() {
   return (
     <main
