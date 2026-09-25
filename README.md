@@ -54,7 +54,6 @@ Other files at the root:
 | --- | --- |
 | `AGENTS.md` | Guide for anyone (or any coding agent) changing the site: design rules, accessibility checks, content rules. `CLAUDE.md` points to it. |
 | `.agents/skills/`, `.claude/skills/` | Design skills for coding agents, pinned in `skills-lock.json`. |
-| `.github/workflows/deploy.yml` | Builds and deploys to Cloudflare. |
 | `wrangler.jsonc` | Cloudflare Workers config: serves `out/` as static assets, with `404.html` for unknown paths. |
 | `public/_headers` | Response headers, such as long-term caching for hashed assets. |
 | `next.config.ts` | Static export, React Compiler, offline support. |
@@ -67,7 +66,7 @@ For anything visual, read the design and accessibility sections of [`AGENTS.md`]
 
 ## Deploying
 
-Every push to `main` builds the site and deploys `out/` to Cloudflare Workers with `wrangler deploy`. The workflow needs two repository secrets: `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
+Cloudflare Workers Builds is connected to this repo. Every push to `main` builds the site and deploys it with `wrangler deploy`. Pull requests get their own preview URL, posted as a comment on the PR.
 
 ## License
 

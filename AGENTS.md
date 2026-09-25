@@ -30,7 +30,8 @@ There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler 
 - **React 19 with the React Compiler.** Don't hand-write `useMemo`/`useCallback` for performance.
 - **Tailwind CSS v4.** Configured in CSS (`@theme`, `@utility`, `@custom-variant` in `globals.css`). There's no `tailwind.config.*`.
 - **TypeScript 7**, strict. `@/*` maps to `src/*`.
-- Deploys on every push to `main` via `.github/workflows/deploy.yml`, which builds and runs `wrangler deploy`. Work on a branch and open a PR.
+- Deployed by Cloudflare Workers Builds, connected to this repo: every push to `main` runs `pnpm run build` then `npx wrangler deploy`, and every other branch gets a preview URL posted on its PR. Work on a branch, open a PR, and check the preview.
+- The Worker is named `website`; the `name` in `wrangler.jsonc` must match it or builds fail. Build settings (commands, `PNPM_VERSION`) live in the Cloudflare dashboard, not in the repo.
 - Response headers for static files live in `public/_headers` (copied into `out/`).
 
 ## Layout of the code

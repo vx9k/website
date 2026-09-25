@@ -2,7 +2,7 @@
 // Worker script: Cloudflare serves the files in out/ directly.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "kthread",
+  "name": "website",
   "compatibility_date": "2026-09-25",
   "assets": {
     "directory": "./out",
