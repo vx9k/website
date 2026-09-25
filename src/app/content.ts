@@ -66,15 +66,3 @@ export const stack = [
   { group: "Web", items: ["Next.js", "React", "Tailwind CSS"] },
   { group: "Tooling", items: ["clang-format", "Ninja", "pnpm", "Git", "GitHub Actions"] },
 ];
-
-// What the hero's boot log prints. Each line matches a real step in
-// 4suite/4init/4init.c and config.h.
-export const bootLog: { tag: "OK" | "WIP" | "--" | ""; text: string }[] = [
-  { tag: "", text: "kernel: Run /sbin/init as init process" },
-  { tag: "OK", text: "4init: pid 1, signals routed to signalfd" },
-  { tag: "OK", text: "4init: fork, setsid, execve /usr/local/bin/4rc" },
-  { tag: "OK", text: "4init: reaping children on SIGCHLD" },
-  { tag: "WIP", text: "4rc: bringing up services" },
-  { tag: "--", text: "logger: planned" },
-  { tag: "--", text: "user: planned" },
-];

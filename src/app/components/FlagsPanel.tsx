@@ -5,26 +5,26 @@ import { useEffect, useId, useRef, useState } from "react";
 type Key = "contrast" | "motion" | "eink" | "large";
 type Flags = Partial<Record<Key, boolean>>;
 
-const OPTIONS: { key: Key; label: string; flag: string; system?: string }[] = [
+const OPTIONS: { key: Key; label: string; hint: string; system?: string }[] = [
   {
     key: "contrast",
     label: "High contrast",
-    flag: "--contrast=high",
+    hint: "Solid colours, stronger edges",
     system: "(prefers-contrast: more)",
   },
   {
     key: "motion",
     label: "Reduce motion",
-    flag: "--motion=reduced",
+    hint: "Turns off animation",
     system: "(prefers-reduced-motion: reduce)",
   },
   {
     key: "eink",
     label: "Paper (e-ink)",
-    flag: "--display=eink",
+    hint: "Black on white, for e-ink screens",
     system: "(update: slow)",
   },
-  { key: "large", label: "Larger text", flag: "--text=large" },
+  { key: "large", label: "Larger text", hint: "Type 25% larger" },
 ];
 
 function systemWants(query?: string) {
@@ -147,11 +147,11 @@ export default function FlagsPanel() {
                     <span className="block text-sm text-ink">{o.label}</span>
                     <span
                       id={noteId}
-                      className="block font-mono text-[0.7rem] text-muted"
+                      className="block text-xs text-muted"
                     >
                       {system[o.key] && !on
                         ? "on: your system asks for it"
-                        : o.flag}
+                        : o.hint}
                     </span>
                   </span>
                   <span

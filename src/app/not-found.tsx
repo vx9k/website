@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
-import Mark from "./components/Mark";
 
 export const metadata: Metadata = {
   title: "Page not found",
 };
 
-// GitHub Pages serves this as 404.html. In 4init's own words: if init
-// can't be found, the kernel panics.
+// GitHub Pages serves this as 404.html.
 export default function NotFound() {
   return (
     <main
@@ -16,9 +14,8 @@ export default function NotFound() {
       <div className="glass ticks w-full max-w-2xl p-6 sm:p-10">
         <a
           href="/"
-          className="inline-flex min-h-11 items-center gap-3 text-sm font-semibold tracking-[-0.02em] text-ink"
+          className="inline-flex min-h-11 items-center text-lg font-semibold tracking-[-0.05em] text-ink"
         >
-          <Mark className="size-7 text-moss" />
           vx
         </a>
 
@@ -33,26 +30,19 @@ export default function NotFound() {
           Page not found
         </h1>
 
-        <pre
-          aria-hidden
-          className="mt-6 overflow-hidden border border-line bg-bg/60 p-5 font-mono text-[0.8rem] leading-7 whitespace-pre-wrap text-muted sm:text-sm"
-        >
-          <span className="text-sun">Kernel panic - not syncing:</span> No
-          working init found for this path.{"\n"}
-          <span className="text-faint">---[ end Kernel panic - not syncing ]---</span>
-        </pre>
-
         <p className="mt-6 max-w-lg leading-7 text-muted">
           Nothing lives at this address. The link may be old, or the URL may
           have a typo.
         </p>
 
-        <a
-          href="/"
-          className="btn btn-solid mt-8"
-        >
-          Reboot to the home page
-          <span aria-hidden>↻︎</span>
+        <a href="/" className="group btn btn-solid mt-10">
+          Back to the home page
+          <span
+            aria-hidden
+            className="transition-transform group-hover:-translate-x-0.5"
+          >
+            ←︎
+          </span>
         </a>
       </div>
     </main>
