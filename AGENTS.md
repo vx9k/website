@@ -26,7 +26,7 @@ There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler 
 
 ## Stack
 
-- **Next.js 16, App Router, `output: "export"`.** Fully static and served as Cloudflare Workers static assets (`wrangler.jsonc`), so there are no server features: no route handlers, no server actions, no `next/image` optimisation, no middleware. `experimental.useOffline` powers the offline banner.
+- **Next.js 16, App Router, `output: "export"`.** Fully static and served as Cloudflare Workers static assets (`wrangler.jsonc`), so there are no Next.js server features: no route handlers, no server actions, no `next/image` optimisation, no middleware. The one exception is `src/worker.ts`, a plain Worker that handles `/`. `experimental.useOffline` powers the offline banner.
 - **React 19 with the React Compiler.** Don't hand-write `useMemo`/`useCallback` for performance.
 - **Tailwind CSS v4.** Configured in CSS (`@theme`, `@utility`, `@custom-variant` in `globals.css`). There's no `tailwind.config.*`.
 - **TypeScript 7**, strict. `@/*` maps to `src/*`.
@@ -37,7 +37,7 @@ There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler 
 ## Layout of the code
 
 ```
-public/index.html     the site root: picks a language and redirects before paint
+src/worker.ts         runs for "/" only: redirects to /en, /es or /pt
 src/app/
   [lang]/layout.tsx   root layout per language: <html lang>, metadata, hreflang
   [lang]/page.tsx     the page: Header, Hero, Principles, Work, Stack, Contact, Footer
@@ -58,7 +58,7 @@ src/app/
 ## Languages
 
 - Every visible string lives in `src/app/i18n/`. `en.ts` defines the shape; `es.ts` and `pt.ts` are typed against it, so a missing key fails the build. Change all three together, and keep them saying the same thing.
-- The root `/` has no server to read `Accept-Language`, so `public/index.html` picks the language: a saved choice first, then the browser's languages, then English. Without JavaScript it sends visitors to `/en`. The 404 page does the same client-side, using the URL prefix first.
+- The root `/` is the only dynamic route. `src/worker.ts` (wired up by `main` and `assets.run_worker_first: ["/"]` in `wrangler.jsonc`) sends a 302 to a saved choice (the `vx-lang` cookie), then the best match in `Accept-Language`, then English. Every other path is served from static files without touching the Worker. The 404 page picks its language client-side, using the URL prefix first.
 - Client components import `i18n/locales`, never `i18n`, so the dictionaries stay out of the browser bundle. Pass strings down as props.
 - Spanish uses tú and Latin American vocabulary; Portuguese uses você. Neither assigns vx a grammatical gender ("Ingeniería de sistemas", not "Ingeniero"). Quotes from English READMEs stay in English.
 - Check new copy in all three languages at phone width: Spanish and Portuguese run about 20% longer than English.
