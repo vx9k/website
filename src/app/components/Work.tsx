@@ -131,9 +131,7 @@ export default function Work() {
           </div>
 
           <div className="border-t border-line p-5 sm:p-8 lg:border-t-0 lg:border-l lg:p-10">
-            <p className="font-mono text-sm text-faint">
-              <span aria-hidden>$ </span>tree 4suite
-            </p>
+            <p className="eyebrow">Components</p>
             <ul className="tree mt-5 space-y-5" aria-label="4suite components">
               {suiteTree.map((n) => (
                 <TreeNode key={n.name} node={n} />
