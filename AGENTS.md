@@ -83,19 +83,19 @@ A technical document on glass: plain facts on a strict grid, large type, hairlin
 | --- | --- | --- | --- |
 | `--bg` | paper `#f3f2ee` | carbon `#0c0c0b` | the page |
 | `--fg` | `#141413` | `#ecebe6` | text, the button, the current language |
-| `--muted` | `#5f5e59` | `#9a9993` | secondary text, labels |
+| `--muted` | `#52514b` | `#a09f99` | secondary text, labels |
 | `--line` | ink at 12% | white at 9% | hairline rules only |
 | `--signal` | `#f04800` | `#f04800` | marks only |
 | `--on-signal` | `#141413` | `#141413` | text on signal |
 | `--glass-top`, `--glass-bottom`, `--glass-edge`, `--glass-ring`, `--glass-shine`, `--glass-shade` | white fill and rim, faint ink ring | faint white fill and rim, dark ring | the `glass` utility only |
 | `--glow`, `--glow-2` | signal and amber, faint | signal and amber, fainter | the ambient light only |
 
-Contrast decides what each token may do. `--fg` (16:1) and `--muted` (5.8:1 light, 6.9:1 dark) carry text. `--signal` is 3.3:1 on paper, so it's for marks and never for text on `--bg`: the square before "vx", the status squares, the mark on the 404, the focus ring, the text selection and the button's hover. Carbon on signal is 4.9:1, which is why the hover and the selection use `--on-signal`. `--line` is for rules, never the only edge of a control. Translucency lives only in the glass and glow tokens; don't add tints, opacity modifiers or new gradients elsewhere (the half-filled status square is the one other gradient).
+Contrast decides what each token may do. `--fg` (16:1) and `--muted` (7.1:1 light, 7.4:1 dark on the bare page) carry text. Muted is set darker than it needs to be on paper because the glow and the glass eat into it: measured over the rendered glow at every width and scroll position, including the strips just above and below the floating header, it stays above 4.5:1. If you touch the glow, the glass or muted, measure it again the same way. `--signal` is 3.3:1 on paper, so it's for marks and never for text on `--bg`: the square before "vx", the status squares, the mark on the 404, the focus ring, the text selection and the button's hover. Carbon on signal is 4.9:1, which is why the hover and the selection use `--on-signal`. `--line` is for rules, never the only edge of a control. Translucency lives only in the glass and glow tokens; don't add tints, opacity modifiers or new gradients elsewhere (the half-filled status square is the one other gradient).
 
 **Light and glass.**
 - `body::before` is a fixed layer with two radial glows: signal at the top right and amber low on the right, where the panels are. Text that sits on the bare page (the headline, the lede, section titles) is on the left, clear of the strongest light. Keep the glows faint: muted text must hold 4.5:1 on whatever they put behind it, at every width and scroll position.
 - `glass` is a pane: a translucent fill that's brighter at the top, a light rim inside a faint outer ring, a 1px highlight along the top and a soft shade under it, with 6px corners. The rim is what makes it read as glass on paper rather than a card. Panes are for things that hold content: the header bar, the hero facts, each project, the principles, the stack and the 404. Contact and the footer sit on the page. Don't nest panes; inside one, structure is hairlines, and a spec table is an open strip with rules above and below.
-- `frost` adds the backdrop blur, and only the header needs it, because it's the one pane text scrolls under. It tints with the page colour instead of white, so the small language labels hold their contrast over the glow. The panels sit over nothing but the smooth glow, where a blur would cost a repaint every scroll and change nothing.
+- `frost` adds the backdrop blur, and only the header needs it, because it's the one pane text scrolls under. It tints with the page colour at 80% instead of white, so the small labels on it hold 4.5:1 over the glow and over the headline scrolling beneath, even where the blur isn't drawn. The panels sit over nothing but the smooth glow, where a blur would cost a repaint every scroll and change nothing.
 - With `prefers-reduced-transparency`, glass turns solid (`--bg`) and loses its blur. In forced colours the glow is hidden and panes keep their edge.
 
 **Corners.** Square with a little rounding, never pills: 6px for panes (`glass`), 4px for controls (`btn`, the language segments, the skip link: `rounded-sm`), 1–2px for the small signal marks. No `rounded-full`, and nothing rounder than 6px.
@@ -103,7 +103,7 @@ Contrast decides what each token may do. `--fg` (16:1) and `--muted` (5.8:1 ligh
 **Type.** Geist for everything, Geist Mono for small uppercase labels (the `label` utility), the language switch and the repo URLs. Weights are 400 and 500 only. Large type gets negative tracking (`text-display` is -0.04em; titles use `tracking-tight`), body text none. Headings are sentence case.
 
 **Layout.** One vertical decides the page.
-- `shell` is the one centred column (80rem, fluid side padding) that the header, every section and the footer share. Don't put page chrome outside it. The header bar bleeds past it by its own padding (`-mx-3 px-3`), so its contents stay on its edges.
+- `shell` is the one centred column (80rem, fluid side padding) that the header, every section and the footer share. Don't put page chrome outside it. The header bar bleeds past it by its own padding less its border (`-mx-3 px-[calc(0.75rem-1px)]`), so its contents stay on its edges.
 - `split` (with `lg:grid`) divides a block in the shell into two tracks from lg up: 1fr 3fr, then 1fr 2fr from xl. The header, the intro, every section and the footer use it, so the section titles and "vx" sit on the left track and everything else starts on the same vertical, the right track's edge. Only the headline spans both. Below lg, blocks stack.
 - Below the intro, every section is a `<Section>`: the number and title on the left (sticky on large screens, below the header), the content on the right. Numbers come from the order of `sections` in `content.ts`.
 - Inside a pane, a four-column sub-grid (`md:grid-cols-4`, `gap-x-6`) lines things up: `<Specs>` is a table of four facts, and rows (components, principles, stack) put their key in the first column and the value across the other three, separated by hairlines. A `split` block that also sets a gap needs `lg:gap-x-12` back, or it drifts off the vertical.
@@ -113,7 +113,7 @@ Contrast decides what each token may do. `--fg` (16:1) and `--muted` (5.8:1 ligh
 - `btn`: the one button. Solid `--fg`, 4px corners, at least 44px tall, `--signal` on hover, and a transparent border that shows as a real edge in contrast themes. One per page.
 - `link`: a 1px underline in `--muted` that darkens to the text colour on hover.
 - `label`: Geist Mono, 12px, uppercase, 0.06em tracking, `--muted`.
-- The language switch is a segmented control: three 44px targets, with the current one marked by a small `--fg` block inside its target.
+- The language switch is a segmented control: three 44px targets, with the current one marked by a small `--fg` block inside its target, and underlined in contrast themes, where the fill disappears.
 - Statuses are a signal square plus the word: filled for shipping, half for in progress, empty for planned. The shape carries the meaning, not the colour, and the squares keep their shape in contrast themes (`forced-color-adjust-none`, with `--signal` set to `CanvasText`).
 
 **Don't:**

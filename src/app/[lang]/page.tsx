@@ -11,7 +11,7 @@ import { getDictionary, hasLocale } from "../i18n";
 // numbered sections, with the content on panes of glass. From lg up the
 // header, every section and the footer share one split, so everything but
 // the titles hangs from one vertical. The header bar bleeds past the shell
-// by its own padding, so its contents stay on it.
+// by its own padding (less its 1px border), so its contents stay on it.
 export default async function Home({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   // The layout already 404s unknown languages; this narrows the type.
@@ -21,7 +21,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
   return (
     <>
       <header className="shell sticky top-3 z-10">
-        <div className="glass frost split -mx-3 flex items-center justify-between px-3 py-1.5 lg:grid">
+        <div className="glass frost split -mx-3 flex items-center justify-between px-[calc(0.75rem-1px)] py-1.5 lg:grid">
           <a href={`/${lang}`} className="inline-flex min-h-11 min-w-11 items-center gap-2.5 justify-self-start font-medium tracking-tight">
             <span aria-hidden className="size-2.5 rounded-[2px] bg-signal" />
             vx

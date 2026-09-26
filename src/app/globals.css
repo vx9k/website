@@ -9,7 +9,7 @@
   color-scheme: light dark;
   --bg: light-dark(#f3f2ee, #0c0c0b);
   --fg: light-dark(#141413, #ecebe6);
-  --muted: light-dark(#5f5e59, #9a9993);
+  --muted: light-dark(#52514b, #a09f99);
   --line: light-dark(rgb(20 20 19 / 0.12), rgb(255 255 255 / 0.09));
   --signal: #f04800;
   --on-signal: #141413;
@@ -27,7 +27,7 @@
   /* The ambient light behind the glass: signal at the top right, amber
      low on the right, both on the side where the panels are. Text that
      sits on the bare page is on the left, clear of them. */
-  --glow: light-dark(rgb(240 72 0 / 0.26), rgb(240 72 0 / 0.3));
+  --glow: light-dark(rgb(240 72 0 / 0.2), rgb(240 72 0 / 0.24));
   --glow-2: light-dark(rgb(255 170 0 / 0.24), rgb(255 120 0 / 0.14));
 }
 
@@ -143,11 +143,15 @@ body::before {
 /* Frosting, for glass that text scrolls under: only the header. The
    panels sit over nothing but the smooth glow, where a blur would cost a
    repaint on every scroll and change nothing. It tints with the page
-   colour rather than white, so small text on it holds its contrast over
-   the glow and over whatever scrolls beneath. */
+   colour rather than white, and thickly enough (80%) that small text on
+   it holds 4.5:1 over the glow and over the headline scrolling beneath,
+   even before the blur. */
 @utility frost {
-  --glass-top: color-mix(in oklab, var(--bg) 72%, transparent);
+  --glass-top: color-mix(in oklab, var(--bg) 80%, transparent);
   --glass-bottom: var(--glass-top);
+  /* A lighter shade in light mode: text passes just under the header,
+     and a full shadow there would darken the page behind it. */
+  --glass-shade: light-dark(rgb(20 20 19 / 0.06), rgb(0 0 0 / 0.6));
   backdrop-filter: blur(24px) saturate(1.5);
   @media (prefers-reduced-transparency: reduce) {
     backdrop-filter: none;
