@@ -1,16 +1,22 @@
-import Contact from "../components/Contact";
-import Intro from "../components/Intro";
-import LanguageLinks from "../components/LanguageLinks";
-import Principles from "../components/Principles";
-import Skills from "../components/Skills";
+import Contact from "@/components/site/Contact";
+import Intro from "@/components/site/Intro";
+import LanguageLinks from "@/components/site/LanguageLinks";
+import Principles from "@/components/site/Principles";
+import Skills from "@/components/site/Skills";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 import { links, sections } from "../content";
 import { getDictionary, hasLocale } from "../i18n";
 
-// One page that reads like a spec sheet: a statement, the facts, then
-// numbered sections, with the content on panes of glass. From lg up the
-// header, every section and the footer share one split, so everything but
-// the titles hangs from one vertical. The header bar bleeds past the shell
-// by its own padding (less its 1px border), so its contents stay on it.
+// The language segments: mono, small, the current one filled. Contrast
+// themes drop the fill, so the current one is underlined there too.
+const segment = "h-7 px-2 font-mono";
+const current = cn(buttonVariants({ variant: "secondary", size: "xs" }), segment, "forced-colors:underline");
+const other = cn(buttonVariants({ variant: "ghost", size: "xs" }), segment, "text-muted-foreground");
+
+// One page in one centred column: the introduction, then numbered
+// sections of cards, on carbon with a faint mesh behind (see globals.css).
 export default async function Home({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   // The layout already 404s unknown languages; this narrows the type.
@@ -19,25 +25,27 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
 
   return (
     <>
-      <header className="shell sticky top-3 z-10">
-        <div className="glass frost split -mx-3 flex items-center justify-between px-[calc(0.75rem-1px)] py-1.5 lg:grid">
-          <a href={`/${lang}`} className="inline-flex min-h-11 min-w-11 items-center gap-2.5 justify-self-start font-medium tracking-tight">
+      {/* Text scrolls under the header, so it's frosted, and solid when
+          the system asks for less transparency. */}
+      <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-md [@media(prefers-reduced-transparency:reduce)]:bg-background [@media(prefers-reduced-transparency:reduce)]:backdrop-blur-none">
+        <div className="shell flex h-14 items-center justify-between gap-4">
+          <a href={`/${lang}`} className="inline-flex min-h-10 items-center gap-2.5 font-semibold tracking-tight">
             <span aria-hidden className="size-2.5 rounded-[2px] bg-signal" />
             vx
           </a>
-          <div className="flex items-center justify-between gap-6">
-            <nav aria-label={t.nav.label} className="hidden md:block">
-              <ul className="flex gap-8 text-sm">
+          <div className="flex items-center gap-3">
+            <nav aria-label={t.nav.label} className="hidden sm:block">
+              <ul className="flex items-center gap-1">
                 {sections.map((id) => (
                   <li key={id}>
-                    <a href={`#${id}`} className="inline-flex min-h-11 items-center text-muted hover:text-fg">
-                      {t.nav[id]}
-                    </a>
+                    <Button asChild variant="ghost" size="sm">
+                      <a href={`#${id}`}>{t.nav[id]}</a>
+                    </Button>
                   </li>
                 ))}
               </ul>
             </nav>
-            <LanguageLinks lang={lang} label={t.nav.language} />
+            <LanguageLinks lang={lang} label={t.nav.language} current={current} other={other} />
           </div>
         </div>
       </header>
@@ -50,16 +58,17 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       </main>
 
       <footer className="shell">
-        <div className="split flex flex-wrap items-center justify-between gap-x-6 border-t border-line py-2 text-sm text-muted lg:grid lg:gap-x-12">
+        <Separator />
+        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-6 text-sm text-muted-foreground">
           <p>vx</p>
-          <p className="flex flex-wrap items-center justify-between gap-x-6">
-            <a href={links.website} className="link inline-flex min-h-11 items-center hover:text-fg">
-              {t.footer.source}&nbsp;<span aria-hidden>↗</span>
-            </a>
-            <a href="#top" className="inline-flex min-h-11 items-center hover:text-fg">
-              {t.footer.top}&nbsp;<span aria-hidden>↑</span>
-            </a>
-          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button asChild variant="link" size="sm">
+              <a href={links.website}>{t.footer.source} ↗</a>
+            </Button>
+            <Button asChild variant="link" size="sm">
+              <a href="#top">{t.footer.top} ↑</a>
+            </Button>
+          </div>
         </div>
       </footer>
     </>

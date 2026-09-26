@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { marks } from "../marks";
+import { marks } from "@/app/marks";
 
 // Icons for the skills, all 24×24 and drawn in currentColor, which the
 // tile sets to the skill's colour. Brands get their own mark; the rest are

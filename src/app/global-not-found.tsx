@@ -2,6 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { fontVariables } from "./document";
 import { getDictionary, localeKeys, locales } from "./i18n";
+import { ArrowLeftIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 export { viewport } from "./document";
 
@@ -38,13 +43,13 @@ const pickScript = `(function () {
 // Only the chosen language shows; English is the no-JS default.
 const visibility = {
   en: "in-data-[lang=es]:hidden in-data-[lang=pt]:hidden",
-  es: "hidden in-data-[lang=es]:block",
-  pt: "hidden in-data-[lang=pt]:block",
+  es: "hidden in-data-[lang=es]:flex",
+  pt: "hidden in-data-[lang=pt]:flex",
 };
 
 export default function GlobalNotFound() {
   return (
-    <html lang="en-US" dir="ltr" suppressHydrationWarning className={`${fontVariables} not-found`}>
+    <html lang="en-US" dir="ltr" suppressHydrationWarning className={cn("dark", fontVariables)}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: pickScript }} />
       </head>
@@ -53,17 +58,26 @@ export default function GlobalNotFound() {
           {localeKeys.map((l) => {
             const t = getDictionary(l).notFound;
             return (
-              <div key={l} lang={locales[l].tag} className={`glass max-w-[48rem] p-6 sm:p-10 ${visibility[l]}`}>
-                <p className="label flex items-center gap-2.5">
-                  <span aria-hidden className="size-2 rounded-[1px] bg-signal" />
-                  404
-                </p>
-                <h1 className="mt-6 max-w-[16ch] text-display font-medium text-balance wrap-break-word">{t.title}</h1>
-                <p className="mt-8 max-w-[36rem] text-lg text-muted text-pretty">{t.body}</p>
-                <a href={`/${l}`} className="btn mt-12">
-                  <span aria-hidden>←</span> {t.back}
-                </a>
-              </div>
+              <Card key={l} lang={locales[l].tag} className={cn("max-w-xl", visibility[l])}>
+                <CardHeader className="gap-4">
+                  <Badge variant="outline" className="gap-2 font-mono">
+                    <span aria-hidden className="size-1.5 rounded-[1px] bg-signal" />
+                    404
+                  </Badge>
+                  <CardTitle role="heading" aria-level={1} className="text-3xl tracking-tight text-balance sm:text-4xl">
+                    {t.title}
+                  </CardTitle>
+                  <CardDescription className="text-base text-pretty">{t.body}</CardDescription>
+                </CardHeader>
+                <CardFooter>
+                  <Button asChild size="lg">
+                    <a href={`/${l}`}>
+                      <ArrowLeftIcon data-icon="inline-start" />
+                      {t.back}
+                    </a>
+                  </Button>
+                </CardFooter>
+              </Card>
             );
           })}
         </main>

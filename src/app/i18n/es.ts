@@ -17,14 +17,9 @@ const es: Dictionary = {
     contact: "Contacto",
   },
   hero: {
-    line: "Soy vx y vivo en Uruguay.",
+    status: "Disponible para trabajar",
+    line: "Soy vx y me dedico a la ingeniería de software en Uruguay.",
     lede: "Escribo C para Linux, hasta el PID 1, y TypeScript para la web, como este sitio. Me interesa cómo funcionan las cosas por dentro, de las capas de red a los modelos de lenguaje.",
-    quote: "Programas pequeños que hacen una sola cosa cada uno, usan interfaces POSIX siempre que pueden y son lo bastante cortos para leerlos de una sentada.",
-    facts: [
-      { k: "Rol", v: "Ingeniería de software" },
-      { k: "Código", v: "github.com/vx9k" },
-    ],
-    status: { k: "Estado", v: "Disponible para trabajar" },
   },
   skills: {
     title: "Habilidades",
@@ -34,6 +29,7 @@ const es: Dictionary = {
   },
   principles: {
     title: "Principios",
+    quote: "Programas pequeños que hacen una sola cosa cada uno, usan interfaces POSIX siempre que pueden y son lo bastante cortos para leerlos de una sentada.",
     items: [
       {
         title: "Estándares antes que atajos",
@@ -51,7 +47,8 @@ const es: Dictionary = {
   },
   contact: {
     title: "Contacto",
-    line: "Estoy disponible para trabajar. Mis proyectos son públicos en GitHub.",
+    heading: "Estoy disponible para trabajar.",
+    body: "Mis proyectos son públicos en GitHub.",
   },
   footer: {
     source: "Código de este sitio",

@@ -1,44 +1,56 @@
 @import "tailwindcss" source("..");
 
+/* shadcn/ui's components style their dark variants with `dark:`. The page
+   is only ever carbon, so <html> carries the class and they always apply. */
+@custom-variant dark (&:is(.dark *));
+
 /* ---------------------------------------------------------------- palette
-   Paper and carbon, with one signal orange. light-dark() follows the
-   system's setting; there's no toggle. Signal is for marks, never text:
-   it's 3.3:1 on paper, and carbon text on it is 4.9:1. */
+   Carbon: one dark theme, neutral greys on near-black, in shadcn/ui's
+   token names so its components read them directly. The one colour is
+   signal orange, kept for marks (the square before "vx", the status
+   square), never text. The brand colours in the skill icons are the only
+   other colour on the page. */
 
 :root {
-  color-scheme: light dark;
-  --bg: light-dark(#f3f2ee, #0c0c0b);
-  --fg: light-dark(#141413, #ecebe6);
-  --muted: light-dark(#52514b, #a09f99);
-  --line: light-dark(rgb(20 20 19 / 0.12), rgb(255 255 255 / 0.09));
+  color-scheme: dark;
+  --radius: 0.375rem;
+
+  --background: oklch(0.155 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.185 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.185 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  /* Lighter than shadcn/ui's default, so the focus ring (drawn at half
+     strength) still clears 3:1 against carbon. */
+  --ring: oklch(0.8 0 0);
+
   --signal: #f04800;
-  --on-signal: #141413;
 
-  /* Glass: a fill that's brighter at the top, a light rim inside a faint
-     outer ring (the rim is what reads as glass rather than a card on
-     paper), a highlight along the top and a soft shade under it. */
-  --glass-top: light-dark(rgb(255 255 255 / 0.7), rgb(255 255 255 / 0.075));
-  --glass-bottom: light-dark(rgb(255 255 255 / 0.3), rgb(255 255 255 / 0.02));
-  --glass-edge: light-dark(rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.08));
-  --glass-ring: light-dark(rgb(20 20 19 / 0.07), rgb(0 0 0 / 0.4));
-  --glass-shine: light-dark(#fff, rgb(255 255 255 / 0.16));
-  --glass-shade: light-dark(rgb(20 20 19 / 0.16), rgb(0 0 0 / 0.6));
-
-  /* The ambient light behind the glass: signal and amber, on the right
-     where the panes are. Text that sits on the bare page is on the left,
-     clear of the strongest light. */
-  --glow: light-dark(rgb(240 72 0 / 0.2), rgb(240 72 0 / 0.24));
-  --glow-2: light-dark(rgb(255 170 0 / 0.24), rgb(255 120 0 / 0.14));
-
-  /* The glint that crosses the skill icons. */
-  --glint: light-dark(rgb(255 255 255 / 0.75), rgb(255 255 255 / 0.2));
+  /* The mesh: hairlines on a 3rem grid, and the glint on the skill tiles. */
+  --mesh: oklch(1 0 0 / 7%);
+  --glint: oklch(1 0 0 / 18%);
 }
 
-/* Contrast themes replace every colour: marks draw in the text colour.
-   The glow's own reset follows the glow, below. */
+/* Contrast themes replace every colour: marks draw in the text colour and
+   the mesh goes. */
 @media (forced-colors: active) {
   :root {
     --signal: CanvasText;
+  }
+  html {
+    background-image: none;
   }
   /* The ink behind the JavaScript and TypeScript letters keeps its own
      fill, so it would merge with the forced text colour. */
@@ -51,56 +63,64 @@
   --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
-  --color-bg: var(--bg);
-  --color-fg: var(--fg);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
-  --color-line: var(--line);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
   --color-signal: var(--signal);
 
-  --text-display: clamp(2.75rem, 1.5rem + 5vw, 6rem);
-  --text-display--line-height: 1;
-  --text-display--letter-spacing: -0.04em;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
 /* ------------------------------------------------------------------ base */
 
-/* The glow is painted on the page's own background, not a fixed layer:
-   Safari 26 on iOS clips fixed layers to the area between its status bar
-   and toolbar, but draws the page background edge to edge behind them.
-   Signal at the top right, amber by the skills, signal again at the end.
-   The image starts 20rem above the page and ends 20rem below it, so the
-   light carries on into the overscroll at both ends. */
-html {
-  background-color: var(--bg);
-  background-image:
-    radial-gradient(60rem 44rem at 100% 20rem, var(--glow), transparent 70%),
-    radial-gradient(48rem 36rem at 90% 50%, var(--glow-2), transparent 70%),
-    radial-gradient(52rem 40rem at 75% calc(100% - 20rem), var(--glow), transparent 70%);
-  background-position: 0 -20rem;
-  background-size: 100% calc(100% + 40rem);
-  background-repeat: no-repeat;
-  color: var(--fg);
-  scroll-behavior: smooth;
-  /* Anchored sections land below the floating header. */
-  scroll-padding-top: 5.5rem;
-}
-
-/* The 404 is a single screen, which would stack all three glows into
-   it. It keeps the signal at the top and puts the fainter amber at the
-   bottom. */
-html.not-found {
-  background-image:
-    radial-gradient(60rem 44rem at 100% 20rem, var(--glow), transparent 70%),
-    radial-gradient(52rem 40rem at 75% calc(100% - 20rem), var(--glow-2), transparent 70%);
-}
-
-/* In forced colours the light goes. This sits after the glow so that it
-   wins over the 404's own. */
-@media (forced-colors: active) {
-  html,
-  html.not-found {
-    background-image: none;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
+}
+
+/* The mesh is painted on the page's own background, not on a fixed layer
+   or on <body>: Safari 26 on iOS clips fixed layers to the area between
+   its status bar and toolbar, but draws the root background edge to edge
+   behind them. From the bottom layer up: the grid of hairlines, a veil of
+   carbon that leaves the grid at full strength only around the top of the
+   page, and a faint light over the hero. */
+html {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(56rem 28rem at 50% 0, oklch(1 0 0 / 5%), transparent 70%),
+    radial-gradient(72rem 44rem at 50% 0, transparent 30%, color-mix(in oklab, var(--background) 65%, transparent)),
+    linear-gradient(to right, var(--mesh) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--mesh) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    100% 100%,
+    3rem 3rem,
+    3rem 3rem;
+  background-position: center top;
+  background-repeat: no-repeat, no-repeat, repeat, repeat;
+  color: var(--foreground);
+  scroll-behavior: smooth;
+  /* Anchored sections land below the sticky header. */
+  scroll-padding-top: 5rem;
 }
 
 body {
@@ -109,12 +129,17 @@ body {
 
 ::selection {
   background: var(--signal);
-  color: var(--on-signal);
+  color: var(--primary-foreground);
 }
 
-:focus-visible {
-  outline: 2px solid var(--signal);
-  outline-offset: 2px;
+/* Links and anything else without its own focus style get this outline.
+   It's in the base layer so shadcn/ui's controls, which set outline-none
+   and draw a ring instead, don't get both. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -129,103 +154,29 @@ body {
    share, so their edges line up at every width. */
 @utility shell {
   width: 100%;
-  max-width: 80rem;
+  max-width: 64rem;
   margin-inline: auto;
-  padding-inline: clamp(1.25rem, 4vw, 3rem);
-}
-
-/* From lg up, a block inside the shell splits into two tracks: titles on
-   the left, everything else on the right. Every block uses the same
-   split, so all content hangs from one vertical. Pair it with lg:grid. */
-@utility split {
-  @media (width >= 64rem) {
-    grid-template-columns: 1fr 3fr;
-    column-gap: 3rem;
-  }
-  @media (width >= 80rem) {
-    grid-template-columns: 1fr 2fr;
+  padding-inline: 1.25rem;
+  @media (width >= 40rem) {
+    padding-inline: 1.5rem;
   }
 }
 
-/* A pane of glass with slightly rounded corners, tinted by the light
-   behind it. With reduced transparency it turns into a solid panel. */
-@utility glass {
-  border: 1px solid var(--glass-edge);
-  border-radius: 0.375rem;
-  background: linear-gradient(var(--glass-top), var(--glass-bottom));
-  box-shadow:
-    inset 0 1px 0 var(--glass-shine),
-    0 0 0 1px var(--glass-ring),
-    0 1px 2px -1px var(--glass-shade),
-    0 24px 48px -32px var(--glass-shade);
-  @media (prefers-reduced-transparency: reduce) {
-    background: var(--bg);
-  }
-}
-
-/* Frosting, for glass that text scrolls under: only the header. The
-   panels sit over nothing but the smooth glow, where a blur would cost a
-   repaint on every scroll and change nothing. It tints with the page
-   colour rather than white, and thickly enough (80%) that small text on
-   it holds 4.5:1 over the glow and over the headline scrolling beneath,
-   even before the blur. */
-@utility frost {
-  --glass-top: color-mix(in oklab, var(--bg) 80%, transparent);
-  --glass-bottom: var(--glass-top);
-  /* A lighter shade in light mode: text passes just under the header,
-     and a full shadow there would darken the page behind it. */
-  --glass-shade: light-dark(rgb(20 20 19 / 0.06), rgb(0 0 0 / 0.6));
-  backdrop-filter: blur(24px) saturate(1.5);
-  @media (prefers-reduced-transparency: reduce) {
-    backdrop-filter: none;
-  }
-}
-
-/* Small uppercase metadata: section numbers, fact keys, skill groups. */
+/* Small uppercase metadata: section numbers. */
 @utility label {
   font-family: var(--font-mono);
   font-size: 0.75rem;
   line-height: 1rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--muted);
-}
-
-/* The one button: solid ink, barely rounded, signal on hover. The
-   transparent border only shows in contrast themes, where the fill goes. */
-@utility btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  min-height: 2.75rem;
-  padding: 0.5625rem 1.1875rem;
-  border: 1px solid transparent;
-  border-radius: 0.25rem;
-  font-weight: 500;
-  background: var(--fg);
-  color: var(--bg);
-  &:hover {
-    background: var(--signal);
-    color: var(--on-signal);
-  }
-}
-
-/* Text links: a muted underline that darkens on hover. */
-@utility link {
-  text-decoration: underline;
-  text-decoration-color: var(--muted);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.3em;
-  &:hover {
-    text-decoration-color: currentColor;
-  }
+  color: var(--muted-foreground);
 }
 
 /* ------------------------------------------------------------ skill icons
    Each skill's icon sits on a small tile tinted with its own colour (--c):
    the brand's colour for a brand mark, signal for the glyphs drawn here.
    Every 12s a glint of light runs across the tiles in reading order (--i
-   staggers them) and then the pane is still again; the icon lifts when its
+   staggers them) and then they're still again; the icon lifts when its
    row is hovered, and the drawn glyphs move a little on their own. All of
    it stops with reduced motion. */
 
@@ -234,16 +185,16 @@ body {
   display: grid;
   place-items: center;
   flex: none;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.25rem;
+  height: 2.25rem;
   overflow: hidden;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-md);
   color: var(--c);
-  background: color-mix(in oklab, var(--c) 12%, transparent);
-  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--c) 30%, transparent);
+  background: color-mix(in oklab, var(--c) 10%, var(--card));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--c) 28%, transparent);
   & svg {
-    width: 1.375rem;
-    height: 1.375rem;
+    width: 1.25rem;
+    height: 1.25rem;
   }
   &::after {
     content: "";

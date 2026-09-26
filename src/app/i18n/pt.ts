@@ -17,14 +17,9 @@ const pt: Dictionary = {
     contact: "Contato",
   },
   hero: {
-    line: "Sou vx e moro no Uruguai.",
+    status: "Disponível para trabalhar",
+    line: "Sou vx e trabalho com engenharia de software no Uruguai.",
     lede: "Escrevo C para Linux, até o PID 1, e TypeScript para a web, como este site. Me interessa como as coisas funcionam por dentro, das camadas de rede aos modelos de linguagem.",
-    quote: "Programas pequenos, cada um com uma só tarefa, que usam interfaces POSIX sempre que possível e são curtos o bastante para ler de uma vez só.",
-    facts: [
-      { k: "Função", v: "Engenharia de software" },
-      { k: "Código", v: "github.com/vx9k" },
-    ],
-    status: { k: "Status", v: "Disponível para trabalhar" },
   },
   skills: {
     title: "Habilidades",
@@ -34,6 +29,7 @@ const pt: Dictionary = {
   },
   principles: {
     title: "Princípios",
+    quote: "Programas pequenos, cada um com uma só tarefa, que usam interfaces POSIX sempre que possível e são curtos o bastante para ler de uma vez só.",
     items: [
       {
         title: "Padrões em vez de atalhos",
@@ -51,7 +47,8 @@ const pt: Dictionary = {
   },
   contact: {
     title: "Contato",
-    line: "Estou disponível para trabalhar. Meus projetos são públicos no GitHub.",
+    heading: "Estou disponível para trabalhar.",
+    body: "Meus projetos são públicos no GitHub.",
   },
   footer: {
     source: "Código deste site",

@@ -14,16 +14,12 @@ const en = {
     contact: "Contact",
   },
   hero: {
-    // From vx's GitHub profile and public repos: 4init is a minimal PID 1.
-    line: "I’m vx, based in Uruguay.",
-    lede: "I write C for Linux, down to PID 1, and TypeScript for the web, like this site. I’m interested in how things work underneath, from network layers to language models.",
-    quote: "Small programs that each do one job, use POSIX interfaces where they can, and stay short enough to read in one sitting.",
-    facts: [
-      { k: "Role", v: "Software engineer" },
-      { k: "Source", v: "github.com/vx9k" },
-    ],
     // vx's GitHub profile is marked available for hire.
-    status: { k: "Status", v: "Open to work" },
+    status: "Open to work",
+    // From vx's GitHub profile (Software Engineer, Uruguay) and public
+    // repos: 4init is a minimal PID 1.
+    line: "I’m vx, a software engineer based in Uruguay.",
+    lede: "I write C for Linux, down to PID 1, and TypeScript for the web, like this site. I’m interested in how things work underneath, from network layers to language models.",
   },
   skills: {
     title: "Skills",
@@ -35,6 +31,7 @@ const en = {
   },
   principles: {
     title: "Principles",
+    quote: "Small programs that each do one job, use POSIX interfaces where they can, and stay short enough to read in one sitting.",
     items: [
       {
         title: "Standards over shortcuts",
@@ -52,7 +49,8 @@ const en = {
   },
   contact: {
     title: "Contact",
-    line: "I’m open to work. My projects are public on GitHub.",
+    heading: "I’m open to work.",
+    body: "My projects are public on GitHub.",
   },
   footer: {
     source: "Source for this site",
