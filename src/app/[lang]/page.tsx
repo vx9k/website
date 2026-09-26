@@ -10,8 +10,8 @@ import { getDictionary, hasLocale } from "../i18n";
 // One page that reads like a spec sheet: a statement, the facts, then
 // numbered sections, with the content on panes of glass. From lg up the
 // header, every section and the footer share one split, so everything but
-// the titles hangs from one vertical. The header and footer bars bleed
-// past the shell by their own padding, so their contents stay on it.
+// the titles hangs from one vertical. The header bar bleeds past the shell
+// by its own padding, so its contents stay on it.
 export default async function Home({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   // The layout already 404s unknown languages; this narrows the type.
@@ -51,8 +51,8 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         <Contact t={t} />
       </main>
 
-      <footer className="shell pb-3">
-        <div className="glass split -mx-3 flex flex-wrap items-center justify-between gap-x-6 px-3 py-1.5 text-sm text-muted lg:grid">
+      <footer className="shell">
+        <div className="split flex flex-wrap items-center justify-between gap-x-6 border-t border-line py-2 text-sm text-muted lg:grid lg:gap-x-12">
           <p>vx</p>
           <p className="flex flex-wrap items-center justify-between gap-x-6">
             <a href={links.website} className="link inline-flex min-h-11 items-center hover:text-fg">

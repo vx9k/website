@@ -39,7 +39,7 @@ export default function Work({ t }: { t: Dictionary }) {
         <Project name="4suite" href={links.suite}>
           <p className="mt-1 max-w-[36rem] text-pretty">{w.suite.body}</p>
           <Specs
-            className="mt-6 rounded-sm border border-line"
+            className="-mx-4 mt-6 border-y border-line"
             rows={[
               [w.spec.language, specs.suite.language],
               [w.spec.target, w.suite.target],
@@ -71,7 +71,7 @@ export default function Work({ t }: { t: Dictionary }) {
         <Project name="website" href={links.website}>
           <p className="mt-1 max-w-[36rem] text-pretty">{w.site.body}</p>
           <Specs
-            className="mt-6 rounded-sm border border-line"
+            className="-mx-4 mt-6 border-y border-line"
             rows={[
               [w.spec.language, specs.site.language],
               [w.spec.framework, specs.site.framework],
