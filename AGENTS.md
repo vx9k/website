@@ -45,7 +45,7 @@ src/app/
   global-not-found.tsx  exported as 404.html; carries all three languages
   content.ts          language-neutral data (links, section ids, suite, specs, stack)
   i18n/               en.ts (source of truth), es.ts, pt.ts, locales.ts
-  globals.css         the palette, type scale and five utilities
+  globals.css         the palette, the glow, type scale and seven utilities
   manifest.ts, icon.svg, apple-icon.png  the signal square on carbon; the PNG is a
                       180px render of the same square on whole pixels (62–118)
   components/
@@ -75,40 +75,50 @@ The page is deliberately flat: server components that render static markup, and 
 
 ## Design direction
 
-A technical document. The references are defence and research companies (Helsing, Palantir, Lockheed Martin) and AI labs (Mistral, Black Forest Labs): plain facts on a strict grid, large type, hairline rules and a lot of space. There's no imagery, no decoration and no motion. The page earns its character from typography and restraint, not effects.
+A technical document on glass. The references are defence and research companies (Helsing, Palantir, Lockheed Martin) and AI labs (Mistral, Black Forest Labs): plain facts on a strict grid, large type, hairline rules and a lot of space. The content sits on panes of glass lit by a soft, fixed glow. There's no imagery and no motion. The page earns its character from typography, light and restraint, not effects.
 
 **Palette.** Paper by day, carbon by night, one signal colour. Tokens live on `:root` in `globals.css`; `light-dark()` picks the value from the system's setting.
 
 | Token | Light | Dark | Use |
 | --- | --- | --- | --- |
 | `--bg` | paper `#f3f2ee` | carbon `#0c0c0b` | the page |
-| `--fg` | `#141413` | `#ecebe6` | text, the button |
+| `--fg` | `#141413` | `#ecebe6` | text, the button, the current language |
 | `--muted` | `#5f5e59` | `#9a9993` | secondary text, labels |
-| `--line` | `#d7d5ce` | `#2c2b28` | hairline rules only |
+| `--line` | ink at 12% | white at 9% | hairline rules only |
 | `--signal` | `#f04800` | `#f04800` | marks only |
 | `--on-signal` | `#141413` | `#141413` | text on signal |
+| `--glass`, `--glass-edge`, `--glass-shine`, `--glass-shade` | white fill, ink edge | faint white fill and edge | the `glass` utility only |
+| `--glow`, `--glow-2` | signal and amber, faint | signal and amber, fainter | the ambient light only |
 
-Contrast decides what each token may do. `--fg` (16:1) and `--muted` (5.8:1 light, 6.9:1 dark) carry text. `--signal` is 3.3:1 on paper, so it's for marks and never for text on `--bg`: the square before "vx", the status squares, the mark on the 404, the underline on the current language, the focus ring, the text selection and the button's hover. Carbon on signal is 4.9:1, which is why the hover and the selection use `--on-signal`. `--line` is for rules, never the only edge of a control. Add no other colours, tints, shadows, opacity-as-colour or gradients (the half-filled status square is the one gradient).
+Contrast decides what each token may do. `--fg` (16:1) and `--muted` (5.8:1 light, 6.9:1 dark) carry text. `--signal` is 3.3:1 on paper, so it's for marks and never for text on `--bg`: the square before "vx", the status squares, the mark on the 404, the focus ring, the text selection and the button's hover. Carbon on signal is 4.9:1, which is why the hover and the selection use `--on-signal`. `--line` is for rules, never the only edge of a control. Translucency lives only in the glass and glow tokens; don't add tints, opacity modifiers or new gradients elsewhere (the half-filled status square is the one other gradient).
+
+**Light and glass.**
+- `body::before` is a fixed layer with two radial glows: signal at the top right and amber low on the right, where the panels are. Text that sits on the bare page (the headline, the lede, section titles) is on the left, clear of the strongest light. Keep the glows faint: muted text must hold 4.5:1 on whatever they put behind it, at every width and scroll position.
+- `glass` is a pane: a translucent fill, a 1px edge, a 1px highlight along the top and a soft shade under it, with 6px corners. It's for the hero facts, each project, the principles, the stack, contact, the header and footer bars and the 404. Don't nest panes; inside one, structure is hairlines and the bordered spec table.
+- `frost` adds the backdrop blur, and only the header needs it, because it's the one pane text scrolls under. The panels sit over nothing but the smooth glow, where a blur would cost a repaint every scroll and change nothing.
+- With `prefers-reduced-transparency`, glass turns solid (`--bg`) and loses its blur. In forced colours the glow is hidden and panes keep their edge.
+
+**Corners.** Square with a little rounding, never pills: 6px for panes (`glass`), 4px for controls (`btn`, the language segments, the skip link, the spec tables: `rounded-sm`), 1–2px for the small signal marks. No `rounded-full`, and nothing rounder than 6px.
 
 **Type.** Geist for everything, Geist Mono for small uppercase labels (the `label` utility), the language switch and the repo URLs. Weights are 400 and 500 only. Large type gets negative tracking (`text-display` is -0.04em; titles use `tracking-tight`), body text none. Headings are sentence case.
 
 **Layout.** One vertical decides the page.
-- `shell` is the one centred column (80rem, fluid side padding) that the header, every section and the footer share. Don't put page chrome outside it.
+- `shell` is the one centred column (80rem, fluid side padding) that the header, every section and the footer share. Don't put page chrome outside it. The header and footer bars bleed past it by their own padding (`-mx-3 px-3`), so their contents stay on its edges.
 - `split` (with `lg:grid`) divides a block in the shell into two tracks from lg up: 1fr 3fr, then 1fr 2fr from xl. The header, the intro, every section and the footer use it, so the section titles and "vx" sit on the left track and everything else starts on the same vertical, the right track's edge. Only the headline spans both. Below lg, blocks stack.
-- Below the intro, every section is a `<Section>`: a hairline across the shell, the number and title on the left (sticky on large screens), the content on the right. Numbers come from the order of `sections` in `content.ts`.
-- Inside the right track, a four-column sub-grid (`md:grid-cols-4`, `gap-x-6`) lines things up: `<Specs>` puts four facts across it, and rows (components, principles, stack) put their key in the first column and the value across the other three. Rows are separated by hairlines; the first row of a section drops its rule, since the section's own rule is right above it.
-- Everything is left-aligned. Sections are separated by space and a single hairline, never boxes or cards.
-- Measure: body text stops at 36rem; the headline at 16ch.
+- Below the intro, every section is a `<Section>`: the number and title on the left (sticky on large screens, below the header), the content on the right. Numbers come from the order of `sections` in `content.ts`.
+- Inside a pane, a four-column sub-grid (`md:grid-cols-4`, `gap-x-6`) lines things up: `<Specs>` is a table of four facts, and rows (components, principles, stack) put their key in the first column and the value across the other three, separated by hairlines.
+- Everything is left-aligned. Measure: body text stops at 36rem; the headline at 16ch.
 
 **Components.**
-- `btn`: the one button. Solid `--fg`, square corners, at least 44px tall, `--signal` on hover, and a transparent border that shows as a real edge in contrast themes. One per page.
+- `btn`: the one button. Solid `--fg`, 4px corners, at least 44px tall, `--signal` on hover, and a transparent border that shows as a real edge in contrast themes. One per page.
 - `link`: a 1px underline in `--muted` that darkens to the text colour on hover.
 - `label`: Geist Mono, 12px, uppercase, 0.06em tracking, `--muted`.
+- The language switch is a segmented control: three 44px segments, the current one filled with `--fg`.
 - Statuses are a signal square plus the word: filled for shipping, half for in progress, empty for planned. The shape carries the meaning, not the colour, and the squares keep their shape in contrast themes (`forced-color-adjust-none`, with `--signal` set to `CanvasText`).
 
 **Don't:**
-- Rounded corners, pills, cards, shadows, blur, gradients (except the half-filled status square) or opacity.
-- A second accent colour, colour on large surfaces, or signal used for text on the page background.
+- Pills, rounding above 6px, heavy or coloured shadows, glass inside glass, or blur anywhere but the header.
+- A second accent colour, colour on large surfaces beyond the faint glow, or signal used for text on the page.
 - Imagery, illustration, icons beyond the ↗ ↑ ← arrows, or decorative motion. Hover changes colour and nothing else.
 - Terminal or hacker clichés: fake shells, `$` prompts, boot logs, blinking cursors, ASCII brackets, crosshairs, HUD or telemetry cosplay. "Technical" here means a spec sheet, not a screen.
 - Copy that performs: taglines, slogans, claims about impact. State what the thing is and what it does.
@@ -123,11 +133,12 @@ For every visual change:
 - Check it in light and dark mode (emulate `prefers-color-scheme` in the browser's dev tools).
 - Keep semantic landmarks, `aria-labelledby` on sections, the skip link, visible `:focus-visible` outlines (2px signal, 3.3:1 or better), 44px minimum touch targets (`min-h-11` on text links too) and `aria-hidden` on purely decorative marks.
 - Keep the page still. The only motion is smooth scrolling to anchors, and `prefers-reduced-motion` turns it off.
-- In forced colours (Windows contrast themes) the system replaces every colour: hairlines and text follow it, `--signal` becomes `CanvasText`, the button keeps an edge through its transparent border, and the status squares opt out of the override so their shape survives. Check any new element there too.
+- In forced colours (Windows contrast themes) the system replaces every colour: the glow is hidden, hairlines, pane edges and text follow the system, `--signal` becomes `CanvasText`, the button keeps an edge through its transparent border, and the status squares opt out of the override so their shape survives. Check any new element there too.
+- With `prefers-reduced-transparency`, check that panes are solid and the header is opaque.
 
 ## Performance
 
-The page is static and small; keep it that way. No runtime dependencies beyond Next and React, and the only client code is the language links and the 404's language picker. Two variable fonts, self-hosted by `next/font`, and no images on the page. Keep any new idea to that standard: no canvas, no animation libraries, nothing running in JavaScript on a timer.
+The page is static and small; keep it that way. No runtime dependencies beyond Next and React, and the only client code is the language links and the 404's language picker. Two variable fonts, self-hosted by `next/font`, and no images on the page. The glow is two CSS gradients, and only the header pays for a backdrop blur. Keep any new idea to that standard: no canvas, no animation libraries, nothing running in JavaScript on a timer.
 
 ## Code style
 

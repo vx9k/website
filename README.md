@@ -2,7 +2,7 @@
 
 Source for [kthread.dev](https://kthread.dev), the personal site of [vx](https://github.com/vx9k).
 
-It's a single static page built with Next.js and Tailwind CSS, exported to plain HTML and served from Cloudflare Workers at [kthread.dev](https://kthread.dev). The design is a plain technical document: paper or carbon depending on your system's setting, one signal orange, Geist type, hairline rules and numbered sections that all hang from one vertical. It reads in English, Spanish and Portuguese.
+It's a single static page built with Next.js and Tailwind CSS, exported to plain HTML and served from Cloudflare Workers at [kthread.dev](https://kthread.dev). The design is a technical document on glass: paper or carbon depending on your system's setting, a faint signal-orange glow behind translucent panes with slightly rounded corners, Geist type, and numbered sections that all hang from one vertical. It reads in English, Spanish and Portuguese.
 
 ## Running it
 
@@ -31,7 +31,7 @@ src/
     ├── global-not-found.tsx  the 404 page, in all three languages
     ├── content.ts        language-neutral facts: links, projects, stack
     ├── i18n/             the copy in English, Spanish and Portuguese
-    ├── globals.css       the palette, type scale and a few utilities
+    ├── globals.css       the palette, the glow, glass and a few utilities
     └── components/       the intro, the sections and the language links
 ```
 

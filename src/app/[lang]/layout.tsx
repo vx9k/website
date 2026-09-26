@@ -54,7 +54,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
       <body className="min-h-dvh overflow-x-clip antialiased">
         <a
           href="#main"
-          className="fixed top-3 left-3 z-10 -translate-y-24 bg-fg px-4 py-3 text-sm text-bg focus-visible:translate-y-0"
+          className="fixed top-3 left-3 z-20 -translate-y-24 rounded-sm bg-fg px-4 py-3 text-sm text-bg focus-visible:translate-y-0"
         >
           {t.skip}
         </a>

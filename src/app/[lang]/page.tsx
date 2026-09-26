@@ -8,8 +8,10 @@ import { links, sections } from "../content";
 import { getDictionary, hasLocale } from "../i18n";
 
 // One page that reads like a spec sheet: a statement, the facts, then
-// numbered sections. From lg up the header, every section and the footer
-// share one split, so everything but the titles hangs from one vertical.
+// numbered sections, with the content on panes of glass. From lg up the
+// header, every section and the footer share one split, so everything but
+// the titles hangs from one vertical. The header and footer bars bleed
+// past the shell by their own padding, so their contents stay on it.
 export default async function Home({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   // The layout already 404s unknown languages; this narrows the type.
@@ -18,10 +20,10 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
 
   return (
     <>
-      <header id="top" className="border-b border-line">
-        <div className="shell split flex items-center justify-between py-2 lg:grid">
+      <header className="shell sticky top-3 z-10">
+        <div className="glass frost split -mx-3 flex items-center justify-between px-3 py-1.5 lg:grid">
           <a href={`/${lang}`} className="inline-flex min-h-11 min-w-11 items-center gap-2.5 justify-self-start font-medium tracking-tight">
-            <span aria-hidden className="size-2.5 bg-signal" />
+            <span aria-hidden className="size-2.5 rounded-[2px] bg-signal" />
             vx
           </a>
           <div className="flex items-center justify-between gap-6">
@@ -49,8 +51,8 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         <Contact t={t} />
       </main>
 
-      <footer className="border-t border-line">
-        <div className="shell split flex flex-wrap items-center justify-between gap-x-6 py-2 text-sm text-muted lg:grid">
+      <footer className="shell pb-3">
+        <div className="glass split -mx-3 flex flex-wrap items-center justify-between gap-x-6 px-3 py-1.5 text-sm text-muted lg:grid">
           <p>vx</p>
           <p className="flex flex-wrap items-center justify-between gap-x-6">
             <a href={links.website} className="link inline-flex min-h-11 items-center hover:text-fg">

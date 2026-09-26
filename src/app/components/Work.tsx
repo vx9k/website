@@ -13,10 +13,11 @@ const glyph: Record<Status, string> = {
   planned: "border border-signal",
 };
 
+/** One project on its own pane of glass. */
 function Project({ name, href, children }: { name: string; href: string; children: ReactNode }) {
   return (
-    <article aria-labelledby={`${name}-title`}>
-      <header className="flex flex-wrap items-baseline justify-between gap-x-6">
+    <article aria-labelledby={`${name}-title`} className="glass p-5 sm:p-8">
+      <header className="-mt-2.5 flex flex-wrap items-baseline justify-between gap-x-6">
         <h3 id={`${name}-title`} className="text-xl font-medium tracking-tight">
           {name}
         </h3>
@@ -34,11 +35,11 @@ export default function Work({ t }: { t: Dictionary }) {
   const notes: Partial<Record<string, string>> = w.suite.nodes;
   return (
     <Section id="work" title={w.title}>
-      <div className="space-y-20">
+      <div className="space-y-6">
         <Project name="4suite" href={links.suite}>
-          <p className="mt-2 max-w-[36rem] text-pretty">{w.suite.body}</p>
+          <p className="mt-1 max-w-[36rem] text-pretty">{w.suite.body}</p>
           <Specs
-            className="mt-8"
+            className="mt-6 rounded-sm border border-line"
             rows={[
               [w.spec.language, specs.suite.language],
               [w.spec.target, w.suite.target],
@@ -48,13 +49,16 @@ export default function Work({ t }: { t: Dictionary }) {
           />
 
           <h4 className="label mt-10">{w.suite.components}</h4>
-          <ul className="mt-4 border-b border-line">
+          <ul className="mt-3">
             {suite.map(({ name, status }) => (
-              <li key={name} className="grid gap-x-6 gap-y-1 border-t border-line py-4 md:grid-cols-4">
+              <li key={name} className="grid gap-x-6 gap-y-1 border-t border-line py-4 last:pb-0 md:grid-cols-4">
                 <p className="flex flex-wrap items-baseline gap-x-3">
                   <span className="font-medium">{name}</span>
                   <span className="label inline-flex items-center gap-2">
-                    <span aria-hidden className={`size-2 shrink-0 forced-color-adjust-none ${glyph[status]}`} />
+                    <span
+                      aria-hidden
+                      className={`size-2 shrink-0 rounded-[1px] forced-color-adjust-none ${glyph[status]}`}
+                    />
                     {w.status[status]}
                   </span>
                 </p>
@@ -65,9 +69,9 @@ export default function Work({ t }: { t: Dictionary }) {
         </Project>
 
         <Project name="website" href={links.website}>
-          <p className="mt-2 max-w-[36rem] text-pretty">{w.site.body}</p>
+          <p className="mt-1 max-w-[36rem] text-pretty">{w.site.body}</p>
           <Specs
-            className="mt-8"
+            className="mt-6 rounded-sm border border-line"
             rows={[
               [w.spec.language, specs.site.language],
               [w.spec.framework, specs.site.framework],

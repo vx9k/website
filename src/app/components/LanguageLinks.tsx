@@ -12,7 +12,7 @@ function remember(lang: Locale) {
 export default function LanguageLinks({ lang, label }: { lang: Locale; label: string }) {
   return (
     <nav aria-label={label}>
-      <ul className="-me-3.5 flex">
+      <ul className="flex gap-1">
         {localeKeys.map((l) => (
           <li key={l}>
             <a
@@ -21,7 +21,7 @@ export default function LanguageLinks({ lang, label }: { lang: Locale; label: st
               lang={locales[l].tag}
               aria-current={l === lang ? "page" : undefined}
               onClick={() => remember(l)}
-              className="inline-flex min-h-11 min-w-11 items-center justify-center font-mono text-xs text-muted decoration-signal decoration-2 underline-offset-8 hover:text-fg aria-[current=page]:text-fg aria-[current=page]:underline"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-sm font-mono text-xs text-muted hover:text-fg aria-[current=page]:bg-fg aria-[current=page]:text-bg"
             >
               {locales[l].short}
               <span className="sr-only"> {locales[l].name}</span>

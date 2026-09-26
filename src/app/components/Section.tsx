@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 import { sections } from "../content";
 
-/** The frame every section below the intro shares: a hairline across the
- *  shell, then the number and title on the left and the content on the
- *  right. On small screens the two stack. */
+/** The frame every section below the intro shares: the number and title
+ *  on the left (held in view on large screens), the content on the right.
+ *  On small screens the two stack. */
 export default function Section({
   id,
   title,
@@ -16,8 +16,8 @@ export default function Section({
   const number = String(sections.indexOf(id) + 1).padStart(2, "0");
   return (
     <section id={id} aria-labelledby={`${id}-title`} className="shell">
-      <div className="split border-t border-line pt-6 pb-20 lg:grid lg:pb-28">
-        <header className="lg:sticky lg:top-8 lg:self-start">
+      <div className="split pb-20 lg:grid lg:pb-28">
+        <header className="lg:sticky lg:top-24 lg:self-start lg:pt-8">
           <p aria-hidden className="label">
             {number}
           </p>
@@ -25,7 +25,7 @@ export default function Section({
             {title}
           </h2>
         </header>
-        <div className="mt-10 lg:mt-0">{children}</div>
+        <div className="mt-8 lg:mt-0">{children}</div>
       </div>
     </section>
   );

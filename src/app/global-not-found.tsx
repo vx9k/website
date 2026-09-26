@@ -53,9 +53,9 @@ export default function GlobalNotFound() {
           {localeKeys.map((l) => {
             const t = getDictionary(l).notFound;
             return (
-              <div key={l} lang={locales[l].tag} className={visibility[l]}>
+              <div key={l} lang={locales[l].tag} className={`glass max-w-[48rem] p-6 sm:p-10 ${visibility[l]}`}>
                 <p className="label flex items-center gap-2.5">
-                  <span aria-hidden className="size-2 bg-signal" />
+                  <span aria-hidden className="size-2 rounded-[1px] bg-signal" />
                   404
                 </p>
                 <h1 className="mt-6 max-w-[16ch] text-display font-medium text-balance wrap-break-word">{t.title}</h1>
