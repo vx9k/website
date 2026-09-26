@@ -1,13 +1,12 @@
 import type { Dictionary } from "./en";
 
 // Spanish (Latin America). Tuteo throughout, and wording that doesn't
-// assign vx a grammatical gender ("Ingeniería de sistemas", not
+// assign vx a grammatical gender ("Ingeniería de software", not
 // "Ingeniero"). Quotes from English READMEs stay in English.
 const es: Dictionary = {
   meta: {
-    title: "vx — ingeniería de sistemas",
-    description:
-      "vx escribe sistemas init mínimos y herramientas de arranque en C, lo bastante pequeños para leerlos de una sentada.",
+    title: "vx — ingeniería de software",
+    description: "vx vive en Uruguay y escribe C para Linux y TypeScript para la web.",
   },
   skip: "Saltar al contenido",
   nav: {
@@ -18,11 +17,11 @@ const es: Dictionary = {
     contact: "Contacto",
   },
   hero: {
-    line: "Sistemas init y herramientas de arranque en C.",
-    lede: "Programas pequeños que hacen una sola cosa cada uno, usan interfaces POSIX siempre que pueden y son lo bastante cortos para leerlos de una sentada.",
+    line: "Soy vx y vivo en Uruguay.",
+    lede: "Escribo C para Linux, hasta el PID 1, y TypeScript para la web, como este sitio. Me interesa cómo funcionan las cosas por dentro, de las capas de red a los modelos de lenguaje.",
+    quote: "Programas pequeños que hacen una sola cosa cada uno, usan interfaces POSIX siempre que pueden y son lo bastante cortos para leerlos de una sentada.",
     facts: [
-      { k: "Rol", v: "Ingeniería de sistemas" },
-      { k: "Enfoque", v: "Sistemas init, C POSIX" },
+      { k: "Rol", v: "Ingeniería de software" },
       { k: "Código", v: "github.com/vx9k" },
     ],
   },

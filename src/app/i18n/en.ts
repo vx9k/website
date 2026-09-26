@@ -2,9 +2,8 @@
 // are typed against it, so a missing or extra key fails the build.
 const en = {
   meta: {
-    title: "vx — systems engineer",
-    description:
-      "vx writes minimal init systems and boot tooling in C, small enough to read in one sitting.",
+    title: "vx — software engineer",
+    description: "vx is based in Uruguay and writes C for Linux and TypeScript for the web.",
   },
   skip: "Skip to content",
   nav: {
@@ -15,11 +14,12 @@ const en = {
     contact: "Contact",
   },
   hero: {
-    line: "Init systems and boot tooling in C.",
-    lede: "Small programs that each do one job, use POSIX interfaces where they can, and stay short enough to read in one sitting.",
+    // From vx's GitHub profile and public repos: 4init is a minimal PID 1.
+    line: "I’m vx, based in Uruguay.",
+    lede: "I write C for Linux, down to PID 1, and TypeScript for the web, like this site. I’m interested in how things work underneath, from network layers to language models.",
+    quote: "Small programs that each do one job, use POSIX interfaces where they can, and stay short enough to read in one sitting.",
     facts: [
-      { k: "Role", v: "Systems engineer" },
-      { k: "Focus", v: "Init systems, POSIX C" },
+      { k: "Role", v: "Software engineer" },
       { k: "Source", v: "github.com/vx9k" },
     ],
   },
