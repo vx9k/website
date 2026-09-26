@@ -26,9 +26,12 @@ let pages = 0;
 for (const file of htmlFiles(out)) {
   pages++;
   const html = readFileSync(file, "utf8");
-  for (const [, attrs, body] of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)) {
+  // Tags in any case, and end tags with anything before the ">"
+  // ("</script >", "</SCRIPT foo>"), as browsers read them: a script this
+  // missed would get no hash, and the policy would block it.
+  for (const [, attrs, body] of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\b[^>]*>/gi)) {
     // Scripts with a src load from this origin and are covered by 'self'.
-    if (/\bsrc=/.test(attrs)) continue;
+    if (/\bsrc\s*=/i.test(attrs)) continue;
     hashes.add(`'sha256-${createHash("sha256").update(body, "utf8").digest("base64")}'`);
   }
 }
