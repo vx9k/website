@@ -18,19 +18,9 @@ const es: Dictionary = {
     stack: "Herramientas",
     contact: "Contacto",
   },
-  scene: {
-    hint: "Algunos píxeles hacen cosas: prueba el sol o la luna, el árbol grande y la manga de viento.",
-    sky: "Cambiar entre día y noche",
-    tree: "Sacudir el árbol",
-    windsock: "Soplar una ráfaga de viento",
-  },
-  console: {
-    a: "A: soplar una ráfaga de viento",
-    b: "B: cambiar entre día y noche",
-  },
   hero: {
-    line: "Escribo software pensado para durar más que la máquina en la que corre.",
-    lede: "Escribo sistemas init mínimos en C. El código es lo bastante pequeño para leerlo de una sentada y se apega a las interfaces POSIX siempre que puede.",
+    line: "Sistemas init y herramientas de arranque en C.",
+    lede: "Programas pequeños que hacen una sola cosa cada uno, usan interfaces POSIX siempre que pueden y son lo bastante cortos para leerlos de una sentada.",
     facts: [
       { k: "Rol", v: "Ingeniería de sistemas" },
       { k: "Enfoque", v: "Sistemas init, C POSIX" },
@@ -40,7 +30,6 @@ const es: Dictionary = {
   },
   work: {
     title: "Trabajo",
-    aside: "Programas pequeños que hacen una sola cosa cada uno, en el orden en que se ejecutan.",
     status: {
       shipping: "disponible",
       "in progress": "en progreso",
@@ -52,40 +41,36 @@ const es: Dictionary = {
       build: "Compilación",
       license: "Licencia",
       framework: "Framework",
-      graphics: "Gráficos",
+      styling: "Estilos",
       hosting: "Alojamiento",
     },
     suite: {
-      body: "Una pila de arranque autocontenida en C: init, rc, logger y user, cada uno con su propio alcance y su propio README.",
-      target: "Linux, BSD planeado",
-      platforms: "Por ahora solo Linux. signalfd es una interfaz de Linux; el soporte para BSD está planeado.",
+      body: "Una pila de arranque autocontenida en C: init, rc, logger y user.",
+      target: "Linux",
       components: "Componentes",
       nodes: {
-        "4init": "PID 1 mínimo. Bloquea las señales y las lee con un signalfd, lanza 4rc con fork en su propia sesión y recoge a los procesos hijos en cada SIGCHLD. Inspirado en el init mínimo de rofl0r.",
-        "4rc": "El gestor de servicios que arranca 4init. Está en sus inicios: su propio README dice que “larps as being functional”.",
-        logger: "Forma parte del alcance de la suite. Sin empezar.",
-        user: "Forma parte del alcance de la suite. Sin empezar.",
+        "4init": "PID 1 mínimo. Bloquea las señales y las lee con un signalfd, hace fork de 4rc en su propia sesión y luego recolecta los procesos hijos en cada SIGCHLD. Inspirado en el init mínimo de rofl0r.",
+        "4rc": "El gestor de servicios que 4init arranca por defecto. Está en sus inicios.",
       },
     },
     site: {
-      body: "Un export estático de Next.js servido desde Cloudflare Workers. El paisaje de arriba es pixel art: se dibuja al compilar el sitio y llega como SVG. Los árboles se mueven con un viento hecho de CSS, el sol cambia la paleta y la página está en inglés, español y portugués.",
+      body: "Un sitio estático exportado con Next.js y servido desde Cloudflare Workers, en inglés, español y portugués. Un Worker en la dirección raíz elige tu idioma, y la página sigue el modo claro u oscuro de tu sistema.",
     },
   },
   principles: {
     title: "Principios",
-    aside: "Tres reglas que resuelven casi todas mis decisiones de diseño antes de escribir una línea.",
     items: [
       {
         title: "Estándares antes que atajos",
-        body: "Interfaces POSIX antes que extensiones de un fabricante. Si un programa corre en una sola plataforma, alguien lo decidió, y esa decisión necesita una razón.",
+        body: "Interfaces POSIX antes que extensiones de un fabricante.",
       },
       {
-        title: "Una sola tarea, predecible",
-        body: "Un init que solo gestiona procesos. Un gestor de servicios que solo gestiona servicios. Cuando el alcance crece sin control, suele ser la primera señal de que algo va a dejar de ser confiable.",
+        title: "Una sola tarea, hecha de forma predecible",
+        body: "Un init que solo gestiona procesos y un gestor de servicios que solo gestiona servicios. El resto de la pila está planeado como programas aparte.",
       },
       {
         title: "Lo bastante pequeño para entenderlo entero",
-        body: "Mejor código que te cabe en la cabeza que código en el que tienes que confiar. Si no puedo explicar por qué está una línea, se va.",
+        body: "Si no puedo explicar por qué una línea está ahí, no se queda.",
       },
     ],
   },
@@ -95,13 +80,15 @@ const es: Dictionary = {
   },
   contact: {
     title: "Contacto",
-    quote:
-      "Prefiero publicar algo pequeño que entiendo por completo que algo grande cuyos límites todavía estoy descubriendo.",
+    line: "Todo el trabajo de arriba es público en GitHub.",
+  },
+  footer: {
     source: "Código de este sitio",
+    top: "Volver arriba",
   },
   notFound: {
     title: "Página no encontrada",
-    body: "No hay nada en esta dirección. El enlace puede ser viejo o la URL puede tener un error.",
+    body: "No hay ninguna página en esta dirección. El enlace puede estar desactualizado o la URL puede tener un error.",
     back: "Volver al inicio",
   },
 };

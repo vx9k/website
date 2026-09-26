@@ -5,11 +5,14 @@ import Section from "./Section";
 export default function Stack({ t }: { t: Dictionary }) {
   return (
     <Section id="stack" title={t.stack.title}>
-      <dl>
+      <dl className="glass px-5 sm:px-8">
         {stack.map(({ group, items }) => (
-          <div key={group} className="rule grid grid-cols-[7rem_minmax(0,1fr)] gap-4 py-2.5">
-            <dt className="eyebrow pt-0.5">{t.stack.groups[group]}</dt>
-            <dd>{items.join(", ")}</dd>
+          <div
+            key={group}
+            className="grid gap-x-6 gap-y-1 border-t border-line py-5 first:border-t-0 sm:py-8 md:grid-cols-4 md:items-baseline"
+          >
+            <dt className="label">{t.stack.groups[group]}</dt>
+            <dd className="md:col-span-3">{items.join(", ")}</dd>
           </div>
         ))}
       </dl>

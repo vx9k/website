@@ -1,490 +1,199 @@
-@import "tailwindcss";
+@import "tailwindcss" source("..");
 
 /* ---------------------------------------------------------------- palette
-   Mist GB by Kerrie Lake: four colours and nothing else. Components use
-   the role tokens below, never the four directly (the vx badge aside), so
-   the night palette is a swap of roles, not new colours. */
+   Paper and carbon, with one signal orange. light-dark() follows the
+   system's setting; there's no toggle. Signal is for marks, never text:
+   it's 3.3:1 on paper, and carbon text on it is 4.9:1. */
 
 :root {
-  --mint: #c4f0c2;
-  --teal: #5ab9a8;
-  --deep: #1e606e;
-  --brown: #2d1b00;
+  color-scheme: light dark;
+  --bg: light-dark(#f3f2ee, #0c0c0b);
+  --fg: light-dark(#141413, #ecebe6);
+  --muted: light-dark(#52514b, #a09f99);
+  --line: light-dark(rgb(20 20 19 / 0.12), rgb(255 255 255 / 0.09));
+  --signal: #f04800;
+  --on-signal: #141413;
 
-  /* One art pixel of the interface. Frames and rules are multiples of it. */
-  --px: 3px;
+  /* Glass: a fill that's brighter at the top, a light rim inside a faint
+     outer ring (the rim is what reads as glass rather than a card on
+     paper), a highlight along the top and a soft shade under it. */
+  --glass-top: light-dark(rgb(255 255 255 / 0.7), rgb(255 255 255 / 0.075));
+  --glass-bottom: light-dark(rgb(255 255 255 / 0.3), rgb(255 255 255 / 0.02));
+  --glass-edge: light-dark(rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.08));
+  --glass-ring: light-dark(rgb(20 20 19 / 0.07), rgb(0 0 0 / 0.4));
+  --glass-shine: light-dark(#fff, rgb(255 255 255 / 0.16));
+  --glass-shade: light-dark(rgb(20 20 19 / 0.16), rgb(0 0 0 / 0.6));
 
-  --bg: var(--mint);
-  --ink: var(--brown);
-  --soft: var(--deep);
-  --line: var(--deep);
-  --accent: var(--teal);
-  --plastic: var(--teal);
-  --on-plastic: var(--brown);
-  --bezel: var(--brown);
-  --on-bezel: var(--mint);
-
-  /* The scene: sky, far hills, near hills, foreground, sun or moon. */
-  --sky: var(--bg);
-  --far: var(--teal);
-  --near: var(--deep);
-  --fore: var(--brown);
-  --sun: var(--teal);
-
-  color-scheme: light;
+  /* The ambient light behind the glass: signal at the top right, amber
+     low on the right, both on the side where the panels are. Text that
+     sits on the bare page is on the left, clear of them. */
+  --glow: light-dark(rgb(240 72 0 / 0.2), rgb(240 72 0 / 0.24));
+  --glow-2: light-dark(rgb(255 170 0 / 0.24), rgb(255 120 0 / 0.14));
 }
 
-[data-theme="night"] {
-  --bg: var(--brown);
-  --ink: var(--mint);
-  --soft: var(--teal);
-  --line: var(--teal);
-  --accent: var(--deep);
-  --plastic: var(--deep);
-  --on-plastic: var(--mint);
-
-  --far: var(--deep);
-  --near: var(--teal);
-  --fore: var(--mint);
-  --sun: var(--mint);
-
-  color-scheme: dark;
+/* Contrast themes replace every colour. Marks that carry meaning (the
+   status squares) opt out with forced-color-adjust-none and draw in the
+   text colour instead. */
+@media (forced-colors: active) {
+  :root {
+    --signal: CanvasText;
+  }
+  body::before {
+    display: none;
+  }
 }
-
-@custom-variant night (&:where([data-theme="night"], [data-theme="night"] *));
 
 @theme inline {
-  --font-sans: var(--font-pixelify), ui-sans-serif, system-ui, sans-serif;
-  --font-label: var(--font-silkscreen), ui-monospace, monospace;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
   --color-bg: var(--bg);
-  --color-ink: var(--ink);
-  --color-soft: var(--soft);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
   --color-line: var(--line);
-  --color-accent: var(--accent);
-  --color-plastic: var(--plastic);
-  --color-on-plastic: var(--on-plastic);
-  --color-bezel: var(--bezel);
-  --color-on-bezel: var(--on-bezel);
-  --color-sky: var(--sky);
-  --color-far: var(--far);
-  --color-near: var(--near);
-  --color-fore: var(--fore);
-  --color-sun: var(--sun);
+  --color-signal: var(--signal);
 
-  --text-title: clamp(1.625rem, 1.2rem + 1.8vw, 2.5rem);
-  --text-title--line-height: 1.2;
-  --text-heading: 1.625rem;
-  --text-heading--line-height: 1.25;
+  --text-display: clamp(2.75rem, 1.5rem + 5vw, 6rem);
+  --text-display--line-height: 1;
+  --text-display--letter-spacing: -0.04em;
 }
 
 /* ------------------------------------------------------------------ base */
 
 html {
-  background: var(--plastic);
-  color: var(--ink);
+  background: var(--bg);
+  color: var(--fg);
   scroll-behavior: smooth;
-  -webkit-tap-highlight-color: transparent;
+  /* Anchored sections land below the floating header. */
+  scroll-padding-top: 5.5rem;
 }
 
 body {
-  font-family: var(--font-sans);
-  font-variant-ligatures: none;
+  line-height: 1.6;
+}
+
+/* Fixed, so the glass passes over it as the page scrolls. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 44rem at 100% 0%, var(--glow), transparent 70%),
+    radial-gradient(52rem 40rem at 75% 100%, var(--glow-2), transparent 70%);
 }
 
 ::selection {
-  background: var(--ink);
-  color: var(--bg);
+  background: var(--signal);
+  color: var(--on-signal);
 }
 
 :focus-visible {
-  outline: var(--px) solid currentColor;
-  outline-offset: var(--px);
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
 }
 
-/* ----------------------------------------------------- console and pixels */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
 
-/* The one centred column shared by the case's top edge, the screen and the
-   controls, so they line up at every width. */
-@utility console {
+/* ------------------------------------------------------------- utilities */
+
+/* The one centred column that the header, every section and the footer
+   share, so their edges line up at every width. */
+@utility shell {
   width: 100%;
-  max-width: 60rem;
+  max-width: 80rem;
   margin-inline: auto;
-  padding-inline: clamp(0.75rem, 3vw, 2rem);
+  padding-inline: clamp(1.25rem, 4vw, 3rem);
 }
 
-/* The scene's width: the widest multiple of 160px that fits the screen
-   with a margin, so every art pixel is a whole number of screen pixels
-   (on tiny screens, where that would be 160px, it fills the screen
-   instead). Text lines up with the scene's left edge through art-inset;
-   both resolve % against the screen. */
-:root {
-  --art: calc(100% - 1.5rem);
-}
-@supports (width: round(down, 100%, 160px)) {
-  :root {
-    --art: max(round(down, 100% - 1.5rem, 160px), min(100% - 1.5rem, 320px));
+/* From lg up, a block inside the shell splits into two tracks: titles on
+   the left, everything else on the right. Every block uses the same
+   split, so all content hangs from one vertical. Pair it with lg:grid. */
+@utility split {
+  @media (width >= 64rem) {
+    grid-template-columns: 1fr 3fr;
+    column-gap: 3rem;
   }
-}
-@utility art {
-  width: var(--art);
-  margin-inline: auto;
-}
-@utility art-inset {
-  padding-inline: calc((100% - var(--art)) / 2);
-}
-
-/* Corners cut in two pixel steps, for the bezel and the screen. */
-@utility notch {
-  --a: var(--px);
-  --b: calc(2 * var(--px));
-  clip-path: polygon(
-    var(--b) 0, calc(100% - var(--b)) 0, calc(100% - var(--b)) var(--a),
-    calc(100% - var(--a)) var(--a), calc(100% - var(--a)) var(--b),
-    100% var(--b), 100% calc(100% - var(--b)), calc(100% - var(--a)) calc(100% - var(--b)),
-    calc(100% - var(--a)) calc(100% - var(--a)), calc(100% - var(--b)) calc(100% - var(--a)),
-    calc(100% - var(--b)) 100%, var(--b) 100%, var(--b) calc(100% - var(--a)),
-    var(--a) calc(100% - var(--a)), var(--a) calc(100% - var(--b)), 0 calc(100% - var(--b)),
-    0 var(--b), var(--a) var(--b), var(--a) var(--a), var(--b) var(--a), var(--b) 0
-  );
-}
-
-/* A one-pixel stepped outline with empty corners. Set --frame to recolour. */
-@utility frame {
-  box-shadow:
-    0 calc(-1 * var(--px)) 0 0 var(--frame, var(--ink)),
-    0 var(--px) 0 0 var(--frame, var(--ink)),
-    calc(-1 * var(--px)) 0 0 0 var(--frame, var(--ink)),
-    var(--px) 0 0 0 var(--frame, var(--ink));
-}
-
-/* The RPG dialogue box: stepped outer frame, a gap, then an inner line. */
-@utility dialog {
-  box-shadow:
-    0 calc(-1 * var(--px)) 0 0 var(--ink),
-    0 var(--px) 0 0 var(--ink),
-    calc(-1 * var(--px)) 0 0 0 var(--ink),
-    var(--px) 0 0 0 var(--ink),
-    inset 0 0 0 var(--px) var(--bg),
-    inset 0 0 0 calc(2 * var(--px)) var(--line);
-}
-
-/* A dashed pixel rule along the top of a row. */
-@utility rule {
-  background: repeating-linear-gradient(
-      90deg,
-      var(--line) 0 calc(2 * var(--px)),
-      transparent 0 calc(3 * var(--px))
-    )
-    top left / 100% var(--px) no-repeat;
-}
-
-@utility eyebrow {
-  font-family: var(--font-label);
-  font-size: 0.75rem;
-  line-height: 1.25rem;
-  text-transform: uppercase;
-  color: var(--soft);
-}
-
-@utility chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.125rem 0.5rem;
-  font-family: var(--font-label);
-  font-size: 0.75rem;
-  line-height: 1.25rem;
-  text-transform: uppercase;
-  --frame: var(--line);
-  box-shadow:
-    0 calc(-1 * var(--px)) 0 0 var(--frame),
-    0 var(--px) 0 0 var(--frame),
-    calc(-1 * var(--px)) 0 0 0 var(--frame),
-    var(--px) 0 0 0 var(--frame);
-}
-
-/* Text links: a pixel underline that inverts into an ink block on hover. */
-@utility link {
-  text-decoration: underline;
-  text-decoration-thickness: var(--px);
-  text-underline-offset: calc(2 * var(--px));
-  &:hover {
-    background: var(--ink);
-    color: var(--bg);
-    text-decoration: none;
+  @media (width >= 80rem) {
+    grid-template-columns: 1fr 2fr;
   }
 }
 
-/* A chunky button on a lip; pressing drops it onto the lip. */
+/* A pane of glass with slightly rounded corners, tinted by the light
+   behind it. With reduced transparency it turns into a solid panel. */
+@utility glass {
+  border: 1px solid var(--glass-edge);
+  border-radius: 0.375rem;
+  background: linear-gradient(var(--glass-top), var(--glass-bottom));
+  box-shadow:
+    inset 0 1px 0 var(--glass-shine),
+    0 0 0 1px var(--glass-ring),
+    0 1px 2px -1px var(--glass-shade),
+    0 24px 48px -32px var(--glass-shade);
+  @media (prefers-reduced-transparency: reduce) {
+    background: var(--bg);
+  }
+}
+
+/* Frosting, for glass that text scrolls under: only the header. The
+   panels sit over nothing but the smooth glow, where a blur would cost a
+   repaint on every scroll and change nothing. It tints with the page
+   colour rather than white, and thickly enough (80%) that small text on
+   it holds 4.5:1 over the glow and over the headline scrolling beneath,
+   even before the blur. */
+@utility frost {
+  --glass-top: color-mix(in oklab, var(--bg) 80%, transparent);
+  --glass-bottom: var(--glass-top);
+  /* A lighter shade in light mode: text passes just under the header,
+     and a full shadow there would darken the page behind it. */
+  --glass-shade: light-dark(rgb(20 20 19 / 0.06), rgb(0 0 0 / 0.6));
+  backdrop-filter: blur(24px) saturate(1.5);
+  @media (prefers-reduced-transparency: reduce) {
+    backdrop-filter: none;
+  }
+}
+
+/* Small uppercase metadata: section numbers, spec keys, statuses. */
+@utility label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* The one button: solid ink, barely rounded, signal on hover. The
+   transparent border only shows in contrast themes, where the fill goes. */
 @utility btn {
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
   min-height: 2.75rem;
-  padding: 0.5rem 1.25rem;
-  font-weight: 600;
-  background: var(--ink);
+  padding: 0.5625rem 1.1875rem;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  font-weight: 500;
+  background: var(--fg);
   color: var(--bg);
-  box-shadow:
-    0 calc(-1 * var(--px)) 0 0 var(--ink),
-    calc(-1 * var(--px)) 0 0 0 var(--ink),
-    var(--px) 0 0 0 var(--ink),
-    0 calc(2 * var(--px)) 0 0 var(--line);
-  &:active {
-    translate: 0 var(--px);
-    box-shadow:
-      0 calc(-1 * var(--px)) 0 0 var(--ink),
-      calc(-1 * var(--px)) 0 0 0 var(--ink),
-      var(--px) 0 0 0 var(--ink),
-      0 var(--px) 0 0 var(--line);
+  &:hover {
+    background: var(--signal);
+    color: var(--on-signal);
   }
 }
 
-/* Palette swap helpers for art that differs by day and by night. */
-[data-theme="night"] .day-only,
-.night-only {
-  display: none;
-}
-[data-theme="night"] .night-only {
-  display: inline;
-}
-
-/* -------------------------------------------------------------- the scene
-   Buttons over sprites sit in art-pixel units (--cx, --cy, --w, --h, out
-   of 160 by 56), never smaller than a 44px touch target. Hovering shows
-   corner brackets, like a selection cursor in a menu. */
-
-.scene-button {
-  position: absolute;
-  left: calc(var(--cx) / 160 * 100%);
-  top: calc(var(--cy) / 56 * 100%);
-  width: max(2.75rem, calc(var(--w) / 160 * 100%));
-  height: max(2.75rem, calc(var(--h) / 56 * 100%));
-  translate: -50% -50%;
-  color: var(--ink);
-  cursor: pointer;
-  --c: linear-gradient(var(--ink) 0 0);
-  --l: calc(3 * var(--px));
-  &:hover,
-  &:focus-visible {
-    background:
-      var(--c) top left / var(--l) var(--px),
-      var(--c) top left / var(--px) var(--l),
-      var(--c) top right / var(--l) var(--px),
-      var(--c) top right / var(--px) var(--l),
-      var(--c) bottom left / var(--l) var(--px),
-      var(--c) bottom left / var(--px) var(--l),
-      var(--c) bottom right / var(--l) var(--px),
-      var(--c) bottom right / var(--px) var(--l);
-    background-repeat: no-repeat;
-  }
-}
-
-/* ---------------------------------------------------------------- the wind
-   One clock for the whole scene. Each swaying thing is delayed by its x
-   (--x, in art pixels) at the speed of the wind, so a gust reaches the
-   left edge first and crosses to the right, and the streaks in the sky
-   arrive just as the trees lean. Everything moves in whole art pixels
-   with hard cuts (steps), never eased. */
-
-.scene {
-  --cycle: 12s;
-  /* How long the wind takes to cross one art pixel. */
-  --speed: 15ms;
-}
-
-.sway,
-.sway-peak,
-.sock-limp,
-.sock-full,
-.blown {
-  animation: var(--cycle) steps(1, end) infinite;
-  animation-delay: calc(var(--x) * var(--speed));
-}
-.sway {
-  animation-name: sway;
-}
-.sway-peak {
-  animation-name: sway-peak;
-}
-
-@keyframes sway {
-  0%, 62% { transform: none; }
-  63% { transform: translateX(1px); }
-  70% { transform: none; }
-  72% { transform: translateX(1px); }
-  76%, 100% { transform: none; }
-}
-
-@keyframes sway-peak {
-  0%, 65% { transform: none; }
-  66% { transform: translateX(1px); }
-  69%, 100% { transform: none; }
-}
-
-/* The windsock fills while a gust passes, and hangs limp otherwise. */
-.sock-limp {
-  animation-name: sock-limp;
-}
-.sock-full {
-  visibility: hidden;
-  animation-name: sock-full;
-}
-@keyframes sock-limp {
-  0%, 62% { visibility: visible; }
-  63%, 74% { visibility: hidden; }
-  75%, 100% { visibility: visible; }
-}
-@keyframes sock-full {
-  0%, 62% { visibility: hidden; }
-  63%, 74% { visibility: visible; }
-  75%, 100% { visibility: hidden; }
-}
-
-/* Streaks start off the left edge and cross 200 art pixels while the gust
-   does: 200 × --speed = 3s, a quarter of the cycle. */
-.streak {
-  visibility: hidden;
-  animation: streak var(--cycle) steps(100, end) infinite;
-  animation-delay: calc(var(--x) * var(--speed));
-}
-@keyframes streak {
-  0% { visibility: hidden; transform: none; }
-  60% { visibility: visible; transform: none; }
-  85% { visibility: hidden; transform: translateX(200px); }
-  100% { visibility: hidden; transform: translateX(200px); }
-}
-
-/* Two leaves let go of the big tree in each gust and blow off. */
-.blown {
-  visibility: hidden;
-  animation-name: blown;
-  animation-timing-function: steps(3, end);
-}
-@keyframes blown {
-  0%, 64% { visibility: hidden; transform: none; }
-  65% { visibility: visible; transform: none; }
-  68% { transform: translate(5px, 2px); }
-  71% { transform: translate(11px, 4px); }
-  74% { transform: translate(18px, 5px); }
-  77% { visibility: visible; transform: translate(26px, 8px); }
-  78%, 100% { visibility: hidden; transform: none; }
-}
-
-/* Clouds drift with the wind, one art pixel at a time. */
-.drift {
-  animation: drift var(--t) steps(var(--n), end) infinite;
-  animation-delay: var(--d);
-}
-@keyframes drift {
-  from { transform: translateX(var(--from)); }
-  to { transform: translateX(var(--to)); }
-}
-
-.twinkle {
-  animation: twinkle 7s steps(1, end) infinite;
-  animation-delay: var(--d);
-}
-@keyframes twinkle {
-  0%, 90% { visibility: visible; }
-  91%, 100% { visibility: hidden; }
-}
-
-/* A gust someone sent (the windsock, or A): everything flutters at once
-   for a few seconds, faster streaks fill the sky, and the sock fills. */
-[data-gust] .gust {
-  animation: flutter 0.6s steps(1, end) infinite;
-  animation-delay: calc(var(--x) * 4ms);
-}
-@keyframes flutter {
-  0% { transform: translateX(1px); }
-  50% { transform: none; }
-}
-.gust-streak {
-  visibility: hidden;
-}
-[data-gust] .gust-streak {
-  visibility: visible;
-  animation: dash 0.9s steps(50, end) infinite;
-  animation-delay: var(--d);
-}
-@keyframes dash {
-  to { transform: translateX(200px); }
-}
-[data-gust] .sock-limp {
-  visibility: hidden;
-  animation: none;
-}
-[data-gust] .sock-full {
-  visibility: visible;
-  animation: none;
-}
-
-/* Shaking the tree: the crown rattles and five leaves fall and stay. */
-[data-shaken] .shake {
-  animation: shake 0.6s steps(1, end);
-}
-@keyframes shake {
-  0% { transform: translateX(1px); }
-  20% { transform: translateX(-1px); }
-  40% { transform: translateX(1px); }
-  60% { transform: translateX(-1px); }
-  80%, 100% { transform: none; }
-}
-.leaf {
-  visibility: hidden;
-  transform: translate(var(--dx), var(--dy));
-}
-[data-shaken] .leaf {
-  visibility: visible;
-  animation: fall 1.4s steps(3, end) both;
-  animation-delay: var(--d);
-}
-@keyframes fall {
-  0% { transform: none; }
-  25% { transform: translate(calc(var(--dx) * 0.5), calc(var(--dy) * 0.25)); }
-  50% { transform: translate(calc(var(--dx) * 0.1), calc(var(--dy) * 0.5)); }
-  75% { transform: translate(calc(var(--dx) * 0.8), calc(var(--dy) * 0.75)); }
-  100% { transform: translate(var(--dx), var(--dy)); }
-}
-
-/* Console buttons press down a pixel. */
-.key:active svg {
-  translate: 0 var(--px);
-}
-
-/* ---------------------------------------------------------------- motion
-   With reduced motion nothing animates. The buttons still work, as a
-   still: a sent gust holds the trees leaning and the sock full, and a
-   shaken tree's leaves are already on the ground. */
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  .scene *,
-  .scene *::before {
-    animation: none !important;
-  }
-  .streak,
-  .blown,
-  .gust-streak {
-    visibility: hidden !important;
-  }
-  [data-gust] .gust {
-    transform: translateX(1px);
-  }
-}
-
-/* Windows contrast themes: hide the art, give boxes real borders. */
-@media (forced-colors: active) {
-  .scene svg {
-    display: none;
-  }
-  .dialog,
-  .frame,
-  .chip,
-  .btn {
-    border: 1px solid CanvasText;
+/* Text links: a muted underline that darkens on hover. */
+@utility link {
+  text-decoration: underline;
+  text-decoration-color: var(--muted);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+  &:hover {
+    text-decoration-color: currentColor;
   }
 }

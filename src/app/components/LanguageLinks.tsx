@@ -3,21 +3,16 @@
 import { localeKeys, locales, type Locale } from "../i18n/locales";
 
 // Plain links to each copy of the site, so they work without JavaScript.
-// With it, the choice is remembered: the Worker at "/" reads the cookie,
-// the 404 page reads localStorage.
+// With it, the choice is remembered in a cookie that both the Worker at
+// "/" and the 404 page read.
 function remember(lang: Locale) {
   document.cookie = `vx-lang=${lang}; path=/; max-age=31536000; samesite=lax; secure`;
-  try {
-    localStorage.setItem("vx-lang", lang);
-  } catch {
-    // Storage can be blocked; the link still works for this visit.
-  }
 }
 
 export default function LanguageLinks({ lang, label }: { lang: Locale; label: string }) {
   return (
     <nav aria-label={label}>
-      <ul className="flex">
+      <ul className="flex gap-1">
         {localeKeys.map((l) => (
           <li key={l}>
             <a
@@ -26,9 +21,14 @@ export default function LanguageLinks({ lang, label }: { lang: Locale; label: st
               lang={locales[l].tag}
               aria-current={l === lang ? "page" : undefined}
               onClick={() => remember(l)}
-              className="inline-flex min-h-11 min-w-11 items-center justify-center font-label text-xs underline-offset-[6px] decoration-[length:var(--px)] hover:bg-on-plastic hover:text-plastic aria-[current=page]:underline"
+              className="group inline-flex min-h-11 min-w-11 items-center justify-center rounded-sm font-mono text-xs text-muted hover:text-fg aria-[current=page]:text-bg"
             >
-              {locales[l].short}
+              {/* The fill sits inside the 44px target, so the current
+                  language is a small block rather than the whole cell.
+                  Contrast themes drop the fill, so it's underlined there. */}
+              <span className="rounded-sm px-2 py-1.5 group-aria-[current=page]:bg-fg forced-colors:group-aria-[current=page]:underline">
+                {locales[l].short}
+              </span>
               <span className="sr-only"> {locales[l].name}</span>
             </a>
           </li>

@@ -2,19 +2,16 @@ import type { Dictionary } from "../i18n";
 import Section from "./Section";
 
 export default function Principles({ t }: { t: Dictionary }) {
-  const p = t.principles;
   return (
-    <Section id="principles" title={p.title} aside={p.aside}>
-      <ol>
-        {p.items.map((item, i) => (
-          <li key={item.title} className="rule grid grid-cols-[3rem_minmax(0,1fr)] gap-2 py-5">
-            <span aria-hidden className="eyebrow pt-1">
-              {String(i + 1).padStart(2, "0")}
-            </span>
-            <div>
-              <h3 className="text-lg font-semibold">{item.title}</h3>
-              <p className="mt-1.5 text-pretty">{item.body}</p>
-            </div>
+    <Section id="principles" title={t.principles.title}>
+      <ol className="glass px-5 sm:px-8">
+        {t.principles.items.map((item) => (
+          <li
+            key={item.title}
+            className="grid gap-x-6 gap-y-1 border-t border-line py-5 first:border-t-0 sm:py-8 md:grid-cols-4"
+          >
+            <h3 className="font-medium text-balance">{item.title}</h3>
+            <p className="text-muted text-pretty md:col-span-3">{item.body}</p>
           </li>
         ))}
       </ol>
