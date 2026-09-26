@@ -45,11 +45,11 @@ src/app/
   global-not-found.tsx  exported as 404.html; carries all three languages
   content.ts          language-neutral data (links, section ids, suite, specs, stack)
   i18n/               en.ts (source of truth), es.ts, pt.ts, locales.ts
-  globals.css         the palette, type scale and the four utilities
+  globals.css         the palette, type scale and five utilities
   components/
     Intro.tsx         the statement, the lede and the facts
     Section.tsx       the numbered frame every section below the intro uses
-    Specs.tsx         label-over-value cells on hairlines: facts, specs, stack
+    Specs.tsx         four label-over-value cells on hairlines: the facts and project specs
     Work.tsx, Principles.tsx, Stack.tsx, Contact.tsx
     LanguageLinks.tsx EN / ES / PT; remembers the choice for "/" and the 404
 ```
@@ -90,17 +90,19 @@ Contrast decides what each token may do. `--fg` (16:1) and `--muted` (5.8:1 ligh
 
 **Type.** Geist for everything, Geist Mono for small uppercase labels (the `label` utility). Weights are 400 and 500 only. Large type gets negative tracking (`text-display` is -0.04em; titles use `tracking-tight`), body text none. Headings are sentence case.
 
-**Layout.**
-- `wrap` is the one centred column (80rem, fluid side padding) that the header, every section and the footer share. Don't put page chrome outside it.
-- Below the intro, every section is a `<Section>`: a hairline across the column, then a 12-column grid with the number and title in the left four columns (sticky on large screens) and the content in the right eight. Numbers come from the order of `sections` in `content.ts`. On small screens the two stack.
-- Facts, specs and the stack are `<Specs>`: label-over-value cells on hairlines that wrap to as many columns as fit.
+**Layout.** One vertical decides the page.
+- `shell` is the one centred column (80rem, fluid side padding) that the header, every section and the footer share. Don't put page chrome outside it.
+- `split` (with `lg:grid`) divides a block in the shell into two tracks from lg up: 1fr 3fr, then 1fr 2fr from xl. The header, the intro, every section and the footer use it, so the section titles and "vx" sit on the left track and everything else starts on the same vertical, the right track's edge. Only the headline spans both. Below lg, blocks stack.
+- Below the intro, every section is a `<Section>`: a hairline across the shell, the number and title on the left (sticky on large screens), the content on the right. Numbers come from the order of `sections` in `content.ts`.
+- Inside the right track, a four-column sub-grid (`md:grid-cols-4`, `gap-x-6`) lines things up: `<Specs>` puts four facts across it, and rows (components, principles, stack) put their key in the first column and the value across the other three. Rows are separated by hairlines; the first row of a section drops its rule, since the section's own rule is right above it.
 - Everything is left-aligned. Sections are separated by space and a single hairline, never boxes or cards.
+- Measure: body text stops at 36rem; the headline at 16ch.
 
 **Components.**
-- `btn`: the one button. Solid `--fg`, square corners, at least 44px tall, `--signal` on hover. One per view at most.
-- `link`: a hairline underline in `--line` that darkens to the text colour on hover.
+- `btn`: the one button. Solid `--fg`, square corners, at least 44px tall, `--signal` on hover, and a transparent border that shows as a real edge in contrast themes. One per page.
+- `link`: a 1px underline in `--muted` that darkens to the text colour on hover.
 - `label`: Geist Mono, 12px, uppercase, 0.06em tracking, `--muted`.
-- Statuses are a signal square plus the word: filled for shipping, half for in progress, empty for planned. The shape carries the meaning, not the colour.
+- Statuses are a signal square plus the word: filled for shipping, half for in progress, empty for planned. The shape carries the meaning, not the colour, and the squares keep their shape in contrast themes (`forced-color-adjust-none`, with `--signal` set to `CanvasText`).
 
 **Don't:**
 - Rounded corners, pills, cards, shadows, blur, gradients (except the half-filled status square) or opacity.
@@ -117,9 +119,9 @@ Target WCAG 2.2 AA. There's no theme toggle: `color-scheme: light dark` and `lig
 
 For every visual change:
 - Check it in light and dark mode (emulate `prefers-color-scheme` in the browser's dev tools).
-- Keep semantic landmarks, `aria-labelledby` on sections, the skip link, visible `:focus-visible` outlines, 44px minimum touch targets and `aria-hidden` on purely decorative marks.
+- Keep semantic landmarks, `aria-labelledby` on sections, the skip link, visible `:focus-visible` outlines (2px signal, 3.3:1 or better), 44px minimum touch targets (`min-h-11` on text links too) and `aria-hidden` on purely decorative marks.
 - Keep the page still. The only motion is smooth scrolling to anchors, and `prefers-reduced-motion` turns it off.
-- In forced colours (Windows contrast themes) the hairlines, text and button fall back to system colours without extra rules; check any new element there too.
+- In forced colours (Windows contrast themes) the system replaces every colour: hairlines and text follow it, `--signal` becomes `CanvasText`, the button keeps an edge through its transparent border, and the status squares opt out of the override so their shape survives. Check any new element there too.
 
 ## Performance
 

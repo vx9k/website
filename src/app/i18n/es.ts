@@ -20,7 +20,7 @@ const es: Dictionary = {
   },
   hero: {
     line: "Sistemas init y herramientas de arranque en C.",
-    lede: "Programas pequeños que hacen una sola cosa cada uno, usan interfaces POSIX siempre que pueden y son lo bastante cortos para leerlos de una sentada. El proyecto actual es 4suite, una pila de arranque autocontenida para Linux.",
+    lede: "Programas pequeños que hacen una sola cosa cada uno, usan interfaces POSIX siempre que pueden y son lo bastante cortos para leerlos de una sentada.",
     facts: [
       { k: "Rol", v: "Ingeniería de sistemas" },
       { k: "Enfoque", v: "Sistemas init, C POSIX" },
@@ -45,15 +45,12 @@ const es: Dictionary = {
       hosting: "Alojamiento",
     },
     suite: {
-      body: "Una pila de arranque autocontenida en C: init, rc, logger y user, cada uno con su propio alcance y su propio README.",
+      body: "Una pila de arranque autocontenida en C, hecha de cuatro programas pequeños: init, rc, logger y user.",
       target: "Linux, BSD planeado",
-      platforms: "Por ahora solo Linux. signalfd es una interfaz de Linux; el soporte para BSD está planeado.",
       components: "Componentes",
       nodes: {
         "4init": "PID 1 mínimo. Bloquea las señales y las lee con un signalfd, lanza 4rc con fork en su propia sesión y recoge a los procesos hijos en cada SIGCHLD. Inspirado en el init mínimo de rofl0r.",
-        "4rc": "El gestor de servicios que arranca 4init. Está en sus inicios: su propio README dice que “larps as being functional”.",
-        logger: "Forma parte del alcance de la suite. Sin empezar.",
-        user: "Forma parte del alcance de la suite. Sin empezar.",
+        "4rc": "El gestor de servicios que 4init arranca por defecto. Está en sus inicios.",
       },
     },
     site: {
@@ -62,19 +59,18 @@ const es: Dictionary = {
   },
   principles: {
     title: "Principios",
-    aside: "Tres reglas que resuelven casi todas mis decisiones de diseño antes de escribir una línea.",
     items: [
       {
         title: "Estándares antes que atajos",
-        body: "Interfaces POSIX antes que extensiones de un fabricante. Si un programa corre en una sola plataforma, alguien lo decidió, y esa decisión necesita una razón.",
+        body: "Interfaces POSIX antes que extensiones de un fabricante. Todo lo que dependa de una plataforma necesita una razón explícita.",
       },
       {
         title: "Una sola tarea, predecible",
-        body: "Un init que solo gestiona procesos. Un gestor de servicios que solo gestiona servicios. Cuando el alcance crece sin control, suele ser la primera señal de que algo va a dejar de ser confiable.",
+        body: "Un init que solo gestiona procesos y un gestor de servicios que solo gestiona servicios. El resto de la pila está planeado como programas aparte.",
       },
       {
         title: "Lo bastante pequeño para entenderlo entero",
-        body: "Mejor código que te cabe en la cabeza que código en el que tienes que confiar. Si no puedo explicar por qué está una línea, se va.",
+        body: "Si no puedo explicar por qué está una línea, se va.",
       },
     ],
   },
@@ -84,11 +80,10 @@ const es: Dictionary = {
   },
   contact: {
     title: "Contacto",
-    quote:
-      "Prefiero publicar algo pequeño que entiendo por completo que algo grande cuyos límites todavía estoy descubriendo.",
-    source: "Código de este sitio",
+    line: "Todo el trabajo de arriba es público en GitHub.",
   },
   footer: {
+    source: "Código de este sitio",
     top: "Volver arriba",
   },
   notFound: {

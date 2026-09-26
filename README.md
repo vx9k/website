@@ -2,7 +2,7 @@
 
 Source for [kthread.dev](https://kthread.dev), the personal site of [vx](https://github.com/vx9k).
 
-It's a single static page built with Next.js and Tailwind CSS, exported to plain HTML and served from Cloudflare Workers at [kthread.dev](https://kthread.dev). The design is a plain technical document: paper or carbon depending on your system's setting, one signal orange, Geist type, hairline rules and numbered sections on a 12-column grid. It reads in English, Spanish and Portuguese.
+It's a single static page built with Next.js and Tailwind CSS, exported to plain HTML and served from Cloudflare Workers at [kthread.dev](https://kthread.dev). The design is a plain technical document: paper or carbon depending on your system's setting, one signal orange, Geist type, hairline rules and numbered sections that all hang from one vertical. It reads in English, Spanish and Portuguese.
 
 ## Running it
 

@@ -17,7 +17,7 @@ const en = {
   },
   hero: {
     line: "Init systems and boot tooling in C.",
-    lede: "Small programs that each do one job, use POSIX interfaces where they can, and stay short enough to read in one sitting. The current project is 4suite, a self-contained boot stack for Linux.",
+    lede: "Small programs that each do one job, use POSIX interfaces where they can, and stay short enough to read in one sitting.",
     facts: [
       { k: "Role", v: "Systems engineer" },
       { k: "Focus", v: "Init systems, POSIX C" },
@@ -42,36 +42,34 @@ const en = {
       hosting: "Hosting",
     },
     suite: {
-      body: "A self-contained boot stack in C: init, rc, logger and user, each with its own scope and its own README.",
+      body: "A self-contained boot stack in C, made of four small programs: init, rc, logger and user.",
       target: "Linux, BSD planned",
-      platforms: "Linux only for now. signalfd is a Linux interface; BSD support is planned.",
       components: "Components",
+      // Only the components with code get a description; the rest are
+      // described by their status.
       nodes: {
-        "4init": "Minimal PID 1. Blocks signals and reads them through a signalfd, forks 4rc into its own session, then reaps children on every SIGCHLD. Inspired by rofl0r's minimal init.",
-        "4rc": "The service manager 4init starts. Early days: its own README says it “larps as being functional”.",
-        logger: "Part of the suite's scope. Not started.",
-        user: "Part of the suite's scope. Not started.",
+        "4init": "Minimal PID 1. Blocks signals and reads them through a signalfd, forks 4rc into its own session, then reaps children on every SIGCHLD. Inspired by rofl0r’s minimal init.",
+        "4rc": "The service manager 4init starts by default. Early work.",
       },
     },
     site: {
-      body: "A static Next.js export served from Cloudflare Workers, in English, Spanish and Portuguese. The root picks a language at the edge, and the page follows your system's light or dark setting.",
+      body: "A static Next.js export served from Cloudflare Workers, in English, Spanish and Portuguese. The root picks a language at the edge, and the page follows your system’s light or dark setting.",
     },
   },
   principles: {
     title: "Principles",
-    aside: "Three rules that decide most of my trade-offs before I write a line.",
     items: [
       {
         title: "Standards over shortcuts",
-        body: "POSIX interfaces over vendor extensions. If a program runs on only one platform, someone decided that, and the decision needs a reason.",
+        body: "POSIX interfaces over vendor extensions. Anything platform-specific needs a stated reason.",
       },
       {
         title: "One job, done predictably",
-        body: "An init that only manages processes. A service manager that only manages services. Scope creep is usually the first sign something's about to become unreliable.",
+        body: "An init that only manages processes, and a service manager that only manages services. The rest of the stack is planned as separate programs.",
       },
       {
         title: "Small enough to understand fully",
-        body: "Code you can hold in your head beats code you have to trust. If I can't explain why a line is there, it doesn't stay.",
+        body: "If I can’t explain why a line is there, it doesn’t stay.",
       },
     ],
   },
@@ -81,11 +79,10 @@ const en = {
   },
   contact: {
     title: "Contact",
-    quote:
-      "I'd rather ship something small that I fully understand than something large I'm still discovering the edges of.",
-    source: "Source for this site",
+    line: "All the work above is public on GitHub.",
   },
   footer: {
+    source: "Source for this site",
     top: "Back to top",
   },
   notFound: {

@@ -31,6 +31,10 @@ const pickScript = `(function () {
   d.setAttribute("data-lang", l);
   d.lang = tags[l];
   document.title = titles[l];
+  // Hydration writes metadata.title (English) back into <head>; undo it.
+  new MutationObserver(function () {
+    if (document.title !== titles[l]) document.title = titles[l];
+  }).observe(document.head, { subtree: true, childList: true, characterData: true });
 })();`;
 
 // Only the chosen language shows; English is the no-JS default.
@@ -47,7 +51,7 @@ export default function GlobalNotFound() {
         <script dangerouslySetInnerHTML={{ __html: pickScript }} />
       </head>
       <body className="min-h-dvh overflow-x-clip antialiased">
-        <main id="main" className="wrap flex min-h-dvh flex-col justify-center py-16">
+        <main id="main" className="shell flex min-h-dvh flex-col justify-center py-16">
           {localeKeys.map((l) => {
             const t = getDictionary(l).notFound;
             return (
@@ -56,7 +60,7 @@ export default function GlobalNotFound() {
                   <span aria-hidden className="size-2 bg-signal" />
                   404
                 </p>
-                <h1 className="mt-6 max-w-[16ch] text-display font-medium text-balance">{t.title}</h1>
+                <h1 className="mt-6 max-w-[16ch] text-display font-medium text-balance wrap-break-word">{t.title}</h1>
                 <p className="mt-8 max-w-[34rem] text-lg text-muted text-pretty">{t.body}</p>
                 <a href={`/${l}`} className="btn mt-12">
                   <span aria-hidden>←</span> {t.back}

@@ -15,6 +15,15 @@
   --on-signal: #141413;
 }
 
+/* Contrast themes replace every colour. Marks that carry meaning (the
+   status squares) opt out with forced-color-adjust-none and draw in the
+   text colour instead. */
+@media (forced-colors: active) {
+  :root {
+    --signal: CanvasText;
+  }
+}
+
 @theme inline {
   --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
@@ -63,11 +72,24 @@ body {
 
 /* The one centred column that the header, every section and the footer
    share, so their edges line up at every width. */
-@utility wrap {
+@utility shell {
   width: 100%;
   max-width: 80rem;
   margin-inline: auto;
   padding-inline: clamp(1.25rem, 4vw, 3rem);
+}
+
+/* From lg up, a block inside the shell splits into two tracks: titles on
+   the left, everything else on the right. Every block uses the same
+   split, so all content hangs from one vertical. Pair it with lg:grid. */
+@utility split {
+  @media (width >= 64rem) {
+    grid-template-columns: 1fr 3fr;
+    column-gap: 3rem;
+  }
+  @media (width >= 80rem) {
+    grid-template-columns: 1fr 2fr;
+  }
 }
 
 /* Small uppercase metadata: section numbers, spec keys, statuses. */
@@ -80,13 +102,15 @@ body {
   color: var(--muted);
 }
 
-/* The one button: solid ink, square corners, signal on hover. */
+/* The one button: solid ink, square corners, signal on hover. The
+   transparent border only shows in contrast themes, where the fill goes. */
 @utility btn {
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
   min-height: 2.75rem;
-  padding: 0.625rem 1.25rem;
+  padding: 0.5625rem 1.1875rem;
+  border: 1px solid transparent;
   font-weight: 500;
   background: var(--fg);
   color: var(--bg);
@@ -96,10 +120,10 @@ body {
   }
 }
 
-/* Text links: a hairline underline that darkens on hover. */
+/* Text links: a muted underline that darkens on hover. */
 @utility link {
   text-decoration: underline;
-  text-decoration-color: var(--line);
+  text-decoration-color: var(--muted);
   text-decoration-thickness: 1px;
   text-underline-offset: 0.3em;
   &:hover {

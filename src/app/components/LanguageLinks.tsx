@@ -17,7 +17,7 @@ function remember(lang: Locale) {
 export default function LanguageLinks({ lang, label }: { lang: Locale; label: string }) {
   return (
     <nav aria-label={label}>
-      <ul className="flex">
+      <ul className="-me-3.5 flex">
         {localeKeys.map((l) => (
           <li key={l}>
             <a
