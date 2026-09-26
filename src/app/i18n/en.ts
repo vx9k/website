@@ -27,7 +27,7 @@ const en = {
     title: "Skills",
     groups: { languages: "Languages", web: "Web", networking: "Networking", ai: "AI" },
     // Names for the skills that have none in content.ts.
-    names: { asm: "Assembly", llm: "How LLMs work", ai: "Working with AI" },
+    names: { asm: "x86 Assembly", llm: "How LLMs work", ai: "Working with AI" },
     // The OSI layers each entry covers.
     notes: { l23: "Data link, network", l4: "Transport", l67: "Presentation, application" },
   },

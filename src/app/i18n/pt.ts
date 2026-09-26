@@ -29,7 +29,7 @@ const pt: Dictionary = {
   skills: {
     title: "Habilidades",
     groups: { languages: "Linguagens", web: "Web", networking: "Redes", ai: "IA" },
-    names: { asm: "Assembly", llm: "Como funcionam os LLMs", ai: "Trabalho com IA" },
+    names: { asm: "Assembly x86", llm: "Como funcionam os LLMs", ai: "Trabalho com IA" },
     notes: { l23: "Enlace de dados, rede", l4: "Transporte", l67: "Apresentação, aplicação" },
   },
   principles: {

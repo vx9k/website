@@ -54,7 +54,7 @@ const stroke = {
   strokeLinejoin: "round",
 } as const;
 
-/** A chip, for Assembly: its core pulses like a clock. */
+/** A chip, for x86 Assembly: its core pulses like a clock. */
 function Chip() {
   return (
     <svg viewBox="0 0 24 24" {...stroke}>
