@@ -48,8 +48,8 @@ export default function GlobalNotFound() {
       <head>
         <script dangerouslySetInnerHTML={{ __html: pickScript }} />
       </head>
-      <body className="min-h-dvh overflow-x-clip antialiased">
-        <main id="main" className="shell flex min-h-dvh flex-col justify-center py-16">
+      <body className="flex min-h-dvh flex-col overflow-x-clip antialiased">
+        <main id="main" className="shell flex flex-1 flex-col justify-center py-16">
           {localeKeys.map((l) => {
             const t = getDictionary(l).notFound;
             return (

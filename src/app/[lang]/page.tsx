@@ -20,7 +20,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
 
   return (
     <>
-      <header className="shell sticky top-3 z-10">
+      <header className="shell sticky top-[calc(var(--safe-top)+0.75rem)] z-10">
         <div className="glass frost split -mx-3 flex items-center justify-between px-[calc(0.75rem-1px)] py-1.5 lg:grid">
           <a href={`/${lang}`} className="inline-flex min-h-11 min-w-11 items-center gap-2.5 justify-self-start font-medium tracking-tight">
             <span aria-hidden className="size-2.5 rounded-[2px] bg-signal" />

@@ -17,7 +17,7 @@ export default function Section({
   return (
     <section id={id} aria-labelledby={`${id}-title`} className="shell">
       <div className="split pb-20 lg:grid lg:pb-28">
-        <header className="lg:sticky lg:top-24 lg:self-start lg:pt-8">
+        <header className="lg:sticky lg:top-[calc(var(--safe-top)+6rem)] lg:self-start lg:pt-8">
           <p aria-hidden className="label">
             {number}
           </p>

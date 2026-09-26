@@ -29,6 +29,12 @@
      sits on the bare page is on the left, clear of them. */
   --glow: light-dark(rgb(240 72 0 / 0.2), rgb(240 72 0 / 0.24));
   --glow-2: light-dark(rgb(255 170 0 / 0.24), rgb(255 120 0 / 0.14));
+
+  /* The page runs edge to edge (viewport-fit=cover in document.ts), so on
+     phones the status bar and the browser's toolbar sit over it. These are
+     how far in the content has to start to clear them; 0 elsewhere. */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* Contrast themes replace every colour. Marks that carry meaning (the
@@ -65,14 +71,19 @@ html {
   color: var(--fg);
   scroll-behavior: smooth;
   /* Anchored sections land below the floating header. */
-  scroll-padding-top: 5.5rem;
+  scroll-padding-top: calc(5.5rem + var(--safe-top));
 }
 
 body {
   line-height: 1.6;
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
 }
 
-/* Fixed, so the glass passes over it as the page scrolls. */
+/* Fixed, so the glass passes over it as the page scrolls. With
+   viewport-fit=cover it also fills the space behind Safari's status bar
+   and toolbar; without it, Safari clips fixed layers to the area between
+   them, leaving flat bands at the top and bottom of the screen. */
 body::before {
   content: "";
   position: fixed;
@@ -108,7 +119,9 @@ body::before {
   width: 100%;
   max-width: 80rem;
   margin-inline: auto;
-  padding-inline: clamp(1.25rem, 4vw, 3rem);
+  /* Clear of the notch in landscape. */
+  padding-left: max(clamp(1.25rem, 4vw, 3rem), env(safe-area-inset-left, 0px));
+  padding-right: max(clamp(1.25rem, 4vw, 3rem), env(safe-area-inset-right, 0px));
 }
 
 /* From lg up, a block inside the shell splits into two tracks: titles on

@@ -29,4 +29,7 @@ export const viewport: Viewport = {
   colorScheme: "light dark",
   width: "device-width",
   initialScale: 1,
+  // Edge to edge, so the fixed glow reaches behind the status bar and the
+  // toolbar in Safari. The CSS keeps content inside the safe area.
+  viewportFit: "cover",
 };
