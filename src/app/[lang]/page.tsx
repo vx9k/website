@@ -1,18 +1,14 @@
 import Contact from "../components/Contact";
-import Controls from "../components/Controls";
 import Intro from "../components/Intro";
 import LanguageLinks from "../components/LanguageLinks";
-import Mark from "../components/Mark";
 import Principles from "../components/Principles";
-import Scene from "../components/Scene";
-import Screen from "../components/Screen";
 import Stack from "../components/Stack";
 import Work from "../components/Work";
+import { sections } from "../content";
 import { getDictionary, hasLocale } from "../i18n";
 
-// The page is a handheld console: the header is the top edge of the case,
-// everything the page says is on the screen set into the bezel, and the
-// footer is the lower half with the controls.
+// One page that reads like a spec sheet: a statement, the facts, then
+// numbered sections on a hairline grid.
 export default async function Home({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   // The layout already 404s unknown languages; this narrows the type.
@@ -21,37 +17,43 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
 
   return (
     <>
-      <header className="console flex items-center justify-between py-3 text-on-plastic">
-        <a href={`/${lang}`} className="inline-flex min-h-11 items-center gap-3 px-1">
-          <Mark className="h-[21px] w-[39px]" />
-          <span className="font-label text-xs">vx</span>
-        </a>
-        <LanguageLinks lang={lang} label={t.nav.language} />
+      <header id="top" className="border-b border-line">
+        <div className="wrap flex items-center justify-between gap-6 py-2">
+          <a href={`/${lang}`} className="inline-flex min-h-11 items-center gap-2.5 font-medium tracking-tight">
+            <span aria-hidden className="size-2.5 bg-signal" />
+            vx
+          </a>
+          <nav aria-label={t.nav.label} className="hidden md:block">
+            <ul className="flex gap-8 text-sm">
+              {sections.map((id) => (
+                <li key={id}>
+                  <a href={`#${id}`} className="inline-flex min-h-11 items-center text-muted hover:text-fg">
+                    {t.nav[id]}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <LanguageLinks lang={lang} label={t.nav.language} />
+        </div>
       </header>
 
-      <main id="main" tabIndex={-1} className="console focus:outline-none">
-        <div className="notch bg-bezel px-[clamp(0.5rem,2vw,1.5rem)] pt-2 pb-[clamp(0.5rem,2vw,1.5rem)]">
-          <p aria-hidden className="flex items-center gap-2 px-1 pb-2 font-label text-xs text-on-bezel">
-            <span className="size-[calc(2*var(--px))] bg-[var(--teal)]" />
-            VX·9K
-          </p>
-          <Screen>
-            <Scene labels={t.scene} />
-            <div className="art-inset pb-16">
-              <p className="mt-4 text-sm text-soft text-pretty">{t.scene.hint}</p>
-              <div className="max-w-[44rem]">
-                <Intro t={t} />
-                <Work t={t} />
-                <Principles t={t} />
-                <Stack t={t} />
-                <Contact t={t} />
-              </div>
-            </div>
-          </Screen>
-        </div>
+      <main id="main" tabIndex={-1} className="focus:outline-none">
+        <Intro t={t} />
+        <Work t={t} />
+        <Principles t={t} />
+        <Stack t={t} />
+        <Contact t={t} />
       </main>
 
-      <Controls t={t} />
+      <footer className="border-t border-line">
+        <div className="wrap flex items-center justify-between gap-6 py-2 text-sm text-muted">
+          <p>vx · kthread.dev</p>
+          <a href="#top" className="inline-flex min-h-11 items-center hover:text-fg">
+            {t.footer.top} <span aria-hidden>&nbsp;↑</span>
+          </a>
+        </div>
+      </footer>
     </>
   );
 }

@@ -2,7 +2,7 @@
 
 Source for [kthread.dev](https://kthread.dev), the personal site of [vx](https://github.com/vx9k).
 
-It's a single static page built with Next.js and Tailwind CSS, exported to plain HTML and served from Cloudflare Workers at [kthread.dev](https://kthread.dev). The page is a retro handheld console in the four-colour Mist GB palette. At the top of its screen is a small pixel-art landscape, generated at build time as SVG: pines on two ranges of hills, a big tree and a windsock, with a wind made of CSS that sends gusts across it from left to right. The sun (or moon) swaps the palette, the windsock sends a gust, and the tree drops its leaves when you shake it. Below that, it's a plain document in English, Spanish and Portuguese.
+It's a single static page built with Next.js and Tailwind CSS, exported to plain HTML and served from Cloudflare Workers at [kthread.dev](https://kthread.dev). The design is a plain technical document: paper or carbon depending on your system's setting, one signal orange, Geist type, hairline rules and numbered sections on a 12-column grid. It reads in English, Spanish and Portuguese.
 
 ## Running it
 
@@ -26,14 +26,13 @@ pnpm wrangler dev   # serves out/ through the Workers runtime at http://localhos
 src/
 ├── worker.ts             runs for "/" only: sends visitors to /en, /es or /pt
 └── app/
-    ├── [lang]/layout.tsx metadata, hreflang and the pre-paint theme script
-    ├── [lang]/page.tsx   the page: case, bezel, screen and controls
+    ├── [lang]/layout.tsx metadata, hreflang and the skip link
+    ├── [lang]/page.tsx   the page: header, sections and footer
     ├── global-not-found.tsx  the 404 page, in all three languages
     ├── content.ts        language-neutral facts: links, projects, stack
     ├── i18n/             the copy in English, Spanish and Portuguese
-    ├── globals.css       the palette, pixel primitives and the wind
-    ├── pixels.ts         build-time helpers that turn sprites into SVG paths
-    └── components/       the scene, the sections and the console parts
+    ├── globals.css       the palette, type scale and a few utilities
+    └── components/       the intro, the sections and the language links
 ```
 
 Other files at the root:
@@ -50,7 +49,7 @@ Other files at the root:
 
 Facts that read the same in every language live in `src/app/content.ts`; the copy lives in `src/app/i18n/`, one file per language. Keep it factual: everything on the page should be checkable against the public repos.
 
-For anything visual, read the design and accessibility sections of [`AGENTS.md`](AGENTS.md) first. Every change has to work by day and by night, and with reduced motion.
+For anything visual, read the design and accessibility sections of [`AGENTS.md`](AGENTS.md) first. Every change has to work in light and dark mode, in all three languages.
 
 ## Deploying
 

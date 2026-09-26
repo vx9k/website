@@ -5,10 +5,10 @@ import Section from "./Section";
 export default function Contact({ t }: { t: Dictionary }) {
   return (
     <Section id="contact" title={t.contact.title}>
-      <blockquote className="border-l-[calc(2*var(--px))] border-line pl-5 text-xl leading-8 font-medium text-pretty sm:pl-7">
+      <blockquote className="max-w-[30ch] text-2xl font-medium tracking-tight text-balance sm:text-3xl sm:leading-10">
         <p>{t.contact.quote}</p>
       </blockquote>
-      <p className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-6">
+      <p className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-6">
         <a href={links.github} className="btn">
           github.com/vx9k <span aria-hidden>↗</span>
         </a>

@@ -18,19 +18,9 @@ const es: Dictionary = {
     stack: "Herramientas",
     contact: "Contacto",
   },
-  scene: {
-    hint: "Algunos píxeles hacen cosas: prueba el sol o la luna, el árbol grande y la manga de viento.",
-    sky: "Cambiar entre día y noche",
-    tree: "Sacudir el árbol",
-    windsock: "Soplar una ráfaga de viento",
-  },
-  console: {
-    a: "A: soplar una ráfaga de viento",
-    b: "B: cambiar entre día y noche",
-  },
   hero: {
-    line: "Escribo software pensado para durar más que la máquina en la que corre.",
-    lede: "Escribo sistemas init mínimos en C. El código es lo bastante pequeño para leerlo de una sentada y se apega a las interfaces POSIX siempre que puede.",
+    line: "Sistemas init y herramientas de arranque en C.",
+    lede: "Programas pequeños que hacen una sola cosa cada uno, usan interfaces POSIX siempre que pueden y son lo bastante cortos para leerlos de una sentada. El proyecto actual es 4suite, una pila de arranque autocontenida para Linux.",
     facts: [
       { k: "Rol", v: "Ingeniería de sistemas" },
       { k: "Enfoque", v: "Sistemas init, C POSIX" },
@@ -40,7 +30,6 @@ const es: Dictionary = {
   },
   work: {
     title: "Trabajo",
-    aside: "Programas pequeños que hacen una sola cosa cada uno, en el orden en que se ejecutan.",
     status: {
       shipping: "disponible",
       "in progress": "en progreso",
@@ -52,7 +41,7 @@ const es: Dictionary = {
       build: "Compilación",
       license: "Licencia",
       framework: "Framework",
-      graphics: "Gráficos",
+      styling: "Estilos",
       hosting: "Alojamiento",
     },
     suite: {
@@ -68,7 +57,7 @@ const es: Dictionary = {
       },
     },
     site: {
-      body: "Un export estático de Next.js servido desde Cloudflare Workers. El paisaje de arriba es pixel art: se dibuja al compilar el sitio y llega como SVG. Los árboles se mueven con un viento hecho de CSS, el sol cambia la paleta y la página está en inglés, español y portugués.",
+      body: "Un export estático de Next.js servido desde Cloudflare Workers, en inglés, español y portugués. La raíz elige el idioma en el edge y la página sigue el modo claro u oscuro de tu sistema.",
     },
   },
   principles: {
@@ -98,6 +87,9 @@ const es: Dictionary = {
     quote:
       "Prefiero publicar algo pequeño que entiendo por completo que algo grande cuyos límites todavía estoy descubriendo.",
     source: "Código de este sitio",
+  },
+  footer: {
+    top: "Volver arriba",
   },
   notFound: {
     title: "Página no encontrada",

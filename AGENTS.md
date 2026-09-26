@@ -22,13 +22,13 @@ pnpm wrangler dev  # serve out/ through the Workers runtime, as in production
 pnpm lint        # currently broken: typescript-eslint doesn't support TypeScript 7 yet
 ```
 
-There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler dev`; restart it after a rebuild) and looking at it in a browser at desktop and phone widths, by day and by night, and with reduced motion on. Click and tap every pixel button you touched.
+There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler dev`; restart it after a rebuild) and looking at it in a browser at desktop and phone widths, in light and dark mode, in all three languages.
 
 ## Stack
 
 - **Next.js 16, App Router, `output: "export"`.** Fully static and served as Cloudflare Workers static assets (`wrangler.jsonc`), so there are no Next.js server features: no route handlers, no server actions, no `next/image` optimisation, no middleware. The one exception is `src/worker.ts`, a plain Worker that handles `/`.
 - **React 19 with the React Compiler.** Don't hand-write `useMemo`/`useCallback` for performance.
-- **Tailwind CSS v4.** Configured in CSS (`@theme`, `@utility`, `@custom-variant` in `globals.css`). There's no `tailwind.config.*`.
+- **Tailwind CSS v4.** Configured in CSS (`@theme` and `@utility` in `globals.css`). There's no `tailwind.config.*`.
 - **TypeScript 7**, strict. `@/*` maps to `src/*`.
 - Deployed by Cloudflare Workers Builds, connected to this repo: every push to `main` runs `pnpm run build` then `pnpm wrangler deploy`, and every other branch gets a preview URL posted on its PR. Work on a branch, open a PR, and check the preview.
 - The Worker is named `website`; the `name` in `wrangler.jsonc` must match it or builds fail. `kthread.dev` is attached as a Custom Domain in `wrangler.jsonc`; `www.kthread.dev` redirects to it through a Cloudflare Redirect Rule on the zone. DNS for the zone also carries iCloud mail records — leave those alone. Build and deploy commands live in the Cloudflare dashboard, not in the repo; they use `pnpm wrangler …` so the pinned wrangler runs, never `pnpm dlx`/`npx` without a local install. pnpm's version comes from `packageManager` in `package.json`.
@@ -39,27 +39,22 @@ There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler 
 ```
 src/worker.ts         runs for "/" only: redirects to /en, /es or /pt
 src/app/
-  [lang]/layout.tsx   root layout per language: <html lang>, metadata, hreflang
-  [lang]/page.tsx     the page: case top edge, bezel and screen, controls
-  document.ts         fonts, viewport and the pre-paint theme script
+  [lang]/layout.tsx   root layout per language: <html lang>, metadata, hreflang, skip link
+  [lang]/page.tsx     the page: header, the sections, footer
+  document.ts         fonts and viewport, shared with the 404
   global-not-found.tsx  exported as 404.html; carries all three languages
   content.ts          language-neutral data (links, section ids, suite, specs, stack)
   i18n/               en.ts (source of truth), es.ts, pt.ts, locales.ts
-  globals.css         the palette, the console, pixel primitives, the wind
-  pixels.ts           build-time pixel helpers: seeded PRNG, sprites, paths, blobs
+  globals.css         the palette, type scale and the four utilities
   components/
-    Scene.tsx         the landscape: hills, pines, the big tree, windsock, sky
-    PixelButton.tsx   the one client button: theme, gust or shake
-    Screen.tsx        the screen set into the bezel, with its edge line
-    Intro.tsx         the dialogue box, lede, facts and section menu
-    Section.tsx       the frame every section below the intro uses
+    Intro.tsx         the statement, the lede and the facts
+    Section.tsx       the numbered frame every section below the intro uses
+    Specs.tsx         label-over-value cells on hairlines: facts, specs, stack
     Work.tsx, Principles.tsx, Stack.tsx, Contact.tsx
-    Controls.tsx      the lower half: D-pad (drawing), A (gust), B (palette)
-    Mark.tsx          the pixel "vx" badge (icon.svg draws the same grid)
     LanguageLinks.tsx EN / ES / PT; remembers the choice for "/" and the 404
 ```
 
-The page is deliberately flat: server components that render static markup, one short client button, and one boot script. There is no game, no settings menu and no app state. Keep it that way; a new idea should fit in CSS and a data attribute before it earns a component with state.
+The page is deliberately flat: server components that render static markup, and one client component for the language links. There's no theme script, no toggle and no app state. Keep it that way.
 
 ## Languages
 
@@ -78,76 +73,57 @@ The page is deliberately flat: server components that render static markup, one 
 
 ## Design direction
 
-A retro handheld console, minimal inside. The page *is* the console: the header is the top edge of the case, the content sits on a screen set into a dark bezel, and the footer is the lower half with a D-pad and A/B. On the screen, one left-aligned column that reads like a document, as plain as [suckless.org](https://suckless.org). The character comes from pixels, four colours, a dialogue box and a small landscape with wind in it.
+A technical document. The references are defence and research companies (Helsing, Palantir, Lockheed Martin) and AI labs (Mistral, Black Forest Labs): plain facts on a strict grid, large type, hairline rules and a lot of space. There's no imagery, no decoration and no motion. The page earns its character from typography and restraint, not effects.
 
-**Palette.** Four colours, [Mist GB](https://lospec.com/palette-list/mist-gb) by Kerrie Lake, and nothing else: no tints, no fifth colour, no gradients except the ones that draw pixel patterns.
+**Palette.** Paper by day, carbon by night, one signal colour. Tokens live on `:root` in `globals.css`; `light-dark()` picks the value from the system's setting.
 
-| Token | Day (default) | Night (palette swap) |
-| --- | --- | --- |
-| `--bg` (the screen) | mint `#c4f0c2` | brown `#2d1b00` |
-| `--ink` (text) | brown | mint |
-| `--soft` (secondary text, labels) | deep `#1e606e` | teal `#5ab9a8` |
-| `--line` (rules, frames) | deep | teal |
-| `--accent` (fills) | teal | deep |
-| `--plastic` (the case) / `--on-plastic` | teal / brown | deep / mint |
-| `--bezel` / `--on-bezel` | brown / mint | brown / mint |
-| `--sky`, `--far`, `--near`, `--fore`, `--sun` (the scene) | mint, teal, deep, brown, teal | brown, deep, teal, mint, mint |
+| Token | Light | Dark | Use |
+| --- | --- | --- | --- |
+| `--bg` | paper `#f3f2ee` | carbon `#0c0c0b` | the page |
+| `--fg` | `#141413` | `#ecebe6` | text, the button |
+| `--muted` | `#5f5e59` | `#9a9993` | secondary text, labels |
+| `--line` | `#d7d5ce` | `#2c2b28` | hairline rules only |
+| `--signal` | `#f04800` | `#f04800` | marks only |
+| `--on-signal` | `#141413` | `#141413` | text on signal |
 
-Contrast decides what each pairing may do. Brown on mint (13.1:1), brown on teal (7.1:1) and deep on mint (5.6:1) carry text; the tokens above are arranged so every `--ink`, `--soft` and `--on-*` pairing is one of them. Deep on teal (3.0:1) is for edges and large text only. Brown on deep (2.3:1) and teal on mint (1.9:1) are decoration only: never text, never the only edge of a control.
+Contrast decides what each token may do. `--fg` (16:1) and `--muted` (5.8:1 light, 6.9:1 dark) carry text. `--signal` is 3.3:1 on paper, so it's for marks and never for text on `--bg`: the square before "vx", the status squares, the underline on the current language, the focus ring, the text selection and the button's hover. Carbon on signal is 4.9:1, which is why the hover and the selection use `--on-signal`. `--line` is for rules, never the only edge of a control. Add no other colours, tints, gradients, shadows or opacity-as-colour.
 
-**Type.** Pixelify Sans for headings (600) and body (400). Silkscreen, uppercase, for small labels via `eyebrow` and `chip`. No negative tracking, and ligatures stay off.
+**Type.** Geist for everything, Geist Mono for small uppercase labels (the `label` utility). Weights are 400 and 500 only. Large type gets negative tracking (`text-display` is -0.04em; titles use `tracking-tight`), body text none. Headings are sentence case.
 
-**The console** (in `globals.css`).
-- `console`: the one centred column that the case's top edge, the bezel and the controls share, so they line up at every width. Don't put page chrome outside it.
-- `notch`: corners cut in two pixel steps, for the bezel and the screen. `Screen` nests two of them to draw the screen's edge line.
-- `art` / `art-inset`: the scene's width is the widest multiple of 160px that fits, so every art pixel is a whole number of screen pixels; `art-inset` pads the text column to the same left edge.
+**Layout.**
+- `wrap` is the one centred column (80rem, fluid side padding) that the header, every section and the footer share. Don't put page chrome outside it.
+- Below the intro, every section is a `<Section>`: a hairline across the column, then a 12-column grid with the number and title in the left four columns (sticky on large screens) and the content in the right eight. Numbers come from the order of `sections` in `content.ts`. On small screens the two stack.
+- Facts, specs and the stack are `<Specs>`: label-over-value cells on hairlines that wrap to as many columns as fit.
+- Everything is left-aligned. Sections are separated by space and a single hairline, never boxes or cards.
 
-**Pixel primitives.** `--px` is one art pixel of the interface, 3px; frames, rules and offsets are multiples of it.
-- `dialog`: the RPG dialogue box (stepped ink frame, gap, inner line). For grouped content: the intro and the project cards.
-- `frame`: a stepped outline one pixel wide with empty corner pixels. Set `--frame` to recolour it. `chip` is a small label inside one.
-- `btn`: a chunky ink button on a lip; pressing drops it onto the lip. `link`: a pixel underline that inverts into an ink block on hover.
-- `rule`: a dashed pixel rule along the top of a row, for spec tables and lists. Sections are separated by space.
-
-**Pixel art.** Inline SVG built at build time with the helpers in `pixels.ts` (sprites as rows of characters, blobs, skylines): one viewBox unit per art pixel, `shapeRendering="crispEdges"`, and a whole number of screen pixels per art pixel wherever the size is fixed. Colour it with tokens (the `fill-*` utilities), never literal colours; the vx badge is the one exception. Motion moves in whole pixels with `steps()`; frame swaps are hard cuts, never smooth.
-
-**The wind** (bottom of `globals.css`). One clock (`--cycle`) drives the whole scene. Anything that sways sits in `<Sway x={…}>` and is delayed by its x at `--speed` per art pixel, so each gust crosses from left to right: the streaks in the sky arrive, the pine tops and the tree's crown lean a pixel, the grass bends, the windsock fills and two leaves blow off. To add something to the wind, wrap it in `Sway` with its x; don't add a second clock.
-
-**Pixel buttons.** A real `<button>` (`PixelButton`) over the sprite, at least 44px square, with an `aria-label` from the dictionaries and a matching `title`. Over the scene they're placed in art-pixel units (`--cx`, `--cy`, `--w`, `--h`) by `.scene-button`, and hovering shows menu-cursor brackets. Each one only sets an attribute on `<html>`, and CSS does the rest:
-
-| Button | Does | Attribute |
-| --- | --- | --- |
-| Sun or moon, B | swaps the palette (saved as `localStorage["vx-theme"]`) | `data-theme="night"` |
-| Windsock, A | a three-second gust: everything flutters, fast streaks, sock full | `data-gust` |
-| The big tree | the crown rattles and five leaves fall and stay on the ground | `data-shaken` |
-
-**Do:**
-- Use `<Section>` for every section below the intro: a title led by one ink pixel, an optional aside, then the content. Everything is left-aligned.
-- Use `dialog` boxes for grouped content, `chip` for statuses (the glyph carries meaning: filled, half and empty squares), and spec tables (`dl` rows with `rule`) for facts.
-- Keep the art sparse and purposeful: one scene, a few sprites, each with a reason to exist.
+**Components.**
+- `btn`: the one button. Solid `--fg`, square corners, at least 44px tall, `--signal` on hover. One per view at most.
+- `link`: a hairline underline in `--line` that darkens to the text colour on hover.
+- `label`: Geist Mono, 12px, uppercase, 0.06em tracking, `--muted`.
+- Statuses are a signal square plus the word: filled for shipping, half for in progress, empty for planned. The shape carries the meaning, not the colour.
 
 **Don't:**
-- Rounded corners, pills, blur, soft shadows, or opacity used as a colour.
-- Colours outside the four, or text on a pairing the contrast table rules out.
-- Console trademarks or logos (no real brand names, logos or labels); the console is our own, the "VX·9K".
-- Terminal or hacker clichés: fake shells, `$` prompts, boot logs, blinking text cursors, `>_` logos, CLI-flag labels, kernel-panic jokes. Retro here means handheld games, not terminals.
-- Smooth, eased motion on sprites, or animation that moves layout.
-- Game mechanics, app state or settings panels. The page is a document with a few toys on it.
+- Rounded corners, pills, cards, shadows, blur, gradients (except the half-filled status square) or opacity.
+- A second accent colour, colour on large surfaces, or signal used for text on the page background.
+- Imagery, illustration, icons beyond the ↗ ↑ ← arrows, or decorative motion. Hover changes colour and nothing else.
+- Terminal or hacker clichés: fake shells, `$` prompts, boot logs, blinking cursors, ASCII brackets, crosshairs, HUD or telemetry cosplay. "Technical" here means a spec sheet, not a screen.
+- Copy that performs: taglines, slogans, claims about impact. State what the thing is and what it does.
 
 Design-oriented agent skills live in `.claude/skills/`. Use them for visual work, but this section wins where they disagree.
 
 ## Themes and accessibility
 
-Target WCAG 2.2 AA. An inline script (`bootScript` in `document.ts`) runs before paint and sets `data-theme` on `<html>`: a saved choice wins, and without one the page follows `prefers-color-scheme`. The CSS reads only that attribute for the palette. Reduced motion is read straight from `prefers-reduced-motion` in CSS: nothing animates, and the buttons still show their result as a still (a sent gust holds the trees leaning and the sock full; shaken leaves are already on the ground). Forced colours (Windows contrast themes) hide the art and give boxes a real border.
+Target WCAG 2.2 AA. There's no theme toggle: `color-scheme: light dark` and `light-dark()` in `globals.css` follow the system, and `viewport.themeColor` in `document.ts` matches the browser chrome to it. A new colour needs both a light and a dark value in the same `light-dark()`.
 
 For every visual change:
-- Colours come from the tokens, and both palettes must work. A new token needs a day value in `:root` and, if it differs, a night value in `[data-theme="night"]`. The `night:` Tailwind variant is there for one-offs.
-- Check it by day and by night. To preview night without clicking, set `localStorage["vx-theme"]` to `"night"` and reload.
-- Keep semantic landmarks, `aria-labelledby` on sections, the skip link, visible `:focus-visible` squares, 44px minimum touch targets and `aria-hidden` on purely decorative art.
-- Motion uses `transform` and `visibility` and must be covered by the reduced-motion rules.
+- Check it in light and dark mode (emulate `prefers-color-scheme` in the browser's dev tools).
+- Keep semantic landmarks, `aria-labelledby` on sections, the skip link, visible `:focus-visible` outlines, 44px minimum touch targets and `aria-hidden` on purely decorative marks.
+- Keep the page still. The only motion is smooth scrolling to anchors, and `prefers-reduced-motion` turns it off.
+- In forced colours (Windows contrast themes) the hairlines, text and button fall back to system colours without extra rules; check any new element there too.
 
 ## Performance
 
-The page is static and small; keep it that way. No runtime dependencies beyond Next and React. The pixel art is generated at build time and ships as SVG paths; its motion is CSS; the only script is the boot script and the button handlers. Keep any new effect to that standard: no canvas, no animation libraries, nothing running in JavaScript on a timer.
+The page is static and small; keep it that way. No runtime dependencies beyond Next and React, and the only client code is the language links and the 404's language picker. Two variable fonts, self-hosted by `next/font`, and no images on the page. Keep any new idea to that standard: no canvas, no animation libraries, nothing running in JavaScript on a timer.
 
 ## Code style
 

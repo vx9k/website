@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import "../globals.css";
-import { bootScript, fontVariables } from "../document";
+import { fontVariables } from "../document";
 import { getDictionary, hasLocale, localeKeys, locales } from "../i18n";
 
 export { viewport } from "../document";
@@ -50,14 +50,11 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   const t = getDictionary(lang);
 
   return (
-    <html lang={locales[lang].tag} dir="ltr" suppressHydrationWarning className={fontVariables}>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: bootScript }} />
-      </head>
+    <html lang={locales[lang].tag} dir="ltr" className={fontVariables}>
       <body className="min-h-dvh overflow-x-clip antialiased">
         <a
           href="#main"
-          className="frame fixed top-3 left-3 z-10 -translate-y-24 bg-bg px-4 py-3 font-label text-xs text-ink focus-visible:translate-y-0"
+          className="fixed top-3 left-3 z-10 -translate-y-24 bg-fg px-4 py-3 text-sm text-bg focus-visible:translate-y-0"
         >
           {t.skip}
         </a>

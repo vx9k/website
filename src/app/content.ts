@@ -7,26 +7,27 @@ export const links = {
   website: "https://github.com/vx9k/website",
 };
 
-// Ids double as URL fragments, so they stay in English everywhere.
+// Ids double as URL fragments, so they stay in English everywhere. The
+// order here is the order on the page, and sets each section's number.
 export const sections = ["work", "principles", "stack", "contact"] as const;
 
 export type Status = "shipping" | "in progress" | "planned";
 
-// 4init starts 4rc (4init/README.md), so 4rc sits one step in. logger and
+// In the order they run: 4init starts 4rc (4init/README.md). logger and
 // user are in the suite's stated scope but have no code yet.
 export const suite = [
-  { name: "4init", status: "shipping", depth: 0 },
-  { name: "4rc", status: "in progress", depth: 1 },
-  { name: "logger", status: "planned", depth: 0 },
-  { name: "user", status: "planned", depth: 0 },
-] as const satisfies { name: string; status: Status; depth: number }[];
+  { name: "4init", status: "shipping" },
+  { name: "4rc", status: "in progress" },
+  { name: "logger", status: "planned" },
+  { name: "user", status: "planned" },
+] as const satisfies { name: string; status: Status }[];
 
 export const specs = {
   suite: { language: "C", build: "Ninja", license: "MIT" },
   site: {
     language: "TypeScript",
     framework: "Next.js",
-    graphics: "SVG",
+    styling: "Tailwind CSS",
     hosting: "Cloudflare Workers",
   },
 };

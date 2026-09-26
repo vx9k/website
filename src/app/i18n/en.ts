@@ -15,19 +15,9 @@ const en = {
     stack: "Stack",
     contact: "Contact",
   },
-  scene: {
-    hint: "Some of the pixels do things: try the sun or moon, the big tree and the windsock.",
-    sky: "Switch between day and night",
-    tree: "Shake the tree",
-    windsock: "Send a gust of wind",
-  },
-  console: {
-    a: "A: send a gust of wind",
-    b: "B: switch between day and night",
-  },
   hero: {
-    line: "I write software meant to outlast the machine it runs on.",
-    lede: "I write minimal init systems in C. The code is small enough to read in one sitting and sticks to POSIX interfaces where it can.",
+    line: "Init systems and boot tooling in C.",
+    lede: "Small programs that each do one job, use POSIX interfaces where they can, and stay short enough to read in one sitting. The current project is 4suite, a self-contained boot stack for Linux.",
     facts: [
       { k: "Role", v: "Systems engineer" },
       { k: "Focus", v: "Init systems, POSIX C" },
@@ -37,7 +27,6 @@ const en = {
   },
   work: {
     title: "Work",
-    aside: "Small programs that each do one job, listed in the order they run.",
     status: {
       shipping: "shipping",
       "in progress": "in progress",
@@ -49,7 +38,7 @@ const en = {
       build: "Build",
       license: "License",
       framework: "Framework",
-      graphics: "Graphics",
+      styling: "Styling",
       hosting: "Hosting",
     },
     suite: {
@@ -65,7 +54,7 @@ const en = {
       },
     },
     site: {
-      body: "A static Next.js export served from Cloudflare Workers. The landscape at the top is pixel art, drawn when the site is built and shipped as SVG. The trees move in a wind made of CSS, the sun swaps the palette, and the page reads in English, Spanish and Portuguese.",
+      body: "A static Next.js export served from Cloudflare Workers, in English, Spanish and Portuguese. The root picks a language at the edge, and the page follows your system's light or dark setting.",
     },
   },
   principles: {
@@ -95,6 +84,9 @@ const en = {
     quote:
       "I'd rather ship something small that I fully understand than something large I'm still discovering the edges of.",
     source: "Source for this site",
+  },
+  footer: {
+    top: "Back to top",
   },
   notFound: {
     title: "Page not found",

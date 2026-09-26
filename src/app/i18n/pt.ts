@@ -18,19 +18,9 @@ const pt: Dictionary = {
     stack: "Ferramentas",
     contact: "Contato",
   },
-  scene: {
-    hint: "Alguns pixels fazem coisas: experimente o sol ou a lua, a árvore grande e a biruta.",
-    sky: "Alternar entre dia e noite",
-    tree: "Sacudir a árvore",
-    windsock: "Soprar uma rajada de vento",
-  },
-  console: {
-    a: "A: soprar uma rajada de vento",
-    b: "B: alternar entre dia e noite",
-  },
   hero: {
-    line: "Escrevo software feito para durar mais que a máquina onde roda.",
-    lede: "Escrevo sistemas init mínimos em C. O código é pequeno o bastante para ler de uma vez só e segue as interfaces POSIX sempre que possível.",
+    line: "Sistemas init e ferramentas de boot em C.",
+    lede: "Programas pequenos, cada um com uma só tarefa, que usam interfaces POSIX sempre que possível e são curtos o bastante para ler de uma vez só. O projeto atual é o 4suite, uma pilha de boot independente para Linux.",
     facts: [
       { k: "Função", v: "Engenharia de sistemas" },
       { k: "Foco", v: "Sistemas init, C POSIX" },
@@ -40,7 +30,6 @@ const pt: Dictionary = {
   },
   work: {
     title: "Trabalho",
-    aside: "Programas pequenos, cada um com uma só tarefa, na ordem em que rodam.",
     status: {
       shipping: "disponível",
       "in progress": "em andamento",
@@ -52,7 +41,7 @@ const pt: Dictionary = {
       build: "Build",
       license: "Licença",
       framework: "Framework",
-      graphics: "Gráficos",
+      styling: "Estilos",
       hosting: "Hospedagem",
     },
     suite: {
@@ -68,7 +57,7 @@ const pt: Dictionary = {
       },
     },
     site: {
-      body: "Um export estático de Next.js servido pelo Cloudflare Workers. A paisagem no topo é pixel art, desenhada no build do site e entregue como SVG. As árvores se movem com um vento feito de CSS, o sol troca a paleta e a página está em inglês, espanhol e português.",
+      body: "Um export estático de Next.js servido pelo Cloudflare Workers, em inglês, espanhol e português. A raiz escolhe o idioma na edge e a página segue o modo claro ou escuro do seu sistema.",
     },
   },
   principles: {
@@ -98,6 +87,9 @@ const pt: Dictionary = {
     quote:
       "Prefiro lançar algo pequeno que eu entendo por completo do que algo grande cujos limites ainda estou descobrindo.",
     source: "Código deste site",
+  },
+  footer: {
+    top: "Voltar ao topo",
   },
   notFound: {
     title: "Página não encontrada",

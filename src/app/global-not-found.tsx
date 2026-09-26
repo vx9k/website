@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Scene from "./components/Scene";
-import Screen from "./components/Screen";
-import { bootScript, fontVariables } from "./document";
+import { fontVariables } from "./document";
 import { getDictionary, localeKeys, locales } from "./i18n";
 
 export { viewport } from "./document";
@@ -46,31 +44,26 @@ export default function GlobalNotFound() {
   return (
     <html lang="en-US" dir="ltr" suppressHydrationWarning className={fontVariables}>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: bootScript + pickScript }} />
+        <script dangerouslySetInnerHTML={{ __html: pickScript }} />
       </head>
       <body className="min-h-dvh overflow-x-clip antialiased">
-        <main id="main" className="console flex min-h-dvh flex-col justify-center py-6">
-          <div className="notch bg-bezel p-[clamp(0.5rem,2vw,1.5rem)]">
-            <Screen>
-              {/* Same generator, another seed: different hills. */}
-              <Scene seed={404} />
-              <div className="art-inset pt-8 pb-12">
-                {localeKeys.map((l) => {
-                  const t = getDictionary(l).notFound;
-                  return (
-                    <div key={l} lang={locales[l].tag} className={visibility[l]}>
-                      <p className="eyebrow">404</p>
-                      <h1 className="mt-3 text-title font-semibold">{t.title}</h1>
-                      <p className="mt-4 max-w-[34rem] text-pretty">{t.body}</p>
-                      <a href={`/${l}`} className="btn mt-8">
-                        <span aria-hidden>←</span> {t.back}
-                      </a>
-                    </div>
-                  );
-                })}
+        <main id="main" className="wrap flex min-h-dvh flex-col justify-center py-16">
+          {localeKeys.map((l) => {
+            const t = getDictionary(l).notFound;
+            return (
+              <div key={l} lang={locales[l].tag} className={visibility[l]}>
+                <p className="label flex items-center gap-2.5">
+                  <span aria-hidden className="size-2 bg-signal" />
+                  404
+                </p>
+                <h1 className="mt-6 max-w-[16ch] text-display font-medium text-balance">{t.title}</h1>
+                <p className="mt-8 max-w-[34rem] text-lg text-muted text-pretty">{t.body}</p>
+                <a href={`/${l}`} className="btn mt-12">
+                  <span aria-hidden>←</span> {t.back}
+                </a>
               </div>
-            </Screen>
-          </div>
+            );
+          })}
         </main>
       </body>
     </html>
