@@ -34,14 +34,16 @@
   --glint: light-dark(rgb(255 255 255 / 0.75), rgb(255 255 255 / 0.2));
 }
 
-/* Contrast themes replace every colour: marks draw in the text colour,
-   and the glow goes. */
+/* Contrast themes replace every colour: marks draw in the text colour.
+   The glow's own reset follows the glow, below. */
 @media (forced-colors: active) {
   :root {
     --signal: CanvasText;
   }
-  html {
-    background-image: none;
+  /* The ink behind the JavaScript and TypeScript letters keeps its own
+     fill, so it would merge with the forced text colour. */
+  .icon-tile .ink {
+    fill: Canvas;
   }
 }
 
@@ -81,6 +83,24 @@ html {
   scroll-behavior: smooth;
   /* Anchored sections land below the floating header. */
   scroll-padding-top: 5.5rem;
+}
+
+/* The 404 is a single screen, which would stack all three glows into
+   it. It keeps the signal at the top and puts the fainter amber at the
+   bottom. */
+html.not-found {
+  background-image:
+    radial-gradient(60rem 44rem at 100% 20rem, var(--glow), transparent 70%),
+    radial-gradient(52rem 40rem at 75% calc(100% - 20rem), var(--glow-2), transparent 70%);
+}
+
+/* In forced colours the light goes. This sits after the glow so that it
+   wins over the 404's own. */
+@media (forced-colors: active) {
+  html,
+  html.not-found {
+    background-image: none;
+  }
 }
 
 body {
@@ -204,9 +224,10 @@ body {
 /* ------------------------------------------------------------ skill icons
    Each skill's icon sits on a small tile tinted with its own colour (--c):
    the brand's colour for a brand mark, signal for the glyphs drawn here.
-   A glint of light crosses every tile in turn (--i staggers them), the
-   icon hops when its row is hovered, and the drawn glyphs move a little
-   on their own. All of it stops with reduced motion. */
+   Every 12s a glint of light runs across the tiles in reading order (--i
+   staggers them) and then the pane is still again; the icon lifts when its
+   row is hovered, and the drawn glyphs move a little on their own. All of
+   it stops with reduced motion. */
 
 .icon-tile {
   position: relative;
@@ -230,22 +251,24 @@ body {
     inset: -50%;
     background: linear-gradient(115deg, transparent 42%, var(--glint) 50%, transparent 58%);
     transform: translateX(-60%);
-    animation: glint 9s ease-in-out infinite;
-    animation-delay: calc(var(--i) * 0.45s);
+    animation: glint 12s ease-in-out infinite;
+    animation-delay: calc(var(--i) * 0.08s);
   }
 }
 
 @keyframes glint {
-  0%, 86% { transform: translateX(-60%); }
+  0%, 90% { transform: translateX(-60%); }
   100% { transform: translateX(60%); }
 }
 
+/* A lift, not a bounce: the skills aren't links, so nothing should
+   suggest a click. */
 .skill:hover .icon-tile svg {
-  animation: hop 0.6s cubic-bezier(0.3, 1.6, 0.5, 1);
+  animation: lift 0.5s ease-out;
 }
 
-@keyframes hop {
-  40% { transform: translateY(-2px) rotate(-8deg) scale(1.12); }
+@keyframes lift {
+  50% { transform: translateY(-2px) scale(1.06); }
 }
 
 /* The drawn glyphs: layers that light in turn, a core that pulses, a

@@ -44,7 +44,7 @@ const visibility = {
 
 export default function GlobalNotFound() {
   return (
-    <html lang="en-US" dir="ltr" suppressHydrationWarning className={fontVariables}>
+    <html lang="en-US" dir="ltr" suppressHydrationWarning className={`${fontVariables} not-found`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: pickScript }} />
       </head>

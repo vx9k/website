@@ -13,7 +13,7 @@ const d = (n: number) => ({ "--d": n }) as CSSProperties;
 function Mark({ path, ink }: { path: string; ink?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor">
-      {ink && <rect x="1.5" y="1.5" width="21" height="21" fill={ink} />}
+      {ink && <rect className="ink" x="1.5" y="1.5" width="21" height="21" fill={ink} />}
       <path d={path} />
     </svg>
   );

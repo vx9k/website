@@ -120,7 +120,7 @@ Contrast decides what each token may do. `--fg` (16:1) and `--muted` (7.1:1 ligh
 - `label`: Geist Mono, 12px, uppercase, 0.06em tracking, `--muted`.
 - The language switch is a segmented control: three 44px targets, with the current one marked by a small `--fg` block inside its target, and underlined in contrast themes, where the fill disappears.
 - Skill icons: a 40px tile (`icon-tile`) tinted with the skill's colour, the icon 22px inside it, `aria-hidden` with the name as text beside it. Brand marks come from `marks.ts`, 24×24 paths from Simple Icons (CC0); the marks belong to their owners and only name the technology. Skills without a brand get a glyph drawn in `SkillIcon.tsx` on the same 24px grid, 1.5px strokes, with one small part that moves.
-- Skill motion is CSS only, on `transform` and `opacity`: a glint that crosses each tile in turn every 9s, a hop when a row is hovered, and the glyphs' own loops (layers that pulse, a core that pulses, a packet that falls, a spark that turns). It stays small and slow, and `prefers-reduced-motion` stops all of it.
+- Skill motion is CSS only, on `transform` and `opacity`: a glint that runs across the tiles once every 12s and leaves the pane still in between, a small lift when a row is hovered (not a bounce: the skills aren't links), and the glyphs' own loops (layers that pulse, a core that pulses, a packet that falls, a spark that turns). It stays small and slow, and `prefers-reduced-motion` stops all of it.
 
 **Don't:**
 - Pills, rounding above 6px, heavy or coloured shadows, glass inside glass, or blur anywhere but the header.
@@ -139,7 +139,7 @@ For every visual change:
 - Check it in light and dark mode (emulate `prefers-color-scheme` in the browser's dev tools).
 - Keep semantic landmarks, `aria-labelledby` on sections, the skip link, visible `:focus-visible` outlines (2px signal, 3.3:1 or better), 44px minimum touch targets (`min-h-11` on text links too) and `aria-hidden` on purely decorative marks.
 - Keep motion to the skill icons and smooth scrolling to anchors, and make sure `prefers-reduced-motion` turns all of it off.
-- In forced colours (Windows contrast themes) the system replaces every colour: the glow is hidden, hairlines, pane edges and text follow the system, `--signal` becomes `CanvasText`, and the button keeps an edge through its transparent border. The skill icons draw in the text colour. Check any new element there too.
+- In forced colours (Windows contrast themes) the system replaces every colour: the glow is hidden, hairlines, pane edges and text follow the system, `--signal` becomes `CanvasText`, and the button keeps an edge through its transparent border. The skill icons draw in the text colour, and the ink behind the JavaScript and TypeScript letters turns to `Canvas` so the letters survive. Check any new element there too.
 - With `prefers-reduced-transparency`, check that panes are solid and the header is opaque.
 
 ## Performance
