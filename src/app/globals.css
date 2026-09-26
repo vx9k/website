@@ -24,28 +24,24 @@
   --glass-shine: light-dark(#fff, rgb(255 255 255 / 0.16));
   --glass-shade: light-dark(rgb(20 20 19 / 0.16), rgb(0 0 0 / 0.6));
 
-  /* The ambient light behind the glass: signal at the top right, amber
-     low on the right, both on the side where the panels are. Text that
-     sits on the bare page is on the left, clear of them. */
+  /* The ambient light behind the glass: signal and amber, on the right
+     where the panes are. Text that sits on the bare page is on the left,
+     clear of the strongest light. */
   --glow: light-dark(rgb(240 72 0 / 0.2), rgb(240 72 0 / 0.24));
   --glow-2: light-dark(rgb(255 170 0 / 0.24), rgb(255 120 0 / 0.14));
 
-  /* The page runs edge to edge (viewport-fit=cover in document.ts), so on
-     phones the status bar and the browser's toolbar sit over it. These are
-     how far in the content has to start to clear them; 0 elsewhere. */
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  /* The glint that crosses the skill icons. */
+  --glint: light-dark(rgb(255 255 255 / 0.75), rgb(255 255 255 / 0.2));
 }
 
-/* Contrast themes replace every colour. Marks that carry meaning (the
-   status squares) opt out with forced-color-adjust-none and draw in the
-   text colour instead. */
+/* Contrast themes replace every colour: marks draw in the text colour,
+   and the glow goes. */
 @media (forced-colors: active) {
   :root {
     --signal: CanvasText;
   }
-  body::before {
-    display: none;
+  html {
+    background-image: none;
   }
 }
 
@@ -66,33 +62,29 @@
 
 /* ------------------------------------------------------------------ base */
 
+/* The glow is painted on the page's own background, not a fixed layer:
+   Safari 26 on iOS clips fixed layers to the area between its status bar
+   and toolbar, but draws the page background edge to edge behind them.
+   Signal at the top right, amber by the skills, signal again at the end.
+   The image starts 20rem above the page and ends 20rem below it, so the
+   light carries on into the overscroll at both ends. */
 html {
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(60rem 44rem at 100% 20rem, var(--glow), transparent 70%),
+    radial-gradient(48rem 36rem at 90% 50%, var(--glow-2), transparent 70%),
+    radial-gradient(52rem 40rem at 75% calc(100% - 20rem), var(--glow), transparent 70%);
+  background-position: 0 -20rem;
+  background-size: 100% calc(100% + 40rem);
+  background-repeat: no-repeat;
   color: var(--fg);
   scroll-behavior: smooth;
   /* Anchored sections land below the floating header. */
-  scroll-padding-top: calc(5.5rem + var(--safe-top));
+  scroll-padding-top: 5.5rem;
 }
 
 body {
   line-height: 1.6;
-  padding-top: var(--safe-top);
-  padding-bottom: var(--safe-bottom);
-}
-
-/* Fixed, so the glass passes over it as the page scrolls. With
-   viewport-fit=cover it also fills the space behind Safari's status bar
-   and toolbar; without it, Safari clips fixed layers to the area between
-   them, leaving flat bands at the top and bottom of the screen. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(60rem 44rem at 100% 0%, var(--glow), transparent 70%),
-    radial-gradient(52rem 40rem at 75% 100%, var(--glow-2), transparent 70%);
 }
 
 ::selection {
@@ -119,9 +111,7 @@ body::before {
   width: 100%;
   max-width: 80rem;
   margin-inline: auto;
-  /* Clear of the notch in landscape. */
-  padding-left: max(clamp(1.25rem, 4vw, 3rem), env(safe-area-inset-left, 0px));
-  padding-right: max(clamp(1.25rem, 4vw, 3rem), env(safe-area-inset-right, 0px));
+  padding-inline: clamp(1.25rem, 4vw, 3rem);
 }
 
 /* From lg up, a block inside the shell splits into two tracks: titles on
@@ -171,7 +161,7 @@ body::before {
   }
 }
 
-/* Small uppercase metadata: section numbers, spec keys, statuses. */
+/* Small uppercase metadata: section numbers, fact keys, skill groups. */
 @utility label {
   font-family: var(--font-mono);
   font-size: 0.75rem;
@@ -208,5 +198,97 @@ body::before {
   text-underline-offset: 0.3em;
   &:hover {
     text-decoration-color: currentColor;
+  }
+}
+
+/* ------------------------------------------------------------ skill icons
+   Each skill's icon sits on a small tile tinted with its own colour (--c):
+   the brand's colour for a brand mark, signal for the glyphs drawn here.
+   A glint of light crosses every tile in turn (--i staggers them), the
+   icon hops when its row is hovered, and the drawn glyphs move a little
+   on their own. All of it stops with reduced motion. */
+
+.icon-tile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  overflow: hidden;
+  border-radius: 0.25rem;
+  color: var(--c);
+  background: color-mix(in oklab, var(--c) 12%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--c) 30%, transparent);
+  & svg {
+    width: 1.375rem;
+    height: 1.375rem;
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -50%;
+    background: linear-gradient(115deg, transparent 42%, var(--glint) 50%, transparent 58%);
+    transform: translateX(-60%);
+    animation: glint 9s ease-in-out infinite;
+    animation-delay: calc(var(--i) * 0.45s);
+  }
+}
+
+@keyframes glint {
+  0%, 86% { transform: translateX(-60%); }
+  100% { transform: translateX(60%); }
+}
+
+.skill:hover .icon-tile svg {
+  animation: hop 0.6s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+@keyframes hop {
+  40% { transform: translateY(-2px) rotate(-8deg) scale(1.12); }
+}
+
+/* The drawn glyphs: layers that light in turn, a core that pulses, a
+   packet that falls through a filter, a spark that turns. --d staggers.
+   The pulse's keyframes are named "beat" because Tailwind's theme already
+   defines a "pulse", and its copy wins. */
+.pulse {
+  animation: beat 2.4s ease-in-out infinite;
+  animation-delay: calc(var(--d, 0) * 0.3s);
+}
+
+@keyframes beat {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.fall {
+  animation: fall 2.6s ease-in infinite;
+}
+
+@keyframes fall {
+  0% { transform: translateY(0); opacity: 0; }
+  15%, 75% { opacity: 1; }
+  100% { transform: translateY(15px); opacity: 0; }
+}
+
+.turn {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: turn 3.2s ease-in-out infinite;
+  animation-delay: calc(var(--d, 0) * 0.5s);
+}
+
+@keyframes turn {
+  0%, 100% { transform: scale(0.85) rotate(0deg); }
+  50% { transform: scale(1.05) rotate(20deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-tile::after {
+    display: none;
+  }
+  .icon-tile * {
+    animation: none !important;
   }
 }

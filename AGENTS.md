@@ -43,16 +43,18 @@ src/app/
   [lang]/page.tsx     the page: header, the sections, footer
   document.ts         fonts and viewport, shared with the 404
   global-not-found.tsx  exported as 404.html; carries all three languages
-  content.ts          language-neutral data (links, section ids, suite, specs, stack)
+  content.ts          language-neutral data (links, section ids, the skills and their colours)
   i18n/               en.ts (source of truth), es.ts, pt.ts, locales.ts
-  globals.css         the palette, the glow, type scale and seven utilities
+  globals.css         the palette, the glow, type scale, seven utilities and the skill icons
+  marks.ts            brand marks for the skills, as SVG paths from Simple Icons (CC0)
   manifest.ts, icon.svg, apple-icon.png  the signal square on carbon; the PNG is a
                       180px render of the same square on whole pixels (62–118)
   components/
     Intro.tsx         the statement, the lede and the facts
     Section.tsx       the numbered frame every section below the intro uses
-    Specs.tsx         four label-over-value cells on hairlines: the facts and project specs
-    Work.tsx, Principles.tsx, Stack.tsx, Contact.tsx
+    Skills.tsx        the skills pane: a row per group, an icon tile per skill
+    SkillIcon.tsx     the icons: brand marks, and the glyphs drawn for the rest
+    Principles.tsx, Contact.tsx
     LanguageLinks.tsx EN / ES / PT; remembers the choice for "/" and the 404
 ```
 
@@ -68,14 +70,14 @@ The page is deliberately flat: server components that render static markup, and 
 
 ## Content rules
 
-- **Only true claims.** Everything in `content.ts` and the dictionaries comes from the public repos on github.com/vx9k. Don't invent projects, stats, clients, dates or testimonials. If something is planned, label it planned.
-- Copy goes in the dictionaries in `src/app/i18n/`, never inline in a component. Language-neutral data (links, names, statuses, spec values) goes in `content.ts`.
+- **Only true claims.** The skills are vx's own list; everything else in `content.ts` and the dictionaries comes from the public repos on github.com/vx9k. Don't add skills vx hasn't named, and don't invent projects, stats, clients, dates or testimonials. The page doesn't list projects: GitHub does.
+- Copy goes in the dictionaries in `src/app/i18n/`, never inline in a component. Language-neutral data (links, product names, colours) goes in `content.ts`.
 - **Say "systems engineer" once at most** in visible copy (and its translations). It's currently the Role row in the intro.
 - Write plainly: sentence case, active voice, no exclamation marks, and none of the marketing words ("elevate", "seamless", "unleash", "next-gen" and so on).
 
 ## Design direction
 
-A technical document on glass: plain facts on a strict grid, large type, hairline rules and a lot of space, with the content on translucent panes lit by a soft, fixed glow. There's no imagery and no motion. The page earns its character from typography, light and restraint, not effects.
+A technical document on glass: plain facts on a strict grid, large type, hairline rules and a lot of space, with the content on translucent panes lit by a soft glow. There's no imagery, and the only motion is in the skill icons. The page earns its character from typography, light and restraint, not effects.
 
 **Palette.** Paper by day, carbon by night, one signal colour. Tokens live on `:root` in `globals.css`; `light-dark()` picks the value from the system's setting.
 
@@ -90,16 +92,18 @@ A technical document on glass: plain facts on a strict grid, large type, hairlin
 | `--glass-top`, `--glass-bottom`, `--glass-edge`, `--glass-ring`, `--glass-shine`, `--glass-shade` | white fill and rim, faint ink ring | faint white fill and rim, dark ring | the `glass` utility only |
 | `--glow`, `--glow-2` | signal and amber, faint | signal and amber, fainter | the ambient light only |
 
-Contrast decides what each token may do. `--fg` (16:1) and `--muted` (7.1:1 light, 7.4:1 dark on the bare page) carry text. Muted is set darker than it needs to be on paper because the glow and the glass eat into it: measured over the rendered glow at every width and scroll position, including the strips just above and below the floating header, it stays above 4.5:1. If you touch the glow, the glass or muted, measure it again the same way. `--signal` is 3.3:1 on paper, so it's for marks and never for text on `--bg`: the square before "vx", the status squares, the mark on the 404, the focus ring, the text selection and the button's hover. Carbon on signal is 4.9:1, which is why the hover and the selection use `--on-signal`. `--line` is for rules, never the only edge of a control. Translucency lives only in the glass and glow tokens; don't add tints, opacity modifiers or new gradients elsewhere (the half-filled status square is the one other gradient).
+Contrast decides what each token may do. `--fg` (16:1) and `--muted` (7.1:1 light, 7.4:1 dark on the bare page) carry text. Muted is set darker than it needs to be on paper because the glow and the glass eat into it: measured over the rendered glow at every width and scroll position, including the strips just above and below the floating header, it stays above 4.5:1. If you touch the glow, the glass or muted, measure it again the same way. `--signal` is 3.3:1 on paper, so it's for marks and never for text on `--bg`: the square before "vx", the mark on the 404, the drawn skill glyphs, the focus ring, the text selection and the button's hover. Carbon on signal is 4.9:1, which is why the hover and the selection use `--on-signal`. `--line` is for rules, never the only edge of a control. Translucency lives only in the glass and glow tokens and the skill tiles; don't add tints, opacity modifiers or new gradients elsewhere (the glint on the skill tiles is the one other gradient).
+
+**Brand colours.** The skills are the one place with more colour: each brand mark keeps its brand's colour, on a tile tinted with it (`--c` at 12%, its edge at 30%). Where the original colour vanishes on paper or on carbon, `content.ts` gives a `light-dark()` pair instead. The glyphs drawn for skills without a brand use signal. Nothing else on the page takes a brand colour, and the names beside the icons stay `--fg`.
 
 **Light and glass.**
-- `body::before` is a fixed layer with two radial glows: signal at the top right and amber low on the right, where the panels are. Text that sits on the bare page (the headline, the lede, section titles) is on the left, clear of the strongest light. Keep the glows faint: muted text must hold 4.5:1 on whatever they put behind it, at every width and scroll position.
-- `glass` is a pane: a translucent fill that's brighter at the top, a light rim inside a faint outer ring, a 1px highlight along the top and a soft shade under it, with 6px corners. The rim is what makes it read as glass on paper rather than a card. Panes are for things that hold content: the header bar, the hero facts, each project, the principles, the stack and the 404. Contact and the footer sit on the page. Don't nest panes; inside one, structure is hairlines, and a spec table is an open strip with rules above and below.
+- The glow is three radial gradients on the `html` element's own background: signal at the top right, amber by the skills, signal again at the end, all on the right where the panes are. Text that sits on the bare page (the headline, the lede, section titles) is on the left, clear of the strongest light. Keep the glows faint: muted text must hold 4.5:1 on whatever they put behind it, at every width.
+- It isn't a fixed layer on purpose. Safari 26 on iOS draws the page under its translucent status bar and toolbar but clips `position: fixed` layers to the area between them, even with negative offsets or `viewport-fit=cover`, which left hard bands at both ends of the screen. The root background is painted across the whole canvas, bars included; its image starts 20rem above the page and ends 20rem below it so the light carries into the overscroll. Don't bring back a full-screen fixed layer, and don't hide things by parking them just off screen (the skip link uses `not-focus:sr-only` for this reason): Safari shows what's above the layout viewport.
+- `glass` is a pane: a translucent fill that's brighter at the top, a light rim inside a faint outer ring, a 1px highlight along the top and a soft shade under it, with 6px corners. The rim is what makes it read as glass on paper rather than a card. Panes are for things that hold content: the header bar, the hero facts, the skills, the principles and the 404. Contact and the footer sit on the page. Don't nest panes; inside one, structure is hairlines.
 - `frost` adds the backdrop blur, and only the header needs it, because it's the one pane text scrolls under. It tints with the page colour at 80% instead of white, so the small labels on it hold 4.5:1 over the glow and over the headline scrolling beneath, even where the blur isn't drawn. The panels sit over nothing but the smooth glow, where a blur would cost a repaint every scroll and change nothing.
 - With `prefers-reduced-transparency`, glass turns solid (`--bg`) and loses its blur. In forced colours the glow is hidden and panes keep their edge.
-- The page runs edge to edge (`viewportFit: "cover"` in `document.ts`). Without it, Safari 26 on iOS clips fixed layers to the area between its status bar and toolbar, and the glow stops in hard bands at the top and bottom of the screen. The price is that the page has to keep its own content clear of them: the body is padded by `--safe-top` and `--safe-bottom`, `shell` clears the notch in landscape, and anything fixed or sticky (the header, the skip link, the section titles, `scroll-padding-top`) adds `var(--safe-top)` to its offset. Do the same for anything new pinned to an edge.
 
-**Corners.** Square with a little rounding, never pills: 6px for panes (`glass`), 4px for controls (`btn`, the language segments, the skip link: `rounded-sm`), 1–2px for the small signal marks. No `rounded-full`, and nothing rounder than 6px.
+**Corners.** Square with a little rounding, never pills: 6px for panes (`glass`), 4px for controls and tiles (`btn`, the language segments, the skip link, the skill tiles: `rounded-sm`), 1–2px for the small signal marks. No `rounded-full`, and nothing rounder than 6px.
 
 **Type.** Geist for everything, Geist Mono for small uppercase labels (the `label` utility), the language switch and the repo URLs. Weights are 400 and 500 only. Large type gets negative tracking (`text-display` is -0.04em; titles use `tracking-tight`), body text none. Headings are sentence case.
 
@@ -107,7 +111,7 @@ Contrast decides what each token may do. `--fg` (16:1) and `--muted` (7.1:1 ligh
 - `shell` is the one centred column (80rem, fluid side padding) that the header, every section and the footer share. Don't put page chrome outside it. The header bar bleeds past it by its own padding less its border (`-mx-3 px-[calc(0.75rem-1px)]`), so its contents stay on its edges.
 - `split` (with `lg:grid`) divides a block in the shell into two tracks from lg up: 1fr 3fr, then 1fr 2fr from xl. The header, the intro, every section and the footer use it, so the section titles and "vx" sit on the left track and everything else starts on the same vertical, the right track's edge. Only the headline spans both. Below lg, blocks stack.
 - Below the intro, every section is a `<Section>`: the number and title on the left (sticky on large screens, below the header), the content on the right. Numbers come from the order of `sections` in `content.ts`.
-- Inside a pane, a four-column sub-grid (`md:grid-cols-4`, `gap-x-6`) lines things up: `<Specs>` is a table of four facts, and rows (components, principles, stack) put their key in the first column and the value across the other three, separated by hairlines. A `split` block that also sets a gap needs `lg:gap-x-12` back, or it drifts off the vertical.
+- Inside a pane, a four-column sub-grid (`md:grid-cols-4`, `gap-x-6`) lines things up: rows (the skill groups, the principles) put their key in the first column and the value across the other three, separated by hairlines. The facts are a table of label-over-value cells, stacked on phones and three across from sm. A `split` block that also sets a gap needs `lg:gap-x-12` back, or it drifts off the vertical.
 - Everything is left-aligned. Measure: body text stops at 36rem; the headline at 16ch.
 
 **Components.**
@@ -115,12 +119,13 @@ Contrast decides what each token may do. `--fg` (16:1) and `--muted` (7.1:1 ligh
 - `link`: a 1px underline in `--muted` that darkens to the text colour on hover.
 - `label`: Geist Mono, 12px, uppercase, 0.06em tracking, `--muted`.
 - The language switch is a segmented control: three 44px targets, with the current one marked by a small `--fg` block inside its target, and underlined in contrast themes, where the fill disappears.
-- Statuses are a signal square plus the word: filled for shipping, half for in progress, empty for planned. The shape carries the meaning, not the colour, and the squares keep their shape in contrast themes (`forced-color-adjust-none`, with `--signal` set to `CanvasText`).
+- Skill icons: a 40px tile (`icon-tile`) tinted with the skill's colour, the icon 22px inside it, `aria-hidden` with the name as text beside it. Brand marks come from `marks.ts`, 24×24 paths from Simple Icons (CC0); the marks belong to their owners and only name the technology. Skills without a brand get a glyph drawn in `SkillIcon.tsx` on the same 24px grid, 1.5px strokes, with one small part that moves.
+- Skill motion is CSS only, on `transform` and `opacity`: a glint that crosses each tile in turn every 9s, a hop when a row is hovered, and the glyphs' own loops (layers that pulse, a core that pulses, a packet that falls, a spark that turns). It stays small and slow, and `prefers-reduced-motion` stops all of it.
 
 **Don't:**
 - Pills, rounding above 6px, heavy or coloured shadows, glass inside glass, or blur anywhere but the header.
-- A second accent colour, colour on large surfaces beyond the faint glow, or signal used for text on the page.
-- Imagery, illustration, icons beyond the ↗ ↑ ← arrows, or decorative motion. Hover changes colour and nothing else.
+- A second accent colour outside the skill icons, colour on large surfaces beyond the faint glow, or signal used for text on the page.
+- Imagery, illustration, icons beyond the skill icons and the ↗ ↑ ← arrows, or motion anywhere but the skill icons. Elsewhere, hover changes colour and nothing else.
 - Terminal or hacker clichés: fake shells, `$` prompts, boot logs, blinking cursors, ASCII brackets, crosshairs, HUD or telemetry cosplay. "Technical" here means a spec sheet, not a screen.
 - Copy that performs: taglines, slogans, claims about impact. State what the thing is and what it does.
 
@@ -133,13 +138,13 @@ Target WCAG 2.2 AA. There's no theme toggle: `color-scheme: light dark` and `lig
 For every visual change:
 - Check it in light and dark mode (emulate `prefers-color-scheme` in the browser's dev tools).
 - Keep semantic landmarks, `aria-labelledby` on sections, the skip link, visible `:focus-visible` outlines (2px signal, 3.3:1 or better), 44px minimum touch targets (`min-h-11` on text links too) and `aria-hidden` on purely decorative marks.
-- Keep the page still. The only motion is smooth scrolling to anchors, and `prefers-reduced-motion` turns it off.
-- In forced colours (Windows contrast themes) the system replaces every colour: the glow is hidden, hairlines, pane edges and text follow the system, `--signal` becomes `CanvasText`, the button keeps an edge through its transparent border, and the status squares opt out of the override so their shape survives. Check any new element there too.
+- Keep motion to the skill icons and smooth scrolling to anchors, and make sure `prefers-reduced-motion` turns all of it off.
+- In forced colours (Windows contrast themes) the system replaces every colour: the glow is hidden, hairlines, pane edges and text follow the system, `--signal` becomes `CanvasText`, and the button keeps an edge through its transparent border. The skill icons draw in the text colour. Check any new element there too.
 - With `prefers-reduced-transparency`, check that panes are solid and the header is opaque.
 
 ## Performance
 
-The page is static and small; keep it that way. No runtime dependencies beyond Next and React, and the only client code is the language links and the 404's language picker. Two variable fonts, self-hosted by `next/font`, and no images on the page. The glow is two CSS gradients, and only the header pays for a backdrop blur. Keep any new idea to that standard: no canvas, no animation libraries, nothing running in JavaScript on a timer.
+The page is static and small; keep it that way. No runtime dependencies beyond Next and React, and the only client code is the language links and the 404's language picker. Two variable fonts, self-hosted by `next/font`, and no image files on the page: the icons are inline SVG paths. The glow is three CSS gradients on the page background, the skill animations run on `transform` and `opacity`, and only the header pays for a backdrop blur. Keep any new idea to that standard: no canvas, no animation libraries, nothing running in JavaScript on a timer.
 
 ## Code style
 

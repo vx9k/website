@@ -13,9 +13,8 @@ const es: Dictionary = {
   nav: {
     label: "Secciones",
     language: "Idioma",
-    work: "Trabajo",
+    skills: "Habilidades",
     principles: "Principios",
-    stack: "Herramientas",
     contact: "Contacto",
   },
   hero: {
@@ -24,38 +23,14 @@ const es: Dictionary = {
     facts: [
       { k: "Rol", v: "Ingeniería de sistemas" },
       { k: "Enfoque", v: "Sistemas init, C POSIX" },
-      { k: "Ahora", v: "4suite / 4rc" },
       { k: "Código", v: "github.com/vx9k" },
     ],
   },
-  work: {
-    title: "Trabajo",
-    status: {
-      shipping: "disponible",
-      "in progress": "en progreso",
-      planned: "planeado",
-    },
-    spec: {
-      language: "Lenguaje",
-      target: "Plataforma",
-      build: "Compilación",
-      license: "Licencia",
-      framework: "Framework",
-      styling: "Estilos",
-      hosting: "Alojamiento",
-    },
-    suite: {
-      body: "Una pila de arranque autocontenida en C: init, rc, logger y user.",
-      target: "Linux",
-      components: "Componentes",
-      nodes: {
-        "4init": "PID 1 mínimo. Bloquea las señales y las lee con un signalfd, hace fork de 4rc en su propia sesión y luego recolecta los procesos hijos en cada SIGCHLD. Inspirado en el init mínimo de rofl0r.",
-        "4rc": "El gestor de servicios que 4init arranca por defecto. Está en sus inicios.",
-      },
-    },
-    site: {
-      body: "Un sitio estático exportado con Next.js y servido desde Cloudflare Workers, en inglés, español y portugués. Un Worker en la dirección raíz elige tu idioma, y la página sigue el modo claro u oscuro de tu sistema.",
-    },
+  skills: {
+    title: "Habilidades",
+    groups: { languages: "Lenguajes", web: "Web", networking: "Redes", ai: "IA" },
+    names: { asm: "Ensamblador", llm: "Cómo funcionan los LLM", ai: "Trabajo con IA" },
+    notes: { l23: "Enlace de datos, red", l4: "Transporte", l67: "Presentación, aplicación" },
   },
   principles: {
     title: "Principios",
@@ -66,7 +41,7 @@ const es: Dictionary = {
       },
       {
         title: "Una sola tarea, hecha de forma predecible",
-        body: "Un init que solo gestiona procesos y un gestor de servicios que solo gestiona servicios. El resto de la pila está planeado como programas aparte.",
+        body: "Un init que solo gestiona procesos. Un gestor de servicios que solo gestiona servicios.",
       },
       {
         title: "Lo bastante pequeño para entenderlo entero",
@@ -74,13 +49,9 @@ const es: Dictionary = {
       },
     ],
   },
-  stack: {
-    title: "Herramientas",
-    groups: { languages: "Lenguajes", web: "Web", tooling: "Utilidades" },
-  },
   contact: {
     title: "Contacto",
-    line: "Todo el trabajo de arriba es público en GitHub.",
+    line: "Mis proyectos son públicos en GitHub.",
   },
   footer: {
     source: "Código de este sitio",

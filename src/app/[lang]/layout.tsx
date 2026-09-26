@@ -52,9 +52,11 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   return (
     <html lang={locales[lang].tag} dir="ltr" className={fontVariables}>
       <body className="min-h-dvh overflow-x-clip antialiased">
+        {/* Out of the layout until it has focus. Parking it off screen isn't
+            enough: Safari draws the page under its status bar. */}
         <a
           href="#main"
-          className="fixed top-[calc(var(--safe-top)+0.75rem)] left-3 z-20 -translate-y-[calc(100%+var(--safe-top)+1rem)] rounded-sm bg-fg px-4 py-3 text-sm text-bg focus-visible:translate-y-0"
+          className="fixed top-3 left-3 z-20 rounded-sm bg-fg px-4 py-3 text-sm text-bg not-focus:sr-only"
         >
           {t.skip}
         </a>

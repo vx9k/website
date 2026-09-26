@@ -10,9 +10,8 @@ const en = {
   nav: {
     label: "Sections",
     language: "Language",
-    work: "Work",
+    skills: "Skills",
     principles: "Principles",
-    stack: "Stack",
     contact: "Contact",
   },
   hero: {
@@ -21,40 +20,16 @@ const en = {
     facts: [
       { k: "Role", v: "Systems engineer" },
       { k: "Focus", v: "Init systems, POSIX C" },
-      { k: "Current", v: "4suite / 4rc" },
       { k: "Source", v: "github.com/vx9k" },
     ],
   },
-  work: {
-    title: "Work",
-    status: {
-      shipping: "shipping",
-      "in progress": "in progress",
-      planned: "planned",
-    },
-    spec: {
-      language: "Language",
-      target: "Target",
-      build: "Build",
-      license: "License",
-      framework: "Framework",
-      styling: "Styling",
-      hosting: "Hosting",
-    },
-    suite: {
-      body: "A self-contained boot stack in C: init, rc, logger and user.",
-      target: "Linux",
-      components: "Components",
-      // Only the components with code get a description; the rest are
-      // described by their status.
-      nodes: {
-        "4init": "Minimal PID 1. Blocks signals and reads them through a signalfd, forks 4rc into its own session, then reaps children on every SIGCHLD. Inspired by rofl0r’s minimal init.",
-        "4rc": "The service manager 4init starts by default. Early work.",
-      },
-    },
-    site: {
-      body: "A static Next.js export served from Cloudflare Workers, in English, Spanish and Portuguese. A Worker at the root address picks your language, and the page follows your system’s light or dark setting.",
-    },
+  skills: {
+    title: "Skills",
+    groups: { languages: "Languages", web: "Web", networking: "Networking", ai: "AI" },
+    // Names for the skills that have none in content.ts.
+    names: { asm: "Assembly", llm: "How LLMs work", ai: "Working with AI" },
+    // The OSI layers each entry covers.
+    notes: { l23: "Data link, network", l4: "Transport", l67: "Presentation, application" },
   },
   principles: {
     title: "Principles",
@@ -65,7 +40,7 @@ const en = {
       },
       {
         title: "One job, done predictably",
-        body: "An init that only manages processes, and a service manager that only manages services. The rest of the stack is planned as separate programs.",
+        body: "An init that only manages processes. A service manager that only manages services.",
       },
       {
         title: "Small enough to understand fully",
@@ -73,13 +48,9 @@ const en = {
       },
     ],
   },
-  stack: {
-    title: "Stack",
-    groups: { languages: "Languages", web: "Web", tooling: "Tooling" },
-  },
   contact: {
     title: "Contact",
-    line: "All the work above is public on GitHub.",
+    line: "My projects are public on GitHub.",
   },
   footer: {
     source: "Source for this site",

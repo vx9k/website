@@ -2,7 +2,7 @@
 
 Source for [kthread.dev](https://kthread.dev), the personal site of [vx](https://github.com/vx9k).
 
-It's a single static page built with Next.js and Tailwind CSS, exported to plain HTML and served from Cloudflare Workers at [kthread.dev](https://kthread.dev). The design is a technical document on glass: paper or carbon depending on your system's setting, a faint signal-orange glow behind translucent panes with slightly rounded corners, Geist type, and numbered sections that all hang from one vertical. It reads in English, Spanish and Portuguese.
+It's a single static page built with Next.js and Tailwind CSS, exported to plain HTML and served from Cloudflare Workers at [kthread.dev](https://kthread.dev). The design is a technical document on glass: paper or carbon depending on your system's setting, a faint signal-orange glow behind translucent panes with slightly rounded corners, Geist type, and numbered sections that all hang from one vertical. The skills carry small animated icons in their own colours, drawn in CSS and SVG. It reads in English, Spanish and Portuguese.
 
 ## Running it
 
@@ -29,10 +29,11 @@ src/
     ├── [lang]/layout.tsx metadata, hreflang and the skip link
     ├── [lang]/page.tsx   the page: header, sections and footer
     ├── global-not-found.tsx  the 404 page, in all three languages
-    ├── content.ts        language-neutral facts: links, projects, stack
+    ├── content.ts        language-neutral facts: links, sections, skills
+    ├── marks.ts          brand marks for the skills, from Simple Icons (CC0)
     ├── i18n/             the copy in English, Spanish and Portuguese
-    ├── globals.css       the palette, the glow, glass and a few utilities
-    └── components/       the intro, the sections and the language links
+    ├── globals.css       the palette, the glow, glass, the icon motion and a few utilities
+    └── components/       the intro, the sections, the skill icons and the language links
 ```
 
 Other files at the root:
@@ -47,7 +48,7 @@ Other files at the root:
 
 ## Editing content
 
-Facts that read the same in every language live in `src/app/content.ts`; the copy lives in `src/app/i18n/`, one file per language. Keep it factual: everything on the page should be checkable against the public repos.
+Facts that read the same in every language live in `src/app/content.ts`; the copy lives in `src/app/i18n/`, one file per language. Keep it factual: the skills are vx's own list, and everything else on the page should be checkable against the public repos. Projects aren't listed here; they're on [GitHub](https://github.com/vx9k).
 
 For anything visual, read the design and accessibility sections of [`AGENTS.md`](AGENTS.md) first. Every change has to work in light and dark mode, in all three languages.
 
