@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import "../globals.css";
 import { fontVariables } from "../document";
 import { getDictionary, hasLocale, localeKeys, locales } from "../i18n";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export { viewport } from "../document";
 
@@ -50,12 +52,12 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   const t = getDictionary(lang);
 
   return (
-    <html lang={locales[lang].tag} dir="ltr" className={fontVariables}>
+    <html lang={locales[lang].tag} dir="ltr" className={cn("dark", fontVariables)}>
       <body className="min-h-dvh overflow-x-clip antialiased">
-        <a
-          href="#main"
-          className="fixed top-3 left-3 z-20 -translate-y-24 rounded-sm bg-fg px-4 py-3 text-sm text-bg focus-visible:translate-y-0"
-        >
+        {/* Out of the layout until it has focus. Parking it off screen isn't
+            enough: Safari draws the page under its status bar. No
+            transition, or it grows out of the 1px box sr-only leaves. */}
+        <a href="#main" className={cn(buttonVariants(), "fixed top-3 left-3 z-50 transition-none not-focus:sr-only")}>
           {t.skip}
         </a>
         {children}

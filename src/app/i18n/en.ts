@@ -2,62 +2,36 @@
 // are typed against it, so a missing or extra key fails the build.
 const en = {
   meta: {
-    title: "vx — systems engineer",
-    description:
-      "vx writes minimal init systems and boot tooling in C, small enough to read in one sitting.",
+    title: "vx — software engineer",
+    description: "vx is based in Uruguay and writes C for Linux and TypeScript for the web.",
   },
   skip: "Skip to content",
   nav: {
     label: "Sections",
     language: "Language",
-    work: "Work",
+    skills: "Skills",
     principles: "Principles",
-    stack: "Stack",
     contact: "Contact",
   },
   hero: {
-    line: "Init systems and boot tooling in C.",
-    lede: "Small programs that each do one job, use POSIX interfaces where they can, and stay short enough to read in one sitting.",
-    facts: [
-      { k: "Role", v: "Systems engineer" },
-      { k: "Focus", v: "Init systems, POSIX C" },
-      { k: "Current", v: "4suite / 4rc" },
-      { k: "Source", v: "github.com/vx9k" },
-    ],
+    // vx's GitHub profile is marked available for hire.
+    status: "Open to work",
+    // From vx's GitHub profile (Software Engineer, Uruguay) and public
+    // repos: 4init is a minimal PID 1.
+    line: "I’m vx, a software engineer based in Uruguay.",
+    lede: "I write C for Linux, down to PID 1, and TypeScript for the web, like this site. I’m interested in how things work underneath, from network layers to language models.",
   },
-  work: {
-    title: "Work",
-    status: {
-      shipping: "shipping",
-      "in progress": "in progress",
-      planned: "planned",
-    },
-    spec: {
-      language: "Language",
-      target: "Target",
-      build: "Build",
-      license: "License",
-      framework: "Framework",
-      styling: "Styling",
-      hosting: "Hosting",
-    },
-    suite: {
-      body: "A self-contained boot stack in C: init, rc, logger and user.",
-      target: "Linux",
-      components: "Components",
-      // Only the components with code get a description; the rest are
-      // described by their status.
-      nodes: {
-        "4init": "Minimal PID 1. Blocks signals and reads them through a signalfd, forks 4rc into its own session, then reaps children on every SIGCHLD. Inspired by rofl0r’s minimal init.",
-        "4rc": "The service manager 4init starts by default. Early work.",
-      },
-    },
-    site: {
-      body: "A static Next.js export served from Cloudflare Workers, in English, Spanish and Portuguese. A Worker at the root address picks your language, and the page follows your system’s light or dark setting.",
-    },
+  skills: {
+    title: "Skills",
+    groups: { languages: "Languages", web: "Web", networking: "Networking", ai: "AI" },
+    // Names for the skills that have none in content.ts.
+    names: { asm: "x86 Assembly", llm: "How LLMs work", ai: "Working with AI" },
+    // The OSI layers each entry covers.
+    notes: { l23: "Data link, network", l4: "Transport", l67: "Presentation, application" },
   },
   principles: {
     title: "Principles",
+    quote: "Small programs that each do one job, use POSIX interfaces where they can, and stay short enough to read in one sitting.",
     items: [
       {
         title: "Standards over shortcuts",
@@ -65,7 +39,7 @@ const en = {
       },
       {
         title: "One job, done predictably",
-        body: "An init that only manages processes, and a service manager that only manages services. The rest of the stack is planned as separate programs.",
+        body: "An init that only manages processes. A service manager that only manages services.",
       },
       {
         title: "Small enough to understand fully",
@@ -73,13 +47,10 @@ const en = {
       },
     ],
   },
-  stack: {
-    title: "Stack",
-    groups: { languages: "Languages", web: "Web", tooling: "Tooling" },
-  },
   contact: {
     title: "Contact",
-    line: "All the work above is public on GitHub.",
+    heading: "I’m open to work.",
+    body: "My projects are public on GitHub.",
   },
   footer: {
     source: "Source for this site",

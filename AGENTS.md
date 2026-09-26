@@ -22,13 +22,14 @@ pnpm wrangler dev  # serve out/ through the Workers runtime, as in production
 pnpm lint        # currently broken: typescript-eslint doesn't support TypeScript 7 yet
 ```
 
-There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler dev`; restart it after a rebuild) and looking at it in a browser at desktop and phone widths, in light and dark mode, in all three languages.
+There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler dev`; restart it after a rebuild) and looking at it in a browser at desktop and phone widths, in all three languages.
 
 ## Stack
 
 - **Next.js 16, App Router, `output: "export"`.** Fully static and served as Cloudflare Workers static assets (`wrangler.jsonc`), so there are no Next.js server features: no route handlers, no server actions, no `next/image` optimisation, no middleware. The one exception is `src/worker.ts`, a plain Worker that handles `/`.
 - **React 19 with the React Compiler.** Don't hand-write `useMemo`/`useCallback` for performance.
 - **Tailwind CSS v4.** Configured in CSS (`@theme` and `@utility` in `globals.css`). There's no `tailwind.config.*`. `source("..")` on the import limits class scanning to `src/`, so the agent skill docs at the root don't leak utilities into the inlined stylesheet.
+- **shadcn/ui**, new-york style on Radix (`components.json`), with lucide icons. Its components live in `src/components/ui/` as source you own; its skill is in `.claude/skills/shadcn` (installed with `pnpm dlx skills add shadcn-ui/ui --skill shadcn`, pinned in `skills-lock.json`). Add components with `pnpm dlx shadcn@latest add <name>`; the CLI needs `ui.shadcn.com`, so a session whose network blocks it has to copy the component from `apps/v4/registry/new-york-v4/ui/` in github.com/shadcn-ui/ui instead, rewriting `from "cn"` to `from "@/lib/utils"`.
 - **TypeScript 7**, strict. `@/*` maps to `src/*`.
 - Deployed by Cloudflare Workers Builds, connected to this repo: every push to `main` runs `pnpm run build` then `pnpm wrangler deploy`, and every other branch gets a preview URL posted on its PR. Work on a branch, open a PR, and check the preview.
 - The Worker is named `website`; the `name` in `wrangler.jsonc` must match it or builds fail. `kthread.dev` is attached as a Custom Domain in `wrangler.jsonc`; `www.kthread.dev` redirects to it through a Cloudflare Redirect Rule on the zone. DNS for the zone also carries iCloud mail records — leave those alone. Build and deploy commands live in the Cloudflare dashboard, not in the repo; they use `pnpm wrangler …` so the pinned wrangler runs, never `pnpm dlx`/`npx` without a local install. pnpm's version comes from `packageManager` in `package.json`.
@@ -39,21 +40,28 @@ There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler 
 ```
 src/worker.ts         runs for "/" only: redirects to /en, /es or /pt
 src/app/
-  [lang]/layout.tsx   root layout per language: <html lang>, metadata, hreflang, skip link
+  [lang]/layout.tsx   root layout per language: <html lang class="dark">, metadata, hreflang, skip link
   [lang]/page.tsx     the page: header, the sections, footer
   document.ts         fonts and viewport, shared with the 404
   global-not-found.tsx  exported as 404.html; carries all three languages
-  content.ts          language-neutral data (links, section ids, suite, specs, stack)
+  content.ts          language-neutral data (links, section ids, the skills and their colours)
   i18n/               en.ts (source of truth), es.ts, pt.ts, locales.ts
-  globals.css         the palette, the glow, type scale and seven utilities
+  globals.css         shadcn/ui's tokens in carbon, the mesh, two utilities and the skill icons
+  marks.ts            brand marks (the skills, GitHub), as SVG paths from Simple Icons (CC0)
   manifest.ts, icon.svg, apple-icon.png  the signal square on carbon; the PNG is a
                       180px render of the same square on whole pixels (62–118)
-  components/
-    Intro.tsx         the statement, the lede and the facts
+src/components/
+  ui/                 shadcn/ui: button, card, badge, separator
+  site/
+    Intro.tsx         the status badge, the introduction and the GitHub button
     Section.tsx       the numbered frame every section below the intro uses
-    Specs.tsx         four label-over-value cells on hairlines: the facts and project specs
-    Work.tsx, Principles.tsx, Stack.tsx, Contact.tsx
+    Skills.tsx        a card per skill group, an icon tile per skill
+    SkillIcon.tsx     the icons: brand marks, and the glyphs drawn for the rest
+    Principles.tsx    the quote, then a card per principle
+    Contact.tsx       a card: open to work, and the GitHub button again
+    GitHubLink.tsx    the GitHub button both of them use
     LanguageLinks.tsx EN / ES / PT; remembers the choice for "/" and the 404
+src/lib/utils.ts      shadcn/ui's cn()
 ```
 
 The page is deliberately flat: server components that render static markup, and one client component for the language links. There's no theme script, no toggle and no app state. Keep it that way.
@@ -63,86 +71,87 @@ The page is deliberately flat: server components that render static markup, and 
 - Every visible string lives in `src/app/i18n/`. `en.ts` defines the shape; `es.ts` and `pt.ts` are typed against it, so a missing key fails the build. Change all three together, and keep them saying the same thing.
 - The root `/` is the only dynamic route. `src/worker.ts` (wired up by `main` and `assets.run_worker_first: ["/"]` in `wrangler.jsonc`) sends a 302 to a saved choice (the `vx-lang` cookie), then the best match in `Accept-Language`, then English. Every other path is served from static files without touching the Worker. The 404 page picks its language client-side, using the URL prefix first.
 - Client components import `i18n/locales`, never `i18n`, so the dictionaries stay out of the browser bundle. Pass strings down as props.
-- Spanish uses tú and Latin American vocabulary; Portuguese uses você. Neither assigns vx a grammatical gender ("Ingeniería de sistemas", not "Ingeniero"). Quotes from English READMEs stay in English.
+- Spanish uses tú and Latin American vocabulary; Portuguese uses você. Neither assigns vx a grammatical gender ("me dedico a la ingeniería de software", not "soy ingeniero"). Quotes from English READMEs stay in English.
 - Check new copy in all three languages at phone width: Spanish and Portuguese run about 20% longer than English.
 
 ## Content rules
 
-- **Only true claims.** Everything in `content.ts` and the dictionaries comes from the public repos on github.com/vx9k. Don't invent projects, stats, clients, dates or testimonials. If something is planned, label it planned.
-- Copy goes in the dictionaries in `src/app/i18n/`, never inline in a component. Language-neutral data (links, names, statuses, spec values) goes in `content.ts`.
-- **Say "systems engineer" once at most** in visible copy (and its translations). It's currently the Role row in the intro.
+- **Only true claims.** The skills are vx's own list; everything else in `content.ts` and the dictionaries comes from vx's GitHub profile and the public repos on github.com/vx9k. Don't add skills vx hasn't named, and don't invent projects, stats, clients, dates or testimonials. The page doesn't list projects: GitHub does.
+- Copy goes in the dictionaries in `src/app/i18n/`, never inline in a component. Language-neutral data (links, product names, colours) goes in `content.ts`.
+- **Say "software engineer" once at most** in visible copy (and its translations). It's in the introduction's headline, so nothing else repeats it.
 - Write plainly: sentence case, active voice, no exclamation marks, and none of the marketing words ("elevate", "seamless", "unleash", "next-gen" and so on).
 
 ## Design direction
 
-A technical document on glass: plain facts on a strict grid, large type, hairline rules and a lot of space, with the content on translucent panes lit by a soft, fixed glow. There's no imagery and no motion. The page earns its character from typography, light and restraint, not effects.
+Carbon and shadcn/ui: one dark theme, neutral greys on near-black, content in shadcn/ui's cards and buttons in one centred column, over a faint mesh. The page earns its character from type, spacing and the mesh, not effects. The skill icons are the only colour beyond one signal orange, and the only motion.
 
-**Palette.** Paper by day, carbon by night, one signal colour. Tokens live on `:root` in `globals.css`; `light-dark()` picks the value from the system's setting.
+**Palette.** Only carbon: `color-scheme: dark`, and `<html>` carries the `dark` class so shadcn/ui's `dark:` variants always apply. There's no light theme and no toggle. The tokens are shadcn/ui's names on `:root` in `globals.css`, in neutral oklch greys:
 
-| Token | Light | Dark | Use |
-| --- | --- | --- | --- |
-| `--bg` | paper `#f3f2ee` | carbon `#0c0c0b` | the page |
-| `--fg` | `#141413` | `#ecebe6` | text, the button, the current language |
-| `--muted` | `#52514b` | `#a09f99` | secondary text, labels |
-| `--line` | ink at 12% | white at 9% | hairline rules only |
-| `--signal` | `#f04800` | `#f04800` | marks only |
-| `--on-signal` | `#141413` | `#141413` | text on signal |
-| `--glass-top`, `--glass-bottom`, `--glass-edge`, `--glass-ring`, `--glass-shine`, `--glass-shade` | white fill and rim, faint ink ring | faint white fill and rim, dark ring | the `glass` utility only |
-| `--glow`, `--glow-2` | signal and amber, faint | signal and amber, fainter | the ambient light only |
+| Token | Value | Use |
+| --- | --- | --- |
+| `--background` | oklch 0.155 (≈ `#0c0c0c`) | the page |
+| `--foreground` | oklch 0.985 | text |
+| `--card` | oklch 0.185 | cards, and the base of the skill tiles |
+| `--muted-foreground` | oklch 0.708 | secondary text, labels |
+| `--primary` | oklch 0.922 | the solid button |
+| `--secondary`, `--muted`, `--accent` | oklch 0.269 | the current language, hovers |
+| `--border`, `--input` | white at 10%, 15% | card edges, rules |
+| `--ring` | oklch 0.8 | focus rings; lighter than shadcn/ui's default so the half-strength ring still clears 3:1 |
+| `--signal` | `#f04800` | marks only |
+| `--mesh` | white at 7% | the mesh lines |
 
-Contrast decides what each token may do. `--fg` (16:1) and `--muted` (7.1:1 light, 7.4:1 dark on the bare page) carry text. Muted is set darker than it needs to be on paper because the glow and the glass eat into it: measured over the rendered glow at every width and scroll position, including the strips just above and below the floating header, it stays above 4.5:1. If you touch the glow, the glass or muted, measure it again the same way. `--signal` is 3.3:1 on paper, so it's for marks and never for text on `--bg`: the square before "vx", the status squares, the mark on the 404, the focus ring, the text selection and the button's hover. Carbon on signal is 4.9:1, which is why the hover and the selection use `--on-signal`. `--line` is for rules, never the only edge of a control. Translucency lives only in the glass and glow tokens; don't add tints, opacity modifiers or new gradients elsewhere (the half-filled status square is the one other gradient).
+Contrast decides what each token may do. Foreground is about 18:1 on carbon and muted-foreground about 7.5:1. Measured over the rendered mesh and cards at every width and scroll position, muted text stays above 5.8:1. If you touch the mesh, the light or the greys, measure it again the same way. `--signal` is for marks and never for text: the square before "vx", the status square in the badge and in Contact, the rule beside the quote, the drawn skill glyphs, the mark on the 404 and the text selection. Don't add colours to the tokens; use shadcn/ui's semantic names (`bg-card`, `text-muted-foreground`), never raw palette classes.
 
-**Light and glass.**
-- `body::before` is a fixed layer with two radial glows: signal at the top right and amber low on the right, where the panels are. Text that sits on the bare page (the headline, the lede, section titles) is on the left, clear of the strongest light. Keep the glows faint: muted text must hold 4.5:1 on whatever they put behind it, at every width and scroll position.
-- `glass` is a pane: a translucent fill that's brighter at the top, a light rim inside a faint outer ring, a 1px highlight along the top and a soft shade under it, with 6px corners. The rim is what makes it read as glass on paper rather than a card. Panes are for things that hold content: the header bar, the hero facts, each project, the principles, the stack and the 404. Contact and the footer sit on the page. Don't nest panes; inside one, structure is hairlines, and a spec table is an open strip with rules above and below.
-- `frost` adds the backdrop blur, and only the header needs it, because it's the one pane text scrolls under. It tints with the page colour at 80% instead of white, so the small labels on it hold 4.5:1 over the glow and over the headline scrolling beneath, even where the blur isn't drawn. The panels sit over nothing but the smooth glow, where a blur would cost a repaint every scroll and change nothing.
-- With `prefers-reduced-transparency`, glass turns solid (`--bg`) and loses its blur. In forced colours the glow is hidden and panes keep their edge.
+**Brand colours.** The skills are the one place with more colour: each brand mark keeps its brand's colour, on a tile tinted with it (`--c` at 10% over the card, its edge at 28%). Where the original colour vanishes on carbon, `content.ts` gives a lighter shade. The glyphs drawn for skills without a brand use signal. Nothing else takes a brand colour.
 
-**Corners.** Square with a little rounding, never pills: 6px for panes (`glass`), 4px for controls (`btn`, the language segments, the skip link: `rounded-sm`), 1–2px for the small signal marks. No `rounded-full`, and nothing rounder than 6px.
+**The mesh.** A grid of 1px lines every 3rem, painted on the `html` element's own background, with a veil of carbon over it that leaves it at full strength only around the top of the page and at about a third of that further down, and a faint white light over the hero. It should catch the eye at the top and then get out of the way. It isn't a fixed layer, and nothing else should be: Safari 26 on iOS clips `position: fixed` layers to the area between its status bar and toolbar, but paints the root background edge to edge. For the same reason, don't hide things by parking them just off screen (the skip link uses `not-focus:sr-only`). Keep `<body>` without a background, or it covers the mesh.
 
-**Type.** Geist for everything, Geist Mono for small uppercase labels (the `label` utility), the language switch and the repo URLs. Weights are 400 and 500 only. Large type gets negative tracking (`text-display` is -0.04em; titles use `tracking-tight`), body text none. Headings are sentence case.
+**Corners.** `--radius` is 0.375rem, so buttons and tiles are 4px, cards 10px. The badge is `rounded-md`, edited from shadcn/ui's pill: no `rounded-full` anywhere.
 
-**Layout.** One vertical decides the page.
-- `shell` is the one centred column (80rem, fluid side padding) that the header, every section and the footer share. Don't put page chrome outside it. The header bar bleeds past it by its own padding less its border (`-mx-3 px-[calc(0.75rem-1px)]`), so its contents stay on its edges.
-- `split` (with `lg:grid`) divides a block in the shell into two tracks from lg up: 1fr 3fr, then 1fr 2fr from xl. The header, the intro, every section and the footer use it, so the section titles and "vx" sit on the left track and everything else starts on the same vertical, the right track's edge. Only the headline spans both. Below lg, blocks stack.
-- Below the intro, every section is a `<Section>`: the number and title on the left (sticky on large screens, below the header), the content on the right. Numbers come from the order of `sections` in `content.ts`.
-- Inside a pane, a four-column sub-grid (`md:grid-cols-4`, `gap-x-6`) lines things up: `<Specs>` is a table of four facts, and rows (components, principles, stack) put their key in the first column and the value across the other three, separated by hairlines. A `split` block that also sets a gap needs `lg:gap-x-12` back, or it drifts off the vertical.
-- Everything is left-aligned. Measure: body text stops at 36rem; the headline at 16ch.
+**Type.** Geist for everything, Geist Mono for the section numbers (the `label` utility), the language codes and the 404 badge. The headline is `text-4xl` to `text-6xl`, `font-semibold`, `tracking-tight`; section titles `text-2xl`/`text-3xl`. Sentence case throughout.
+
+**Layout.**
+- `shell` is the one centred column (64rem) that the header, every section and the footer share. Don't put page chrome outside it.
+- The header is sticky, full width with a bottom border, frosted (`bg-background/80` and a blur), and solid with `prefers-reduced-transparency`. It's the only blur on the page.
+- Below the intro every section is a `<Section>`: a mono number, the title, then the content. Numbers come from the order of `sections` in `content.ts`.
+- Skills: a card per group, stacked. From md up the group's name sits left of its skills, and every card uses the same column grid (1, 2 from 380px, 3 from sm, 5 from lg), so the icons line up from card to card.
+- Principles: the quote, then three cards. Contact: one card.
 
 **Components.**
-- `btn`: the one button. Solid `--fg`, 4px corners, at least 44px tall, `--signal` on hover, and a transparent border that shows as a real edge in contrast themes. One per page.
-- `link`: a 1px underline in `--muted` that darkens to the text colour on hover.
-- `label`: Geist Mono, 12px, uppercase, 0.06em tracking, `--muted`.
-- The language switch is a segmented control: three 44px targets, with the current one marked by a small `--fg` block inside its target, and underlined in contrast themes, where the fill disappears.
-- Statuses are a signal square plus the word: filled for shipping, half for in progress, empty for planned. The shape carries the meaning, not the colour, and the squares keep their shape in contrast themes (`forced-color-adjust-none`, with `--signal` set to `CanvasText`).
+- shadcn/ui's `Button` (`asChild` around an `<a>` for links), `Card` with its full composition, `Badge` and `Separator`. Use their variants before custom classes, and `className` for layout only.
+- Card titles are `div`s; give them `role="heading"` and an `aria-level` so the outline stays h1 → h2 → h3.
+- The language switch is a small segmented control: ghost `xs` buttons in a bordered group, the current one `secondary` and underlined in contrast themes. Its class strings are built on the server and passed in, so `cn()` and tailwind-merge stay out of the browser bundle.
+- Skill icons: a 36px tile (`icon-tile`), the icon 20px inside it, `aria-hidden` with the name as text beside it. Brand marks come from `marks.ts`; skills without a brand get a glyph drawn in `SkillIcon.tsx` on the same 24px grid, with one small part that moves.
+- Skill motion is CSS only, on `transform` and `opacity`: a glint that runs across the tiles once every 12s and leaves them still in between, a small lift when a row is hovered (not a bounce: the skills aren't links), and the glyphs' own loops. `prefers-reduced-motion` stops all of it.
 
 **Don't:**
-- Pills, rounding above 6px, heavy or coloured shadows, glass inside glass, or blur anywhere but the header.
-- A second accent colour, colour on large surfaces beyond the faint glow, or signal used for text on the page.
-- Imagery, illustration, icons beyond the ↗ ↑ ← arrows, or decorative motion. Hover changes colour and nothing else.
-- Terminal or hacker clichés: fake shells, `$` prompts, boot logs, blinking cursors, ASCII brackets, crosshairs, HUD or telemetry cosplay. "Technical" here means a spec sheet, not a screen.
+- A light theme, a second accent, colour on large surfaces, or signal used for text.
+- Pills, heavy or coloured shadows, or blur anywhere but the header.
+- Imagery or illustration; icons beyond lucide's in buttons, the skill icons and the GitHub mark.
+- Terminal or hacker clichés: fake shells, `$` prompts, boot logs, blinking cursors, ASCII brackets, crosshairs, HUD or telemetry cosplay. The mesh is a background, not a HUD: no labels, coordinates or scan lines on it.
 - Copy that performs: taglines, slogans, claims about impact. State what the thing is and what it does.
 
-Design-oriented agent skills live in `.claude/skills/`. Use them for visual work, but this section wins where they disagree.
+Design-oriented agent skills live in `.claude/skills/`, shadcn's among them. Use them for visual work, but this section wins where they disagree.
 
 ## Themes and accessibility
 
-Target WCAG 2.2 AA. There's no theme toggle: `color-scheme: light dark` and `light-dark()` in `globals.css` follow the system, and `viewport.themeColor` in `document.ts` matches the browser chrome to it. A new colour needs both a light and a dark value in the same `light-dark()`, unless it works on both backgrounds as `--signal` does.
+Target WCAG 2.2 AA. There's one theme; `viewport.themeColor` in `document.ts` matches the browser chrome to carbon.
 
 For every visual change:
-- Check it in light and dark mode (emulate `prefers-color-scheme` in the browser's dev tools).
-- Keep semantic landmarks, `aria-labelledby` on sections, the skip link, visible `:focus-visible` outlines (2px signal, 3.3:1 or better), 44px minimum touch targets (`min-h-11` on text links too) and `aria-hidden` on purely decorative marks.
-- Keep the page still. The only motion is smooth scrolling to anchors, and `prefers-reduced-motion` turns it off.
-- In forced colours (Windows contrast themes) the system replaces every colour: the glow is hidden, hairlines, pane edges and text follow the system, `--signal` becomes `CanvasText`, the button keeps an edge through its transparent border, and the status squares opt out of the override so their shape survives. Check any new element there too.
-- With `prefers-reduced-transparency`, check that panes are solid and the header is opaque.
+- Keep semantic landmarks, `aria-labelledby` on sections, the skip link, visible focus (shadcn/ui's ring on its controls, a 2px `--ring` outline on everything else) and `aria-hidden` on purely decorative marks.
+- Targets are at least 24px (WCAG 2.2 AA); the buttons are 32–40px and the language segments 28px.
+- Keep motion to the skill icons and smooth scrolling to anchors, and make sure `prefers-reduced-motion` turns all of it off.
+- In forced colours (Windows contrast themes) the mesh is hidden, text and borders follow the system, `--signal` becomes `CanvasText`, the skill icons draw in the text colour and the ink behind the JavaScript and TypeScript letters turns to `Canvas`. Check any new element there too.
+- With `prefers-reduced-transparency`, check that the header is opaque.
 
 ## Performance
 
-The page is static and small; keep it that way. No runtime dependencies beyond Next and React, and the only client code is the language links and the 404's language picker. Two variable fonts, self-hosted by `next/font`, and no images on the page. The glow is two CSS gradients, and only the header pays for a backdrop blur. Keep any new idea to that standard: no canvas, no animation libraries, nothing running in JavaScript on a timer.
+The page is static and small; keep it that way. The runtime dependencies are Next, React and shadcn/ui's (Radix, class-variance-authority, clsx, tailwind-merge, lucide), and almost all of it renders on the server: the only client code is the language links, the separator and the 404's language picker. Two variable fonts, self-hosted by `next/font`, and no image files on the page: the icons are inline SVG. The mesh is four CSS gradients on the page background, the skill animations run on `transform` and `opacity`, and only the header pays for a backdrop blur. Keep any new idea to that standard: no canvas, no animation libraries, nothing running in JavaScript on a timer.
 
 ## Code style
 
 - Match the surrounding code: small components, Tailwind classes inline, and comments that explain *why* in plain sentences.
 - Server components by default. Add `"use client"` only for event handlers or browser APIs.
+- Follow the shadcn skill's rules: `gap-*` not `space-*`, `size-*` for squares, `cn()` for conditional classes, semantic tokens, `data-icon` on icons in buttons.
 - Use semantic HTML over `div`s, and remove unused code and CSS when deleting a feature.
 - Commit messages: a short imperative summary line, then a body that explains the change.

@@ -20,13 +20,11 @@ const geistMono = Geist_Mono({
 
 export const fontVariables = `${geist.variable} ${geistMono.variable}`;
 
-// The browser chrome matches the page: paper by day, carbon by night.
+// The browser chrome matches the page, which is always carbon: the
+// background token, oklch(0.155 0 0).
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f3f2ee" },
-    { media: "(prefers-color-scheme: dark)", color: "#0c0c0b" },
-  ],
-  colorScheme: "light dark",
+  themeColor: "#0c0c0c",
+  colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
 };
