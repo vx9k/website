@@ -16,7 +16,7 @@ pnpm dev          # dev server at http://localhost:3000
 To build the static site the way it's deployed:
 
 ```sh
-pnpm build          # writes the site to out/
+pnpm build          # writes the site to out/ and hashes its inline scripts into the CSP
 pnpm wrangler dev   # serves out/ through the Workers runtime at http://localhost:8787
 ```
 
@@ -47,7 +47,8 @@ Other files at the root:
 | `.agents/skills/`, `.claude/skills/` | Skills for coding agents (design, and shadcn/ui's), pinned in `skills-lock.json`. |
 | `components.json` | shadcn/ui's config, so `pnpm dlx shadcn@latest add <component>` drops new components into `src/components/ui/`. |
 | `wrangler.jsonc` | Cloudflare Workers config: serves `out/` as static assets on kthread.dev, with `404.html` for unknown paths. |
-| `public/_headers` | Response headers, such as long-term caching for hashed assets. |
+| `public/_headers` | Response headers: the security headers (CSP, HSTS and the rest) and long-term caching for hashed assets. |
+| `scripts/csp.mjs` | Runs after `next build`: hashes every inline script in `out/` into the CSP in `out/_headers`. |
 | `next.config.ts` | Static export and the React Compiler. |
 
 ## Editing content

@@ -1,3 +1,30 @@
+# Security headers for every static response, the 404 included. Responses
+# the Worker makes (the redirect at "/") don't get these, so src/worker.ts
+# sets its own.
+#
+# The CSP allows nothing but this origin. Next.js writes a few inline
+# scripts into each page; after every build, scripts/csp.mjs puts their
+# hashes in place of the token in script-src. Styles need 'unsafe-inline':
+# the stylesheet is inlined, and each skill's colour is a style attribute,
+# which a hash can't allow without 'unsafe-hashes'. Trusted Types are
+# required and no policy may be created: nothing on the page writes
+# script into the DOM, so any sink that tries is blocked.
+#
+# HSTS covers subdomains too. The zone's other records are iCloud mail,
+# which doesn't use HTTPS, and www redirects to the apex over HTTPS.
+/*
+  Content-Security-Policy: default-src 'none'; script-src 'self' INLINE_SCRIPT_HASHES; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests; require-trusted-types-for 'script'; trusted-types 'none'
+  Strict-Transport-Security: max-age=63072000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: accelerometer=(), autoplay=(), browsing-topics=(), camera=(), display-capture=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), hid=(), idle-detection=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), usb=(), xr-spatial-tracking=()
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Embedder-Policy: require-corp
+  Cross-Origin-Resource-Policy: same-origin
+  Origin-Agent-Cluster: ?1
+  X-Permitted-Cross-Domain-Policies: none
+
 # Next.js puts a content hash in every filename under /_next/static/, so
 # those files never change and can be cached for a year.
 /_next/static/*

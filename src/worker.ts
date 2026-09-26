@@ -6,6 +6,18 @@
 
 const known = ["en", "es", "pt"];
 
+// public/_headers doesn't reach responses the Worker makes, so the redirect
+// carries the transport and framing headers itself. It has no content, so
+// its policy allows nothing at all.
+const security = {
+  "content-security-policy": "default-src 'none'; frame-ancestors 'none'",
+  "strict-transport-security": "max-age=63072000; includeSubDomains",
+  "x-content-type-options": "nosniff",
+  "x-frame-options": "DENY",
+  "referrer-policy": "strict-origin-when-cross-origin",
+  "cross-origin-resource-policy": "same-origin",
+};
+
 function fromCookie(header: string | null) {
   const match = header?.match(/(?:^|;\s*)vx-lang=([a-z]+)/);
   return match && known.includes(match[1]) ? match[1] : null;
@@ -35,6 +47,7 @@ export default {
     return new Response(null, {
       status: 302,
       headers: {
+        ...security,
         location: new URL(`/${lang}`, request.url).toString(),
         // The answer depends on the visitor, so no shared cache may keep it.
         "cache-control": "private, no-store",

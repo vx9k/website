@@ -17,7 +17,7 @@ The personal site of vx ([github.com/vx9k](https://github.com/vx9k)), live at [k
 ```sh
 pnpm install     # pnpm only; the lockfile is committed
 pnpm dev         # local dev server (also rewrites the block above; leave it)
-pnpm build       # static export to out/: the check that must pass
+pnpm build       # static export to out/, then the CSP's script hashes: the check that must pass
 pnpm wrangler dev  # serve out/ through the Workers runtime, as in production
 pnpm lint        # currently broken: typescript-eslint doesn't support TypeScript 7 yet
 ```
@@ -33,7 +33,7 @@ There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler 
 - **TypeScript 7**, strict. `@/*` maps to `src/*`.
 - Deployed by Cloudflare Workers Builds, connected to this repo: every push to `main` runs `pnpm run build` then `pnpm wrangler deploy`, and every other branch gets a preview URL posted on its PR. Work on a branch, open a PR, and check the preview.
 - The Worker is named `website`; the `name` in `wrangler.jsonc` must match it or builds fail. `kthread.dev` is attached as a Custom Domain in `wrangler.jsonc`; `www.kthread.dev` redirects to it through a Cloudflare Redirect Rule on the zone. DNS for the zone also carries iCloud mail records — leave those alone. Build and deploy commands live in the Cloudflare dashboard, not in the repo; they use `pnpm wrangler …` so the pinned wrangler runs, never `pnpm dlx`/`npx` without a local install. pnpm's version comes from `packageManager` in `package.json`.
-- Response headers for static files live in `public/_headers` (copied into `out/`).
+- Response headers for static files live in `public/_headers` (copied into `out/`): the security headers below and the long cache on hashed assets. They don't reach responses the Worker makes, so `src/worker.ts` sets its own on the redirect at `/`.
 
 ## Layout of the code
 
@@ -147,6 +147,20 @@ For every visual change:
 ## Performance
 
 The page is static and small; keep it that way. The runtime dependencies are Next, React and shadcn/ui's (Radix, class-variance-authority, clsx, tailwind-merge, lucide), and almost all of it renders on the server: the only client code is the language links, the separator and the 404's language picker. Two variable fonts, self-hosted by `next/font`, and no image files on the page: the icons are inline SVG. The mesh is four CSS gradients on the page background, the skill animations run on `transform` and `opacity`, and only the header pays for a backdrop blur. Keep any new idea to that standard: no canvas, no animation libraries, nothing running in JavaScript on a timer.
+
+## Security headers
+
+Every static response, the 404 included, carries:
+
+- **Content-Security-Policy.** `default-src 'none'`, then only what the page uses, all from `'self'`: scripts, styles, images, fonts, the manifest and `connect-src`. `base-uri`, `form-action` and `frame-ancestors` are `'none'`, requests are upgraded to HTTPS, and Trusted Types are required with no policy allowed.
+  - Scripts: `'self'` plus a hash of each inline script. Next.js writes its bootstrap and each page's data inline, and the 404 carries its language picker, so `scripts/csp.mjs` hashes every inline `<script>` in `out/` after `next build` and puts the hashes in place of `INLINE_SCRIPT_HASHES` in `out/_headers`. The hashes change with every build, so never write them by hand, and never add `'unsafe-inline'` to `script-src`. The script fails the build if the token is missing or a line passes Cloudflare's 2,000-character limit.
+  - Styles: `'self' 'unsafe-inline'`, because the stylesheet is inlined and each skill tile's colour is a `style` attribute.
+  - Trusted Types: nothing on the page writes script into the DOM (`dangerouslySetInnerHTML` is only rendered on the server), so any sink that tries is blocked. Don't add code that sets `innerHTML`, `script.src` or similar in the browser.
+- **Strict-Transport-Security** for two years, subdomains included (the zone's other records are iCloud mail). It isn't marked `preload`: that list is hard to leave, so it's the owner's call.
+- **X-Content-Type-Options** `nosniff`, **X-Frame-Options** `DENY`, **Referrer-Policy** `strict-origin-when-cross-origin`, and a **Permissions-Policy** that turns off every powerful feature.
+- **Cross-Origin-Opener-Policy** `same-origin` and **Cross-Origin-Embedder-Policy** `require-corp`, so the page is cross-origin isolated, and **Cross-Origin-Resource-Policy** `same-origin`. Also **Origin-Agent-Cluster** and **X-Permitted-Cross-Domain-Policies** `none`.
+
+Anything from another origin (analytics, a font service, an embed, an image) needs that origin in the matching directive, and under `require-corp` it has to send CORP or CORS headers. Cloudflare Web Analytics, for one, would need `static.cloudflareinsights.com` in `script-src` and `cloudflareinsights.com` in `connect-src`. After any change, open `/en` and a 404 with the browser console open and check for CSP errors. The Worker's redirect sets its own, smaller set in `src/worker.ts`; keep the two in step.
 
 ## Code style
 
