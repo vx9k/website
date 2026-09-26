@@ -45,8 +45,8 @@ const pt: Dictionary = {
       hosting: "Hospedagem",
     },
     suite: {
-      body: "Uma pilha de boot independente em C, feita de quatro programas pequenos: init, rc, logger e user.",
-      target: "Linux, BSD planejado",
+      body: "Uma pilha de boot autocontida em C: init, rc, logger e user.",
+      target: "Linux",
       components: "Componentes",
       nodes: {
         "4init": "PID 1 mínimo. Bloqueia os sinais e os lê por um signalfd, faz fork do 4rc em uma sessão própria e recolhe os processos filhos a cada SIGCHLD. Inspirado no init mínimo do rofl0r.",
@@ -54,7 +54,7 @@ const pt: Dictionary = {
       },
     },
     site: {
-      body: "Um export estático de Next.js servido pelo Cloudflare Workers, em inglês, espanhol e português. A raiz escolhe o idioma na edge e a página segue o modo claro ou escuro do seu sistema.",
+      body: "Um site estático exportado com Next.js e servido pelo Cloudflare Workers, em inglês, espanhol e português. Um Worker no endereço raiz escolhe o seu idioma, e a página segue o modo claro ou escuro do seu sistema.",
     },
   },
   principles: {
@@ -62,7 +62,7 @@ const pt: Dictionary = {
     items: [
       {
         title: "Padrões em vez de atalhos",
-        body: "Interfaces POSIX em vez de extensões de um fornecedor. Tudo o que depende de uma plataforma precisa de um motivo explícito.",
+        body: "Interfaces POSIX em vez de extensões de um fornecedor.",
       },
       {
         title: "Uma tarefa, feita de forma previsível",
@@ -88,7 +88,7 @@ const pt: Dictionary = {
   },
   notFound: {
     title: "Página não encontrada",
-    body: "Não há nada neste endereço. O link pode estar desatualizado ou a URL pode ter um erro de digitação.",
+    body: "Não há nenhuma página neste endereço. O link pode estar desatualizado ou a URL pode ter um erro de digitação.",
     back: "Voltar para o início",
   },
 };

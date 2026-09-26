@@ -35,5 +35,5 @@ export const specs = {
 export const stack = [
   { group: "languages", items: ["C", "TypeScript"] },
   { group: "web", items: ["Next.js", "React", "Tailwind CSS"] },
-  { group: "tooling", items: ["clang-format", "Ninja", "pnpm", "Git", "GitHub Actions"] },
+  { group: "tooling", items: ["clang-format", "Ninja", "pnpm", "Git"] },
 ] as const;

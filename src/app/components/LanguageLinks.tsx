@@ -3,15 +3,10 @@
 import { localeKeys, locales, type Locale } from "../i18n/locales";
 
 // Plain links to each copy of the site, so they work without JavaScript.
-// With it, the choice is remembered: the Worker at "/" reads the cookie,
-// the 404 page reads localStorage.
+// With it, the choice is remembered in a cookie that both the Worker at
+// "/" and the 404 page read.
 function remember(lang: Locale) {
   document.cookie = `vx-lang=${lang}; path=/; max-age=31536000; samesite=lax; secure`;
-  try {
-    localStorage.setItem("vx-lang", lang);
-  } catch {
-    // Storage can be blocked; the link still works for this visit.
-  }
 }
 
 export default function LanguageLinks({ lang, label }: { lang: Locale; label: string }) {

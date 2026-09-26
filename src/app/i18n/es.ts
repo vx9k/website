@@ -45,16 +45,16 @@ const es: Dictionary = {
       hosting: "Alojamiento",
     },
     suite: {
-      body: "Una pila de arranque autocontenida en C, hecha de cuatro programas pequeños: init, rc, logger y user.",
-      target: "Linux, BSD planeado",
+      body: "Una pila de arranque autocontenida en C: init, rc, logger y user.",
+      target: "Linux",
       components: "Componentes",
       nodes: {
-        "4init": "PID 1 mínimo. Bloquea las señales y las lee con un signalfd, lanza 4rc con fork en su propia sesión y recoge a los procesos hijos en cada SIGCHLD. Inspirado en el init mínimo de rofl0r.",
+        "4init": "PID 1 mínimo. Bloquea las señales y las lee con un signalfd, hace fork de 4rc en su propia sesión y luego recolecta los procesos hijos en cada SIGCHLD. Inspirado en el init mínimo de rofl0r.",
         "4rc": "El gestor de servicios que 4init arranca por defecto. Está en sus inicios.",
       },
     },
     site: {
-      body: "Un export estático de Next.js servido desde Cloudflare Workers, en inglés, español y portugués. La raíz elige el idioma en el edge y la página sigue el modo claro u oscuro de tu sistema.",
+      body: "Un sitio estático exportado con Next.js y servido desde Cloudflare Workers, en inglés, español y portugués. Un Worker en la dirección raíz elige tu idioma, y la página sigue el modo claro u oscuro de tu sistema.",
     },
   },
   principles: {
@@ -62,15 +62,15 @@ const es: Dictionary = {
     items: [
       {
         title: "Estándares antes que atajos",
-        body: "Interfaces POSIX antes que extensiones de un fabricante. Todo lo que dependa de una plataforma necesita una razón explícita.",
+        body: "Interfaces POSIX antes que extensiones de un fabricante.",
       },
       {
-        title: "Una sola tarea, predecible",
+        title: "Una sola tarea, hecha de forma predecible",
         body: "Un init que solo gestiona procesos y un gestor de servicios que solo gestiona servicios. El resto de la pila está planeado como programas aparte.",
       },
       {
         title: "Lo bastante pequeño para entenderlo entero",
-        body: "Si no puedo explicar por qué está una línea, se va.",
+        body: "Si no puedo explicar por qué una línea está ahí, no se queda.",
       },
     ],
   },
@@ -88,7 +88,7 @@ const es: Dictionary = {
   },
   notFound: {
     title: "Página no encontrada",
-    body: "No hay nada en esta dirección. El enlace puede ser viejo o la URL puede tener un error.",
+    body: "No hay ninguna página en esta dirección. El enlace puede estar desactualizado o la URL puede tener un error.",
     back: "Volver al inicio",
   },
 };

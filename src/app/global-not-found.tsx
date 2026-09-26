@@ -5,20 +5,23 @@ import { getDictionary, localeKeys, locales } from "./i18n";
 
 export { viewport } from "./document";
 
-export const metadata: Metadata = { title: "Page not found · vx" };
+// A title that reads the same in every language, so it never disagrees
+// with the copy the script below picks.
+export const metadata: Metadata = { title: "404 · vx" };
 
 // Exported as 404.html, which Cloudflare serves for any unknown path, so it
 // can't know the language on the server. It carries all three copies and
-// this script picks one before paint: the language in the URL (/es/…), a
-// saved choice, then the browser's languages. Without JavaScript, English.
+// this script picks one before paint: the language in the URL (/es/…), the
+// choice saved in the vx-lang cookie, then the browser's languages.
+// Without JavaScript, English.
 const pickScript = `(function () {
   var known = ${JSON.stringify(localeKeys)};
   var tags = ${JSON.stringify(Object.fromEntries(localeKeys.map((l) => [l, locales[l].tag])))};
-  var titles = ${JSON.stringify(Object.fromEntries(localeKeys.map((l) => [l, getDictionary(l).notFound.title + " · vx"])))};
   function pick() {
     var seg = location.pathname.split("/")[1];
     if (known.indexOf(seg) >= 0) return seg;
-    try { var saved = localStorage.getItem("vx-lang"); if (known.indexOf(saved) >= 0) return saved; } catch (e) {}
+    var saved = document.cookie.match(/(?:^|;\\s*)vx-lang=([a-z]+)/);
+    if (saved && known.indexOf(saved[1]) >= 0) return saved[1];
     var langs = navigator.languages || [navigator.language || ""];
     for (var i = 0; i < langs.length; i++) {
       var p = String(langs[i]).toLowerCase().split("-")[0];
@@ -30,11 +33,6 @@ const pickScript = `(function () {
   var d = document.documentElement;
   d.setAttribute("data-lang", l);
   d.lang = tags[l];
-  document.title = titles[l];
-  // Hydration writes metadata.title (English) back into <head>; undo it.
-  new MutationObserver(function () {
-    if (document.title !== titles[l]) document.title = titles[l];
-  }).observe(document.head, { subtree: true, childList: true, characterData: true });
 })();`;
 
 // Only the chosen language shows; English is the no-JS default.
@@ -61,7 +59,7 @@ export default function GlobalNotFound() {
                   404
                 </p>
                 <h1 className="mt-6 max-w-[16ch] text-display font-medium text-balance wrap-break-word">{t.title}</h1>
-                <p className="mt-8 max-w-[34rem] text-lg text-muted text-pretty">{t.body}</p>
+                <p className="mt-8 max-w-[36rem] text-lg text-muted text-pretty">{t.body}</p>
                 <a href={`/${l}`} className="btn mt-12">
                   <span aria-hidden>←</span> {t.back}
                 </a>

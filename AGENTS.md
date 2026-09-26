@@ -28,7 +28,7 @@ There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler 
 
 - **Next.js 16, App Router, `output: "export"`.** Fully static and served as Cloudflare Workers static assets (`wrangler.jsonc`), so there are no Next.js server features: no route handlers, no server actions, no `next/image` optimisation, no middleware. The one exception is `src/worker.ts`, a plain Worker that handles `/`.
 - **React 19 with the React Compiler.** Don't hand-write `useMemo`/`useCallback` for performance.
-- **Tailwind CSS v4.** Configured in CSS (`@theme` and `@utility` in `globals.css`). There's no `tailwind.config.*`.
+- **Tailwind CSS v4.** Configured in CSS (`@theme` and `@utility` in `globals.css`). There's no `tailwind.config.*`. `source("..")` on the import limits class scanning to `src/`, so the agent skill docs at the root don't leak utilities into the inlined stylesheet.
 - **TypeScript 7**, strict. `@/*` maps to `src/*`.
 - Deployed by Cloudflare Workers Builds, connected to this repo: every push to `main` runs `pnpm run build` then `pnpm wrangler deploy`, and every other branch gets a preview URL posted on its PR. Work on a branch, open a PR, and check the preview.
 - The Worker is named `website`; the `name` in `wrangler.jsonc` must match it or builds fail. `kthread.dev` is attached as a Custom Domain in `wrangler.jsonc`; `www.kthread.dev` redirects to it through a Cloudflare Redirect Rule on the zone. DNS for the zone also carries iCloud mail records — leave those alone. Build and deploy commands live in the Cloudflare dashboard, not in the repo; they use `pnpm wrangler …` so the pinned wrangler runs, never `pnpm dlx`/`npx` without a local install. pnpm's version comes from `packageManager` in `package.json`.
@@ -46,6 +46,8 @@ src/app/
   content.ts          language-neutral data (links, section ids, suite, specs, stack)
   i18n/               en.ts (source of truth), es.ts, pt.ts, locales.ts
   globals.css         the palette, type scale and five utilities
+  manifest.ts, icon.svg, apple-icon.png  the signal square on carbon; the PNG is a
+                      180px render of the same square on whole pixels (62–118)
   components/
     Intro.tsx         the statement, the lede and the facts
     Section.tsx       the numbered frame every section below the intro uses
@@ -86,9 +88,9 @@ A technical document. The references are defence and research companies (Helsing
 | `--signal` | `#f04800` | `#f04800` | marks only |
 | `--on-signal` | `#141413` | `#141413` | text on signal |
 
-Contrast decides what each token may do. `--fg` (16:1) and `--muted` (5.8:1 light, 6.9:1 dark) carry text. `--signal` is 3.3:1 on paper, so it's for marks and never for text on `--bg`: the square before "vx", the status squares, the underline on the current language, the focus ring, the text selection and the button's hover. Carbon on signal is 4.9:1, which is why the hover and the selection use `--on-signal`. `--line` is for rules, never the only edge of a control. Add no other colours, tints, gradients, shadows or opacity-as-colour.
+Contrast decides what each token may do. `--fg` (16:1) and `--muted` (5.8:1 light, 6.9:1 dark) carry text. `--signal` is 3.3:1 on paper, so it's for marks and never for text on `--bg`: the square before "vx", the status squares, the mark on the 404, the underline on the current language, the focus ring, the text selection and the button's hover. Carbon on signal is 4.9:1, which is why the hover and the selection use `--on-signal`. `--line` is for rules, never the only edge of a control. Add no other colours, tints, shadows, opacity-as-colour or gradients (the half-filled status square is the one gradient).
 
-**Type.** Geist for everything, Geist Mono for small uppercase labels (the `label` utility). Weights are 400 and 500 only. Large type gets negative tracking (`text-display` is -0.04em; titles use `tracking-tight`), body text none. Headings are sentence case.
+**Type.** Geist for everything, Geist Mono for small uppercase labels (the `label` utility), the language switch and the repo URLs. Weights are 400 and 500 only. Large type gets negative tracking (`text-display` is -0.04em; titles use `tracking-tight`), body text none. Headings are sentence case.
 
 **Layout.** One vertical decides the page.
 - `shell` is the one centred column (80rem, fluid side padding) that the header, every section and the footer share. Don't put page chrome outside it.
@@ -115,7 +117,7 @@ Design-oriented agent skills live in `.claude/skills/`. Use them for visual work
 
 ## Themes and accessibility
 
-Target WCAG 2.2 AA. There's no theme toggle: `color-scheme: light dark` and `light-dark()` in `globals.css` follow the system, and `viewport.themeColor` in `document.ts` matches the browser chrome to it. A new colour needs both a light and a dark value in the same `light-dark()`.
+Target WCAG 2.2 AA. There's no theme toggle: `color-scheme: light dark` and `light-dark()` in `globals.css` follow the system, and `viewport.themeColor` in `document.ts` matches the browser chrome to it. A new colour needs both a light and a dark value in the same `light-dark()`, unless it works on both backgrounds as `--signal` does.
 
 For every visual change:
 - Check it in light and dark mode (emulate `prefers-color-scheme` in the browser's dev tools).

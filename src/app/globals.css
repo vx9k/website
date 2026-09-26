@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import "tailwindcss" source("..");
 
 /* ---------------------------------------------------------------- palette
    Paper and carbon, with one signal orange. light-dark() follows the
@@ -33,7 +33,6 @@
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-signal: var(--signal);
-  --color-on-signal: var(--on-signal);
 
   --text-display: clamp(2.75rem, 1.5rem + 5vw, 6rem);
   --text-display--line-height: 1;

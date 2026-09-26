@@ -42,8 +42,8 @@ const en = {
       hosting: "Hosting",
     },
     suite: {
-      body: "A self-contained boot stack in C, made of four small programs: init, rc, logger and user.",
-      target: "Linux, BSD planned",
+      body: "A self-contained boot stack in C: init, rc, logger and user.",
+      target: "Linux",
       components: "Components",
       // Only the components with code get a description; the rest are
       // described by their status.
@@ -53,7 +53,7 @@ const en = {
       },
     },
     site: {
-      body: "A static Next.js export served from Cloudflare Workers, in English, Spanish and Portuguese. The root picks a language at the edge, and the page follows your system’s light or dark setting.",
+      body: "A static Next.js export served from Cloudflare Workers, in English, Spanish and Portuguese. A Worker at the root address picks your language, and the page follows your system’s light or dark setting.",
     },
   },
   principles: {
@@ -61,7 +61,7 @@ const en = {
     items: [
       {
         title: "Standards over shortcuts",
-        body: "POSIX interfaces over vendor extensions. Anything platform-specific needs a stated reason.",
+        body: "POSIX interfaces over vendor extensions.",
       },
       {
         title: "One job, done predictably",
@@ -87,7 +87,7 @@ const en = {
   },
   notFound: {
     title: "Page not found",
-    body: "Nothing lives at this address. The link may be old, or the URL may have a typo.",
+    body: "There’s no page at this address. The link may be old, or the URL may have a typo.",
     back: "Back to the home page",
   },
 };

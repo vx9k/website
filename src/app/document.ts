@@ -4,17 +4,17 @@ import { Geist, Geist_Mono } from "next/font/google";
 // Shared by the root layout and the global 404, which renders its own
 // <html> and so can't inherit anything from the layout.
 
-// Both are variable, so one file each covers every weight, with the
-// accents Spanish and Portuguese need.
+// Both are variable, so every weight comes from the same files, and the
+// latin subset already has every accent Spanish and Portuguese use.
 const geist = Geist({
   variable: "--font-geist",
-  subsets: ["latin", "latin-ext"],
+  subsets: ["latin"],
   display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  subsets: ["latin", "latin-ext"],
+  subsets: ["latin"],
   display: "swap",
 });
 
