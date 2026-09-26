@@ -75,7 +75,7 @@ The page is deliberately flat: server components that render static markup, and 
 
 ## Design direction
 
-A technical document on glass. The references are defence and research companies (Helsing, Palantir, Lockheed Martin) and AI labs (Mistral, Black Forest Labs): plain facts on a strict grid, large type, hairline rules and a lot of space. The content sits on panes of glass lit by a soft, fixed glow. There's no imagery and no motion. The page earns its character from typography, light and restraint, not effects.
+A technical document on glass: plain facts on a strict grid, large type, hairline rules and a lot of space, with the content on translucent panes lit by a soft, fixed glow. There's no imagery and no motion. The page earns its character from typography, light and restraint, not effects.
 
 **Palette.** Paper by day, carbon by night, one signal colour. Tokens live on `:root` in `globals.css`; `light-dark()` picks the value from the system's setting.
 
