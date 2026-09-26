@@ -24,6 +24,7 @@ const es: Dictionary = {
       { k: "Rol", v: "Ingeniería de software" },
       { k: "Código", v: "github.com/vx9k" },
     ],
+    status: { k: "Estado", v: "Disponible para trabajar" },
   },
   skills: {
     title: "Habilidades",
@@ -50,7 +51,7 @@ const es: Dictionary = {
   },
   contact: {
     title: "Contacto",
-    line: "Mis proyectos son públicos en GitHub.",
+    line: "Estoy disponible para trabajar. Mis proyectos son públicos en GitHub.",
   },
   footer: {
     source: "Código de este sitio",

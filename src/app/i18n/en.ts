@@ -22,6 +22,8 @@ const en = {
       { k: "Role", v: "Software engineer" },
       { k: "Source", v: "github.com/vx9k" },
     ],
+    // vx's GitHub profile is marked available for hire.
+    status: { k: "Status", v: "Open to work" },
   },
   skills: {
     title: "Skills",
@@ -50,7 +52,7 @@ const en = {
   },
   contact: {
     title: "Contact",
-    line: "My projects are public on GitHub.",
+    line: "I’m open to work. My projects are public on GitHub.",
   },
   footer: {
     source: "Source for this site",
