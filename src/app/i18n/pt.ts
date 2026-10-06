@@ -90,6 +90,18 @@ const pt: Dictionary = {
           name: "Fundo de interferência",
           note: "Ondas suaves de três fontes, claras onde se somam e escuras onde se anulam. Uma segue o ponteiro, e cada ramificação posiciona as outras.",
         },
+        cursor: {
+          name: "Cursor de probabilidade",
+          note: "Em um computador com mouse, uma nuvem de onde o ponteiro poderia estar. Um clique a colapsa em um ponto.",
+        },
+        entanglement: {
+          name: "Habilidades emaranhadas",
+          note: "As habilidades formam pares, como C e Assembly x86. Aponte ou toque em uma e o par responde, girando ao contrário.",
+        },
+        orbital: {
+          name: "Orbital",
+          note: "Em telas largas, ao lado da introdução, um orbital do hidrogênio desenhado a partir da sua densidade de probabilidade. Cada ramificação mostra o seu: 2p ou um de dois 3d.",
+        },
         tunneling: {
           name: "Transições por tunelamento",
           note: "Passar para outra seção atravessa uma barreira.",

@@ -19,6 +19,9 @@ const Timeline = lazy(() => import("./Timeline"));
 const EffectsPanel = lazy(() => import("./EffectsPanel"));
 const EraStrip = lazy(() => import("./EraStrip"));
 const Interference = lazy(() => import("./Interference"));
+const ProbabilityCursor = lazy(() => import("./ProbabilityCursor"));
+const Entanglement = lazy(() => import("./Entanglement"));
+const Orbital = lazy(() => import("./Orbital"));
 
 export type Echo = { lang: Locale; line: string };
 
@@ -47,6 +50,8 @@ export default function QuantumRoot({
   const panel = useStore(openPanel);
   const year = useStore(era);
   const still = useStore(reducedMotion);
+  // The probability cursor needs a mouse: a pointer that hovers.
+  const [mouse, setMouse] = useState(false);
 
   useEffect(() => {
     loadFlags();
@@ -71,6 +76,14 @@ export default function QuantumRoot({
     if (panel) setOpened((o) => ({ ...o, [panel]: true }));
   }, [panel]);
 
+  useEffect(() => {
+    const query = matchMedia("(hover: hover) and (pointer: fine)");
+    const update = () => setMouse(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+
   // Superposition is all motion, so it waits for motion to be allowed.
   useEffect(() => {
     if (ready && on.superposition && !still) return startSuperposition();
@@ -88,6 +101,9 @@ export default function QuantumRoot({
         {on.ghosts && <Ghosts lang={lang} places={places} echoes={echoes} />}
         {/* Today only: the past eras paint their own backgrounds. */}
         {on.interference && year === null && <Interference still={still} />}
+        {on.cursor && mouse && !still && <ProbabilityCursor />}
+        {on.entanglement && <Entanglement />}
+        {on.orbital && <Orbital still={still} />}
         {year !== null && <EraStrip copy={copy.time} />}
         {opened.branches && (
           <BranchMap

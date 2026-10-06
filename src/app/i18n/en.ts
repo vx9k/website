@@ -94,6 +94,18 @@ const en = {
           name: "Interference background",
           note: "Faint waves from three sources, bright where they add up and dark where they cancel. One follows your pointer, and each branch places the others.",
         },
+        cursor: {
+          name: "Probability cursor",
+          note: "On a computer with a mouse, a cloud of where your pointer might be. A click collapses it to one point.",
+        },
+        entanglement: {
+          name: "Entangled skills",
+          note: "Skills come in pairs, like C and x86 Assembly. Point at or tap one and its partner answers, spinning the other way.",
+        },
+        orbital: {
+          name: "Orbital",
+          note: "On wide screens, beside the introduction, a hydrogen orbital drawn from its probability density. Each branch shows its own: 2p or one of two 3d.",
+        },
         tunneling: {
           name: "Tunneling transitions",
           note: "Moving to another section passes through a barrier.",

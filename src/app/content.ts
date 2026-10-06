@@ -80,3 +80,15 @@ export type World = (typeof worlds)[number]["id"];
 // vx's own start, in vx's words: using tech since 2011. A mark on the
 // timeline, not a stop.
 export const started = 2011;
+
+// Entangled skills (Entanglement.tsx): touch one and its partner answers.
+// The owner chose the pairs.
+export const pairs = [
+  ["c", "asm"],
+  ["javascript", "typescript"],
+  ["html", "css"],
+  ["nextjs", "nodejs"],
+  ["nftables", "l4"],
+  ["nginx", "l67"],
+  ["llm", "ai"],
+] as const;

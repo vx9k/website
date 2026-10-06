@@ -30,7 +30,7 @@ export default function Skills({ t }: { t: Dictionary }) {
             <CardContent className="flex-1 md:pl-0">
               <ul className="grid gap-3 min-[380px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
                 {items.map((item) => (
-                  <li key={item.id} data-skill-year={item.year} className="skill flex items-center gap-3">
+                  <li key={item.id} data-skill={item.id} data-skill-year={item.year} className="skill flex items-center gap-3">
                     <span
                       aria-hidden
                       className="icon-tile"
