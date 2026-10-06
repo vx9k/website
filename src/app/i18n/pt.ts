@@ -54,6 +54,40 @@ const pt: Dictionary = {
     source: "Código deste site",
     top: "Voltar ao topo",
   },
+  quantum: {
+    close: "Fechar",
+    branches: {
+      open: "Ramificações",
+      title: "Ramificações",
+      description: "Cada lugar desta página por onde você passou, que se divide sempre que você escolheu outro caminho. Escolha um para voltar a ele.",
+      here: "Você está aqui",
+      top: "Introdução",
+      choice: {
+        start: "Chegada",
+        nav: "Link",
+        lang: "Troca de idioma",
+        map: "Salto pelo mapa",
+        link: "Visita direta",
+      },
+    },
+    effects: {
+      open: "Efeitos",
+      title: "Efeitos",
+      description: "Os efeitos visuais desta página. Sua escolha fica salva neste navegador.",
+      all: "Todos os efeitos",
+      reduced: "Seu sistema pede menos movimento, então os efeitos ficam parados.",
+      items: {
+        ghosts: {
+          name: "Prévias fantasma",
+          note: "Ecos suaves das partes da página que você ainda não abriu.",
+        },
+        tunneling: {
+          name: "Transições por tunelamento",
+          note: "Passar para outra seção atravessa uma barreira.",
+        },
+      },
+    },
+  },
   notFound: {
     title: "Página não encontrada",
     body: "Não há nenhuma página neste endereço. O link pode estar desatualizado ou a URL pode ter um erro de digitação.",

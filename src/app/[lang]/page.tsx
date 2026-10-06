@@ -1,6 +1,7 @@
 import Contact from "@/components/site/Contact";
 import Intro from "@/components/site/Intro";
 import LanguageLinks from "@/components/site/LanguageLinks";
+import PanelButton from "@/components/quantum/PanelButton";
 import Principles from "@/components/site/Principles";
 import Skills from "@/components/site/Skills";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -27,7 +28,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
     <>
       {/* Text scrolls under the header, so it's frosted, and solid when
           the system asks for less transparency. */}
-      <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-md [@media(prefers-reduced-transparency:reduce)]:bg-background [@media(prefers-reduced-transparency:reduce)]:backdrop-blur-none">
+      <header className="site-header sticky top-0 z-40 border-b bg-background/80 backdrop-blur-md [@media(prefers-reduced-transparency:reduce)]:bg-background [@media(prefers-reduced-transparency:reduce)]:backdrop-blur-none">
         <div className="shell flex h-14 items-center justify-between gap-4">
           <a href={`/${lang}`} className="inline-flex min-h-10 items-center gap-2.5 font-semibold tracking-tight">
             <span aria-hidden className="size-2.5 rounded-[2px] bg-signal" />
@@ -45,6 +46,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
                 ))}
               </ul>
             </nav>
+            <PanelButton panel="branches" label={t.quantum.branches.open} />
             <LanguageLinks lang={lang} label={t.nav.language} current={current} other={other} />
           </div>
         </div>
@@ -68,6 +70,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             <Button asChild variant="link" size="sm">
               <a href="#top">{t.footer.top} ↑</a>
             </Button>
+            <PanelButton panel="effects" label={t.quantum.effects.open} />
           </div>
         </div>
       </footer>

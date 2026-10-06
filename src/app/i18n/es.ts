@@ -54,6 +54,40 @@ const es: Dictionary = {
     source: "Código de este sitio",
     top: "Volver arriba",
   },
+  quantum: {
+    close: "Cerrar",
+    branches: {
+      open: "Ramas",
+      title: "Ramas",
+      description: "Cada lugar de esta página por el que pasaste, que se divide cada vez que tomaste otro camino. Elige uno para volver a él.",
+      here: "Estás aquí",
+      top: "Introducción",
+      choice: {
+        start: "Llegada",
+        nav: "Enlace",
+        lang: "Cambio de idioma",
+        map: "Salto desde el mapa",
+        link: "Visita directa",
+      },
+    },
+    effects: {
+      open: "Efectos",
+      title: "Efectos",
+      description: "Los efectos visuales de esta página. Tu elección se guarda en este navegador.",
+      all: "Todos los efectos",
+      reduced: "Tu sistema pide menos movimiento, así que los efectos se quedan quietos.",
+      items: {
+        ghosts: {
+          name: "Vistas fantasma",
+          note: "Ecos tenues de las partes de la página que aún no abriste.",
+        },
+        tunneling: {
+          name: "Transiciones de efecto túnel",
+          note: "Pasar a otra sección atraviesa una barrera.",
+        },
+      },
+    },
+  },
   notFound: {
     title: "Página no encontrada",
     body: "No hay ninguna página en esta dirección. El enlace puede estar desactualizado o la URL puede tener un error.",

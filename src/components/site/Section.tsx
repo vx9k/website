@@ -14,7 +14,7 @@ export default function Section({
 }) {
   const number = String(sections.indexOf(id) + 1).padStart(2, "0");
   return (
-    <section id={id} aria-labelledby={`${id}-title`} className="shell py-12 sm:py-16">
+    <section id={id} aria-labelledby={`${id}-title`} data-branch-view={id} className="shell relative isolate py-12 sm:py-16">
       <header className="mb-8 flex flex-col gap-2">
         <p aria-hidden className="label">
           {number}

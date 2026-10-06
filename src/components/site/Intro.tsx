@@ -6,12 +6,15 @@ import GitHubLink from "./GitHubLink";
  *  the way to the code. */
 export default function Intro({ t }: { t: Dictionary }) {
   return (
-    <div className="shell pt-20 pb-8 sm:pt-28 sm:pb-10">
+    <div data-branch-view="top" className="shell relative isolate pt-20 pb-8 sm:pt-28 sm:pb-10">
       <Badge variant="outline" className="gap-2">
         <span aria-hidden className="size-1.5 rounded-[1px] bg-signal" />
         {t.hero.status}
       </Badge>
-      <h1 className="mt-6 max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl md:text-6xl">
+      <h1
+        data-branch-echo
+        className="relative mt-6 max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl md:text-6xl"
+      >
         {t.hero.line}
       </h1>
       <p className="mt-6 max-w-2xl text-lg text-muted-foreground text-pretty sm:text-xl">{t.hero.lede}</p>

@@ -42,7 +42,7 @@ src/worker.ts         runs for "/" only: redirects to /en, /es or /pt
 src/app/
   [lang]/layout.tsx   root layout per language: <html lang class="dark">, metadata, hreflang, skip link
   [lang]/page.tsx     the page: header, the sections, footer
-  document.ts         fonts and viewport, shared with the 404
+  document.ts         fonts and viewport, shared with the 404; the Trusted Types policy
   global-not-found.tsx  exported as 404.html; carries all three languages
   content.ts          language-neutral data (links, section ids, the skills and their colours)
   i18n/               en.ts (source of truth), es.ts, pt.ts, locales.ts
@@ -51,7 +51,7 @@ src/app/
   manifest.ts, icon.svg, apple-icon.png  the signal square on carbon; the PNG is a
                       180px render of the same square on whole pixels (62–118)
 src/components/
-  ui/                 shadcn/ui: button, card, badge, separator
+  ui/                 shadcn/ui: button, card, badge, separator, dialog, switch, label, field
   site/
     Intro.tsx         the status badge, the introduction and the GitHub button
     Section.tsx       the numbered frame every section below the intro uses
@@ -61,16 +61,47 @@ src/components/
     Contact.tsx       a card: open to work, and the GitHub button again
     GitHubLink.tsx    the GitHub button both of them use
     LanguageLinks.tsx EN / ES / PT; remembers the choice for "/" and the 404
+  quantum/
+    QuantumRoot.tsx   the quantum layer's one mount point, after the page; lazy-loads the rest
+    PanelButton.tsx   opens the branch map (header) or the effects panel (footer)
+    BranchMap.tsx     the branch tree in a dialog: a graph beside a keyboard tree
+    EffectsPanel.tsx  a switch per effect, and one for all of them
+    Ghosts.tsx        faint previews of the places you haven't been
+src/quantum/
+  store.ts            a tiny store for useSyncExternalStore
+  flags.ts            which effects are on (localStorage), and whether motion is reduced
+  branches.ts         the branch tree (sessionStorage)
+  navigate.ts         ties the tree to the links, history and view transitions
+  seed.ts             seeded randomness, so each branch lays things out its own way
+  ui.ts               which dialog is open, and the button that opened it
 src/lib/utils.ts      shadcn/ui's cn()
 ```
 
-The page is deliberately flat: server components that render static markup, and one client component for the language links. There's no theme script, no toggle and no app state. Keep it that way.
+The page is deliberately flat: server components that render static markup. On top of it sits the quantum layer (below), which renders nothing on the server and loads what it draws on demand. There's no theme script and no app state beyond the layer's small stores. Keep it that way.
+
+## The quantum layer
+
+Moving around the page branches it, many-worlds style: every place you go is a node in a tree that splits wherever you took a different path, and a few effects make the page feel like it's in superposition. It's decoration over a page that works without it: the server's HTML is the same, every link is still a real link, and each effect can be switched off.
+
+- **Branches.** `branches.ts` keeps the tree in sessionStorage (`vx-branches`). A node is a language and a place (`top` or a section id) plus the choice that led there: arrival, a link, a language change, a map jump or a direct visit. Taking the same choice from the same node again goes back into that branch rather than growing a new one. The tree keeps 48 nodes, pruning the oldest leaves off the current line.
+- **Navigation.** `navigate.ts` handles clicks on this page's own section links: it takes a branch, pushes a history entry tagged with the branch's id (`vxBranch`), scrolls, and moves keyboard focus into the section. Back and forward follow the tag. Next.js patches `history` and reloads the page on a popstate whose state lacks its `__NA` marker, so every entry keeps Next's fields; write history only the way `navigate.ts` does. The language links still load the other document, and a sessionStorage key (`vx-branch-pending`) carries the branch across.
+- **The map.** The header's Branches button opens the tree in a dialog: an SVG graph, `aria-hidden`, beside a WAI-ARIA tree (arrows, Home, End, Enter). Choosing a branch collapses the others into it, then goes there.
+- **Flags.** `flags.ts` lists the effects. All are on by default and saved in localStorage (`vx-quantum`); `?quantum=off` and `?quantum=on` set them all. Each is mirrored on `<html>` as `data-q-<effect>` for CSS. The footer's Effects button opens a switch per effect. A new effect adds its name to `effects`, its copy to `quantum.effects.items` in all three dictionaries, and checks its flag before it draws anything.
+- **Ghost previews.** The places you haven't been, faint behind the one you're in: the other sections' titles, and on the introduction the headline in the other languages lying over the real one. Each flickers every few seconds and goes for good once you've been there. They're CSS generated content with empty alt text, so they're not page text, and they're seeded by the branch, so each branch lays them out its own way.
+- **Tunneling.** Going to a section, or to another language, is a view transition: a barrier sweeps down the screen, the new view resolves above it, and the old one leaks through, faintly, until it ends. The same-document transition starts in `navigate.ts`; the cross-document one is `@view-transition` in CSS, skipped on `pageswap` when the flag is off. Without the API, or with the flag off, the page scrolls the way it always has.
+
+Rules for the layer:
+- It never changes the content or what the server renders. `QuantumRoot` mounts after the page and renders nothing until it has run in the browser.
+- What it draws is `aria-hidden` or generated content with empty alt text. The dialogs are shadcn/ui's, and focus goes back to the button that opened them.
+- Every effect sits behind its flag and keeps still under `prefers-reduced-motion`: the transitions become 160ms fades, the dialogs fade without zooming, the ghosts stop flickering and the map's lines and pulse stop. In forced colours the ghosts are hidden and the map draws in `CanvasText`.
+- Load anything bigger than a store on demand: `QuantumRoot` imports the dialogs and the ghosts with `import()`, so the first load carries only it and `src/quantum/`.
+- The ghosts sit under real text, so they're measured like the mesh: muted text stays above 5.8:1 with them at rest and above 4.5:1 at the brief peak of their flicker.
 
 ## Languages
 
 - Every visible string lives in `src/app/i18n/`. `en.ts` defines the shape; `es.ts` and `pt.ts` are typed against it, so a missing key fails the build. Change all three together, and keep them saying the same thing.
 - The root `/` is the only dynamic route. `src/worker.ts` (wired up by `main` and `assets.run_worker_first: ["/"]` in `wrangler.jsonc`) sends a 302 to a saved choice (the `vx-lang` cookie), then the best match in `Accept-Language`, then English. Every other path is served from static files without touching the Worker. The 404 page picks its language client-side, using the URL prefix first.
-- Client components import `i18n/locales`, never `i18n`, so the dictionaries stay out of the browser bundle. Pass strings down as props.
+- Client components import `i18n/locales`, never `i18n` (a type-only import is fine), so the dictionaries stay out of the browser bundle. Pass strings down as props.
 - Spanish uses tú and Latin American vocabulary; Portuguese uses você. Neither assigns vx a grammatical gender ("me dedico a la ingeniería de software", not "soy ingeniero"). Quotes from English READMEs stay in English.
 - Check new copy in all three languages at phone width: Spanish and Portuguese run about 20% longer than English.
 
@@ -83,7 +114,7 @@ The page is deliberately flat: server components that render static markup, and 
 
 ## Design direction
 
-Carbon and shadcn/ui: one dark theme, neutral greys on near-black, content in shadcn/ui's cards and buttons in one centred column, over a faint mesh. The page earns its character from type, spacing and the mesh, not effects. The skill icons are the only colour beyond one signal orange, and the only motion.
+Carbon and shadcn/ui: one dark theme, neutral greys on near-black, content in shadcn/ui's cards and buttons in one centred column, over a faint mesh. The page earns its character from type, spacing and the mesh, not effects. The skill icons are the only colour beyond one signal orange. The only motion is theirs and the quantum layer's.
 
 **Palette.** Only carbon: `color-scheme: dark`, and `<html>` carries the `dark` class so shadcn/ui's `dark:` variants always apply. There's no light theme and no toggle. The tokens are shadcn/ui's names on `:root` in `globals.css`, in neutral oklch greys:
 
@@ -100,11 +131,11 @@ Carbon and shadcn/ui: one dark theme, neutral greys on near-black, content in sh
 | `--signal` | `#f04800` | marks only |
 | `--mesh` | white at 7% | the mesh lines |
 
-Contrast decides what each token may do. Foreground is about 18:1 on carbon and muted-foreground about 7.5:1. Measured over the rendered mesh and cards at every width and scroll position, muted text stays above 5.8:1. If you touch the mesh, the light or the greys, measure it again the same way. `--signal` is for marks and never for text: the square before "vx", the status square in the badge and in Contact, the rule beside the quote, the drawn skill glyphs, the mark on the 404 and the text selection. Don't add colours to the tokens; use shadcn/ui's semantic names (`bg-card`, `text-muted-foreground`), never raw palette classes.
+Contrast decides what each token may do. Foreground is about 18:1 on carbon and muted-foreground about 7.5:1. Measured over the rendered mesh and cards at every width and scroll position, muted text stays above 5.8:1. If you touch the mesh, the light or the greys, measure it again the same way. `--signal` is for marks and never for text: the square before "vx", the status square in the badge and in Contact, the rule beside the quote, the drawn skill glyphs, the mark on the 404, the edge of the tunneling barrier, the current branch in the map and the text selection. Don't add colours to the tokens; use shadcn/ui's semantic names (`bg-card`, `text-muted-foreground`), never raw palette classes.
 
 **Brand colours.** The skills are the one place with more colour: each brand mark keeps its brand's colour, on a tile tinted with it (`--c` at 10% over the card, its edge at 28%). Where the original colour vanishes on carbon, `content.ts` gives a lighter shade. The glyphs drawn for skills without a brand use signal. Nothing else takes a brand colour.
 
-**The mesh.** A grid of 1px lines every 3rem, painted on the `html` element's own background, with a veil of carbon over it that leaves it at full strength only around the top of the page and at about a third of that further down, and a faint white light over the hero. It should catch the eye at the top and then get out of the way. It isn't a fixed layer, and nothing else should be: Safari 26 on iOS clips `position: fixed` layers to the area between its status bar and toolbar, but paints the root background edge to edge. For the same reason, don't hide things by parking them just off screen (the skip link uses `not-focus:sr-only`). Keep `<body>` without a background, or it covers the mesh.
+**The mesh.** A grid of 1px lines every 3rem, painted on the `html` element's own background, with a veil of carbon over it that leaves it at full strength only around the top of the page and at about a third of that further down, and a faint white light over the hero. It should catch the eye at the top and then get out of the way. It isn't a fixed layer, and nothing else should be but shadcn/ui's dialogs: Safari 26 on iOS clips `position: fixed` layers to the area between its status bar and toolbar, but paints the root background edge to edge. For the same reason, don't hide things by parking them just off screen (the skip link uses `not-focus:sr-only`). Keep `<body>` without a background, or it covers the mesh.
 
 **Corners.** `--radius` is 0.375rem, so buttons and tiles are 4px, cards 10px. The badge is `rounded-md`, edited from shadcn/ui's pill: no `rounded-full` anywhere.
 
@@ -112,13 +143,13 @@ Contrast decides what each token may do. Foreground is about 18:1 on carbon and 
 
 **Layout.**
 - `shell` is the one centred column (64rem) that the header, every section and the footer share. Don't put page chrome outside it.
-- The header is sticky, full width with a bottom border, frosted (`bg-background/80` and a blur), and solid with `prefers-reduced-transparency`. It's the only blur on the page.
+- The header is sticky, full width with a bottom border, frosted (`bg-background/80` and a blur), and solid with `prefers-reduced-transparency`. It's the only backdrop blur on the page.
 - Below the intro every section is a `<Section>`: a mono number, the title, then the content. Numbers come from the order of `sections` in `content.ts`.
 - Skills: a card per group, stacked. From md up the group's name sits left of its skills, and every card uses the same column grid (1, 2 from 380px, 3 from sm, 5 from lg), so the icons line up from card to card.
 - Principles: the quote, then three cards. Contact: one card.
 
 **Components.**
-- shadcn/ui's `Button` (`asChild` around an `<a>` for links), `Card` with its full composition, `Badge` and `Separator`. Use their variants before custom classes, and `className` for layout only.
+- shadcn/ui's `Button` (`asChild` around an `<a>` for links), `Card` with its full composition, `Badge` and `Separator`, and `Dialog`, `Switch` and `Field` for the quantum layer's panels. `DialogContent` takes a `closeLabel` for its translated close button, and the switch is square-cornered, not a pill. Use their variants before custom classes, and `className` for layout only.
 - Card titles are `div`s; give them `role="heading"` and an `aria-level` so the outline stays h1 → h2 → h3.
 - The language switch is a small segmented control: ghost `xs` buttons in a bordered group, the current one `secondary` and underlined in contrast themes. Its class strings are built on the server and passed in, so `cn()` and tailwind-merge stay out of the browser bundle.
 - Skill icons: a 36px tile (`icon-tile`), the icon 20px inside it, `aria-hidden` with the name as text beside it. Brand marks come from `marks.ts`; skills without a brand get a glyph drawn in `SkillIcon.tsx` on the same 24px grid, with one small part that moves.
@@ -126,7 +157,7 @@ Contrast decides what each token may do. Foreground is about 18:1 on carbon and 
 
 **Don't:**
 - A light theme, a second accent, colour on large surfaces, or signal used for text.
-- Pills, heavy or coloured shadows, or blur anywhere but the header.
+- Pills, heavy or coloured shadows, or a backdrop blur anywhere but the header. (The ghosts and the tunneling transition blur their own text, which is different.)
 - Imagery or illustration; icons beyond lucide's in buttons, the skill icons and the GitHub mark.
 - Terminal or hacker clichés: fake shells, `$` prompts, boot logs, blinking cursors, ASCII brackets, crosshairs, HUD or telemetry cosplay. The mesh is a background, not a HUD: no labels, coordinates or scan lines on it.
 - Copy that performs: taglines, slogans, claims about impact. State what the thing is and what it does.
@@ -139,23 +170,23 @@ Target WCAG 2.2 AA. There's one theme; `viewport.themeColor` in `document.ts` ma
 
 For every visual change:
 - Keep semantic landmarks, `aria-labelledby` on sections, the skip link, visible focus (shadcn/ui's ring on its controls, a 2px `--ring` outline on everything else) and `aria-hidden` on purely decorative marks.
-- Targets are at least 24px (WCAG 2.2 AA); the buttons are 32–40px and the language segments 28px.
-- Keep motion to the skill icons and smooth scrolling to anchors, and make sure `prefers-reduced-motion` turns all of it off.
-- In forced colours (Windows contrast themes) the mesh is hidden, text and borders follow the system, `--signal` becomes `CanvasText`, the skill icons draw in the text colour and the ink behind the JavaScript and TypeScript letters turns to `Canvas`. Check any new element there too.
+- Targets are at least 24px (WCAG 2.2 AA); the buttons are 32–40px and the language segments 28px. The effect switches are smaller, but their labels toggle them too.
+- Keep motion to the skill icons, the quantum layer and smooth scrolling to anchors, and make sure `prefers-reduced-motion` turns all of it off (the tunneling transition becomes a short fade).
+- In forced colours (Windows contrast themes) the mesh is hidden, text and borders follow the system, `--signal` becomes `CanvasText`, the skill icons draw in the text colour and the ink behind the JavaScript and TypeScript letters turns to `Canvas`, the ghosts are hidden and the branch map draws in `CanvasText`. Check any new element there too.
 - With `prefers-reduced-transparency`, check that the header is opaque.
 
 ## Performance
 
-The page is static and small; keep it that way. The runtime dependencies are Next, React and shadcn/ui's (Radix, class-variance-authority, clsx, tailwind-merge, lucide), and almost all of it renders on the server: the only client code is the language links, the separator and the 404's language picker. Two variable fonts, self-hosted by `next/font`, and no image files on the page: the icons are inline SVG. The mesh is four CSS gradients on the page background, the skill animations run on `transform` and `opacity`, and only the header pays for a backdrop blur. Keep any new idea to that standard: no canvas, no animation libraries, nothing running in JavaScript on a timer.
+The page is static and small; keep it that way. The runtime dependencies are Next, React and shadcn/ui's (Radix, class-variance-authority, clsx, tailwind-merge, lucide), and almost all of it renders on the server: the only client code is the language links, the separator, the 404's language picker and the quantum layer. Of the layer, the first load carries `QuantumRoot`, its two buttons and `src/quantum/`, about 5 KB gzipped; the dialogs and the ghosts are separate chunks, fetched when the page is idle or when they're needed. Two variable fonts, self-hosted by `next/font`, and no image files on the page: the icons are inline SVG. The mesh is four CSS gradients on the page background, the skill animations run on `transform` and `opacity`, and only the header pays for a backdrop blur. Keep any new idea to that standard: no canvas, no animation libraries, nothing running in JavaScript on a timer.
 
 ## Security headers
 
 Every static response, the 404 included, carries:
 
-- **Content-Security-Policy.** `default-src 'none'`, then only what the page uses, all from `'self'`: scripts, styles, images, fonts, the manifest and `connect-src`. `base-uri`, `form-action` and `frame-ancestors` are `'none'`, requests are upgraded to HTTPS, and Trusted Types are required with no policy allowed.
+- **Content-Security-Policy.** `default-src 'none'`, then only what the page uses, all from `'self'`: scripts, styles, images, fonts, the manifest and `connect-src`. `base-uri`, `form-action` and `frame-ancestors` are `'none'`, requests are upgraded to HTTPS, and Trusted Types are required, with one policy allowed: `default`.
   - Scripts: `'self'` plus a hash of each inline script. Next.js writes its bootstrap and each page's data inline, and the 404 carries its language picker, so `scripts/csp.mjs` hashes every inline `<script>` in `out/` after `next build` and puts the hashes in place of `INLINE_SCRIPT_HASHES` in `out/_headers`. The hashes change with every build, so never write them by hand, and never add `'unsafe-inline'` to `script-src`. The script fails the build if the token is missing or a line passes Cloudflare's 2,000-character limit.
   - Styles: `'self' 'unsafe-inline'`, because the stylesheet is inlined and each skill tile's colour is a `style` attribute.
-  - Trusted Types: nothing on the page writes script into the DOM (`dangerouslySetInnerHTML` is only rendered on the server), so any sink that tries is blocked. Don't add code that sets `innerHTML`, `script.src` or similar in the browser.
+  - Trusted Types: Next.js loads its lazy chunks by setting `script.src` to a string, which Trusted Types blocks, so the first thing in each page's `<head>` is an inline script (`trustedTypesPolicy` in `document.ts`) that creates the `default` policy. It lets through script URLs under this origin's `/_next/static/` and throws for anything else, and it has no HTML or script conversions, so every other sink stays blocked. It returns the URL exactly as given: Turbopack recognises a loaded chunk by its `src` attribute, and a rewritten URL leaves the `import()` waiting forever with no error. The 404 loads no chunks and doesn't carry it. Nothing on the page writes HTML or script into the DOM (`dangerouslySetInnerHTML` is only rendered on the server); don't add code that sets `innerHTML`, `script.text` or similar in the browser.
 - **Strict-Transport-Security** for two years, subdomains included (the zone's other records are iCloud mail). It isn't marked `preload`: that list is hard to leave, so it's the owner's call.
 - **X-Content-Type-Options** `nosniff`, **X-Frame-Options** `DENY`, **Referrer-Policy** `strict-origin-when-cross-origin`, and a **Permissions-Policy** that turns off every powerful feature.
 - **Cross-Origin-Opener-Policy** `same-origin` and **Cross-Origin-Embedder-Policy** `require-corp`, so the page is cross-origin isolated, and **Cross-Origin-Resource-Policy** `same-origin`. Also **Origin-Agent-Cluster** and **X-Permitted-Cross-Domain-Policies** `none`.

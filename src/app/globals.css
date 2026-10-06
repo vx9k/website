@@ -1,4 +1,5 @@
 @import "tailwindcss" source("..");
+@import "tw-animate-css";
 
 /* shadcn/ui's components style their dark variants with `dark:`. The page
    is only ever carbon, so <html> carries the class and they always apply. */
@@ -264,5 +265,319 @@ body {
   }
   .icon-tile * {
     animation: none !important;
+  }
+}
+
+/* --------------------------------------------------------------- quantum
+   The quantum layer (src/quantum/, src/components/quantum/). Its effects
+   can each be turned off in the Effects panel, and all of them keep still
+   when the system asks for less motion. */
+
+/* Tunneling. Moving to another section, or to another language (a full
+   page load), passes through a barrier sweeping down the screen. Above it
+   the new branch has resolved; below it the old one is still there; and
+   the old one keeps leaking through above the barrier, faintly, until the
+   end. The script only starts a transition when the effect is on, and
+   cancels the cross-page one when it's off. */
+@view-transition {
+  navigation: auto;
+}
+
+@property --barrier {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: -20%;
+}
+
+@keyframes barrier {
+  from {
+    --barrier: -20%;
+  }
+  to {
+    --barrier: 105%;
+  }
+}
+
+@keyframes tunnel-out {
+  80% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes tunnel-in {
+  from {
+    filter: blur(4px);
+  }
+}
+
+/* In the band where neither view shows, this is what you see: carbon,
+   with a thin light line edged in signal. */
+::view-transition {
+  background-color: var(--background);
+  background-image: linear-gradient(
+    to bottom,
+    transparent calc(var(--barrier) + 3%),
+    color-mix(in oklab, var(--signal) 20%, transparent) calc(var(--barrier) + 6.5%),
+    oklch(1 0 0 / 55%) calc(var(--barrier) + 7%),
+    color-mix(in oklab, var(--signal) 20%, transparent) calc(var(--barrier) + 7.5%),
+    transparent calc(var(--barrier) + 11%)
+  );
+  animation: barrier 700ms cubic-bezier(0.5, 0, 0.3, 1) both;
+}
+
+::view-transition-old(root) {
+  mask-image: linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0.25) var(--barrier),
+    transparent calc(var(--barrier) + 3%),
+    transparent calc(var(--barrier) + 11%),
+    black calc(var(--barrier) + 17%)
+  );
+  animation:
+    barrier 700ms cubic-bezier(0.5, 0, 0.3, 1) both,
+    tunnel-out 700ms linear both;
+}
+
+::view-transition-new(root) {
+  mask-image: linear-gradient(to bottom, black calc(var(--barrier) - 1%), transparent calc(var(--barrier) + 3%));
+  animation:
+    barrier 700ms cubic-bezier(0.5, 0, 0.3, 1) both,
+    tunnel-in 700ms ease-out both;
+}
+
+/* The header stays put: it's the one fixed point while the content moves. */
+.site-header {
+  view-transition-name: site-header;
+}
+
+::view-transition-group(site-header) {
+  animation: none;
+}
+
+::view-transition-old(site-header) {
+  display: none;
+}
+
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition {
+    background-image: none;
+    animation: none;
+  }
+  ::view-transition-old(root) {
+    mask-image: none;
+    animation: fade-out 160ms ease both;
+  }
+  ::view-transition-new(root) {
+    mask-image: none;
+    animation: fade-in 160ms ease both;
+  }
+}
+
+/* A view the page moved focus to for a keyboard user (navigate.ts): the
+   jump itself shows where they are, so no outline round the section. */
+[data-branch-view]:focus {
+  outline: none;
+}
+
+/* Ghost previews: the places you haven't been, faint behind the one you're
+   in (Ghosts.tsx). The text is generated content with empty alt text, so
+   it isn't page text and screen readers skip it. */
+.ghosts {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* The other sections' titles, anchored from the right so they never run
+   off the edge: anywhere down the introduction, and in a section only by
+   its heading, clear of the text below. */
+.ghosts > span {
+  position: absolute;
+  right: var(--r);
+  top: calc(0.5rem + var(--y) * 4rem);
+  font-size: clamp(2rem, 1rem + 4vw, 4rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+}
+
+/* On the introduction they're smaller and kept to the right edge, where
+   the headline and the text below it stop short. */
+.ghosts[data-in="intro"] > span {
+  right: calc(var(--r) / 4);
+  top: calc(6% + var(--y) * 80%);
+  font-size: clamp(1.75rem, 1rem + 2.5vw, 2.75rem);
+}
+
+/* The headline in the other languages, lying over the real one: it
+   inherits the headline's type and width, so it wraps the same way. */
+.echo {
+  position: absolute;
+  top: var(--dy);
+  left: var(--dx);
+  z-index: -1;
+  width: 100%;
+  font-size: calc(var(--fit) * 1em);
+  pointer-events: none;
+}
+
+.ghosts > span,
+.echo {
+  color: var(--foreground);
+  opacity: var(--o);
+  filter: blur(var(--b));
+  animation: ghost-flicker var(--t) linear var(--delay) infinite;
+  &::before {
+    content: attr(data-ghost) / "";
+  }
+}
+
+@keyframes ghost-flicker {
+  0%,
+  46%,
+  51%,
+  83%,
+  86%,
+  100% {
+    opacity: var(--o);
+    translate: 0 0;
+  }
+  47% {
+    opacity: calc(var(--o) * 0.25);
+    translate: 3px 0;
+  }
+  49% {
+    opacity: calc(var(--o) * 1.8);
+    translate: -2px 0;
+  }
+  84% {
+    opacity: calc(var(--o) * 0.4);
+  }
+}
+
+/* The branch map (BranchMap.tsx): lines draw in from the root, the branch
+   you're on pulses, and choosing one collapses the rest into it. */
+.branch-map path {
+  fill: none;
+  stroke: color-mix(in oklab, var(--foreground) 28%, transparent);
+  stroke-width: 1.5;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: branch-draw 500ms ease-out forwards;
+  animation-delay: calc(var(--row) * 40ms);
+}
+
+@keyframes branch-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.branch-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 1px;
+  background: var(--muted-foreground);
+}
+
+.branch-dot-here {
+  width: 9px;
+  height: 9px;
+  background: var(--signal);
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border: 1px solid var(--signal);
+    border-radius: 2px;
+    animation: branch-ping 1.8s ease-out infinite;
+  }
+}
+
+@keyframes branch-ping {
+  from {
+    opacity: 0.8;
+    scale: 0.6;
+  }
+  to {
+    opacity: 0;
+    scale: 1.6;
+  }
+}
+
+.branch-map [data-row] {
+  transition:
+    opacity 320ms ease,
+    translate 320ms ease,
+    scale 320ms ease;
+}
+
+.branch-map[data-collapsing] {
+  [data-row]:not([data-chosen]) {
+    opacity: 0;
+    translate: 0 var(--pull);
+    scale: 0.96;
+  }
+  path {
+    opacity: 0;
+    transition: opacity 240ms ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ghosts > span,
+  .echo {
+    animation: none;
+  }
+  .branch-map path {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+  .branch-dot-here::after {
+    display: none;
+  }
+  .branch-map [data-row] {
+    transition: none;
+  }
+  /* The dialogs still fade in and out, without the zoom. */
+  [data-slot="dialog-content"] {
+    --tw-enter-scale: 1;
+    --tw-exit-scale: 1;
+  }
+}
+
+@media (forced-colors: active) {
+  .ghosts,
+  .echo {
+    display: none;
+  }
+  .branch-map path {
+    stroke: CanvasText;
+  }
+  .branch-dot {
+    forced-color-adjust: none;
+    background: CanvasText;
   }
 }

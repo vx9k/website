@@ -28,3 +28,22 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
 };
+
+// The CSP requires Trusted Types for scripts (public/_headers), and Next.js
+// loads lazy chunks by setting script.src to a plain string, which that
+// blocks. This default policy runs first in <head> and lets through script
+// URLs under this site's /_next/static/ and nothing else; it defines no
+// HTML or script conversions, so innerHTML and the like stay blocked. It
+// returns the URL exactly as given: Turbopack recognises a loaded chunk by
+// the script's src attribute, so rewriting it would leave the load waiting.
+export const trustedTypesPolicy = `(function () {
+  var tt = window.trustedTypes;
+  if (!tt || !tt.createPolicy) return;
+  var allowed = location.origin + "/_next/static/";
+  tt.createPolicy("default", {
+    createScriptURL: function (url) {
+      if (new URL(url, location.href).href.indexOf(allowed) === 0) return url;
+      throw new TypeError("Script URL outside /_next/static/: " + url);
+    }
+  });
+})();`;

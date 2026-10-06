@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import "../globals.css";
-import { fontVariables } from "../document";
+import { fontVariables, trustedTypesPolicy } from "../document";
 import { getDictionary, hasLocale, localeKeys, locales } from "../i18n";
+import QuantumRoot from "@/components/quantum/QuantumRoot";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -53,6 +54,9 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
 
   return (
     <html lang={locales[lang].tag} dir="ltr" className={cn("dark", fontVariables)}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: trustedTypesPolicy }} />
+      </head>
       <body className="min-h-dvh overflow-x-clip antialiased">
         {/* Out of the layout until it has focus. Parking it off screen isn't
             enough: Safari draws the page under its status bar. No
@@ -61,6 +65,12 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
           {t.skip}
         </a>
         {children}
+        <QuantumRoot
+          lang={lang}
+          copy={t.quantum}
+          places={{ top: t.quantum.branches.top, skills: t.nav.skills, principles: t.nav.principles, contact: t.nav.contact }}
+          echoes={localeKeys.filter((l) => l !== lang).map((l) => ({ lang: l, line: getDictionary(l).hero.line }))}
+        />
       </body>
     </html>
   );

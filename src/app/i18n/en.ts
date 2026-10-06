@@ -56,6 +56,42 @@ const en = {
     source: "Source for this site",
     top: "Back to top",
   },
+  // The quantum layer: the branch map in the header and the effects
+  // panel in the footer.
+  quantum: {
+    close: "Close",
+    branches: {
+      open: "Branches",
+      title: "Branches",
+      description: "Every place you’ve been on this page, splitting wherever you took a different path. Pick one to go back to it.",
+      here: "You are here",
+      top: "Introduction",
+      choice: {
+        start: "Arrival",
+        nav: "Link",
+        lang: "Language change",
+        map: "Map jump",
+        link: "Direct visit",
+      },
+    },
+    effects: {
+      open: "Effects",
+      title: "Effects",
+      description: "The visual effects on this page. Your choice is saved in this browser.",
+      all: "All effects",
+      reduced: "Your system asks for less motion, so the effects stay still.",
+      items: {
+        ghosts: {
+          name: "Ghost previews",
+          note: "Faint echoes of the parts of the page you haven’t opened yet.",
+        },
+        tunneling: {
+          name: "Tunneling transitions",
+          note: "Moving to another section passes through a barrier.",
+        },
+      },
+    },
+  },
   notFound: {
     title: "Page not found",
     body: "There’s no page at this address. The link may be old, or the URL may have a typo.",

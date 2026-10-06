@@ -4,6 +4,8 @@ Source for [kthread.dev](https://kthread.dev), the personal site of [vx](https:/
 
 It's a single static page built with Next.js, Tailwind CSS and [shadcn/ui](https://ui.shadcn.com), exported to plain HTML and served from Cloudflare Workers at [kthread.dev](https://kthread.dev). The design is carbon: one dark theme in neutral greys, shadcn/ui's cards and buttons in a single centred column, Geist type, and a faint mesh of hairlines behind it all that's strongest at the top of the page. The skills carry small animated icons in their own colours, drawn in CSS and SVG. It reads in English, Spanish and Portuguese.
 
+Over the page sits a quantum layer, all of it optional. Moving around the page branches it like many worlds, and a map in the header lets you jump back to any branch. The parts you haven't visited flicker faintly behind the one you're in, and moving between sections tunnels through a barrier. Each effect can be switched off from the footer, and they all keep still when your system asks for less motion.
+
 ## Running it
 
 You need [Node.js](https://nodejs.org) and [pnpm](https://pnpm.io). `corepack enable` picks up the pnpm version pinned in `package.json`.
@@ -26,7 +28,7 @@ pnpm wrangler dev   # serves out/ through the Workers runtime at http://localhos
 src/
 ├── worker.ts                 runs for "/" only: sends visitors to /en, /es or /pt
 ├── app/
-│   ├── [lang]/layout.tsx     metadata, hreflang and the skip link
+│   ├── [lang]/layout.tsx     metadata, hreflang, the skip link and the Trusted Types policy
 │   ├── [lang]/page.tsx       the page: header, sections and footer
 │   ├── global-not-found.tsx  the 404 page, in all three languages
 │   ├── content.ts            language-neutral facts: links, sections, skills
@@ -34,8 +36,10 @@ src/
 │   ├── i18n/                 the copy in English, Spanish and Portuguese
 │   └── globals.css           shadcn/ui's tokens in carbon, the mesh and the icon motion
 ├── components/
-│   ├── ui/                   shadcn/ui: button, card, badge, separator
-│   └── site/                 the intro, the sections, the skill icons and the language links
+│   ├── ui/                   shadcn/ui: button, card, badge, separator, dialog, switch, field
+│   ├── site/                 the intro, the sections, the skill icons and the language links
+│   └── quantum/              the branch map, the effects panel and the ghost previews
+├── quantum/                  the branch tree, navigation and history, and the effect flags
 └── lib/utils.ts              shadcn/ui's cn()
 ```
 
