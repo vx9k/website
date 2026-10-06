@@ -4,9 +4,10 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import type { Dictionary } from "@/app/i18n";
 import type { Locale } from "@/app/i18n/locales";
 import type { Place } from "@/quantum/branches";
-import { flags, loadFlags } from "@/quantum/flags";
+import { flags, loadFlags, reducedMotion } from "@/quantum/flags";
 import { startNavigation } from "@/quantum/navigate";
 import { useStore } from "@/quantum/store";
+import { startSuperposition } from "@/quantum/superposition";
 import { era, startTime, worldOf } from "@/quantum/time";
 import { openPanel } from "@/quantum/ui";
 
@@ -44,6 +45,7 @@ export default function QuantumRoot({
   const on = useStore(flags);
   const panel = useStore(openPanel);
   const year = useStore(era);
+  const still = useStore(reducedMotion);
 
   useEffect(() => {
     loadFlags();
@@ -67,6 +69,11 @@ export default function QuantumRoot({
   useEffect(() => {
     if (panel) setOpened((o) => ({ ...o, [panel]: true }));
   }, [panel]);
+
+  // Superposition is all motion, so it waits for motion to be allowed.
+  useEffect(() => {
+    if (ready && on.superposition && !still) return startSuperposition();
+  }, [ready, on.superposition, still]);
 
   if (!ready) return null;
   const close = (open: boolean) => !open && openPanel.set(null);

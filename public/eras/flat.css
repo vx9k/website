@@ -89,6 +89,12 @@ html[data-era="flat"] {
     }
   }
 
+  /* The header links' superposed copies (globals.css), fainter on the
+     coloured bar so the links keep their contrast. */
+  & .site-header {
+    --copies: 0.4;
+  }
+
   & .era-strip {
     background: var(--app-dark);
     border-top: 0;

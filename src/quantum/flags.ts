@@ -3,7 +3,7 @@ import { createStore } from "./store";
 // The effects, each of which can be turned off in the Effects panel. They
 // all start on. The choice is saved in this browser, and ?quantum=off or
 // ?quantum=on in the URL turns them all off or back on.
-export const effects = ["ghosts", "tunneling", "time"] as const;
+export const effects = ["ghosts", "superposition", "tunneling", "time"] as const;
 export type Effect = (typeof effects)[number];
 export type Flags = Record<Effect, boolean>;
 

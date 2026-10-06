@@ -660,3 +660,28 @@ html[data-travel="past"] {
 html[data-era]:not([data-era="terminal"]) :is(.ghosts > span, .echo) {
   color: color-mix(in srgb, var(--foreground) 40%, var(--background));
 }
+
+/* Superposition (superposition.ts): every link in the header sits in a
+   few faint places at once, offset at its own angle (--a), and draws
+   together as the pointer comes near (--q: 1 far away, 0 on top of it).
+   Keyboard focus, and a link tapped once on a touch screen, collapse it
+   at once, and the current language never spreads. The script only runs with motion allowed; contrast themes drop
+   text shadows by themselves. */
+html[data-superposed] .site-header :is(nav a, [data-panel]) {
+  --s: calc(var(--q, 1) * var(--held, 1));
+  /* How strong the copies are; worlds with a coloured bar turn it down. */
+  --o: calc(var(--s) * var(--copies, 1));
+  text-shadow:
+    calc(cos(var(--a, 0deg)) * var(--s) * 11px) calc(sin(var(--a, 0deg)) * var(--s) * 7px) calc(var(--s) * 2px)
+      color-mix(in oklab, currentColor calc(var(--o) * 40%), transparent),
+    calc(cos(var(--a, 0deg) + 140deg) * var(--s) * 9px) calc(sin(var(--a, 0deg) + 140deg) * var(--s) * 6px)
+      calc(var(--s) * 2.5px) color-mix(in oklab, currentColor calc(var(--o) * 30%), transparent),
+    calc(cos(var(--a, 0deg) + 250deg) * var(--s) * 6px) calc(sin(var(--a, 0deg) + 250deg) * var(--s) * 8px)
+      calc(var(--s) * 3.5px) color-mix(in oklab, currentColor calc(var(--o) * 20%), transparent);
+  transition: text-shadow 200ms ease-out;
+}
+
+/* The language you're reading in has been observed: it stays collapsed. */
+html[data-superposed] .site-header :is(nav a, [data-panel]):is(:focus-visible, [data-collapsed], [aria-current="page"]) {
+  --held: 0;
+}

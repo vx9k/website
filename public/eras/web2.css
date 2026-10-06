@@ -87,6 +87,12 @@ html[data-era="web2"] {
     }
   }
 
+  /* The header links' superposed copies (globals.css), fainter on the
+     coloured bar so the links keep their contrast. */
+  & .site-header {
+    --copies: 0.4;
+  }
+
   & .era-strip {
     background: #e7eff8;
     border-top: 1px solid #b6c9de;

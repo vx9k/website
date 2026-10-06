@@ -82,6 +82,10 @@ const es: Dictionary = {
           name: "Vistas fantasma",
           note: "Ecos tenues de las partes de la página que aún no abriste.",
         },
+        superposition: {
+          name: "Navegación en superposición",
+          note: "Cada enlace del encabezado está en varios lugares tenues a la vez y colapsa en uno cuando el puntero se acerca. En una pantalla táctil, el primer toque colapsa un enlace y el segundo lo sigue.",
+        },
         tunneling: {
           name: "Transiciones de efecto túnel",
           note: "Pasar a otra sección atraviesa una barrera.",

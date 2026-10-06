@@ -86,6 +86,10 @@ const en = {
           name: "Ghost previews",
           note: "Faint echoes of the parts of the page you haven’t opened yet.",
         },
+        superposition: {
+          name: "Superposition nav",
+          note: "Each link in the header sits in a few faint places at once and collapses into one as your pointer comes near. On a touch screen, the first tap collapses a link and the second follows it.",
+        },
         tunneling: {
           name: "Tunneling transitions",
           note: "Moving to another section passes through a barrier.",
