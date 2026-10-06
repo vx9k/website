@@ -1,0 +1,4 @@
+ibm-vga-8x16.woff is "WebPlus IBM VGA 8x16" from the Ultimate Oldschool PC
+Font Pack v2.2 (https://int10h.org/oldschool-pc-fonts/), (c) 2016-2020 VileR,
+licensed under CC BY-SA 4.0 (LICENSE-ibm-vga-8x16.txt). It is redistributed
+unmodified. Used by the 1978 era of time travel (../terminal.css).

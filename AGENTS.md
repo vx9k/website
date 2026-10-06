@@ -186,7 +186,7 @@ Contrast decides what each token may do. Foreground is about 18:1 on carbon and 
 | Years | World | Look |
 | --- | --- | --- |
 | 1972 | `teletype` | A printout: green-bar paper with tractor-feed holes, Courier Prime, black and red ribbon, dashed boxes |
-| 1978 | `terminal` | A video terminal: green phosphor on black, VT323, a faint glow, scan lines, a blinking block cursor |
+| 1978 | `terminal` | A video terminal on a CRT: a monitor bezel round the screen, green phosphor on black in the IBM PC's text-mode face (VGA 8×16), glow, smear and a faint ghost image, scan lines, darkened corners, a rolling bar, a gentle flicker and a blinking block cursor |
 | 1984 | `desktop` | One-bit: a dithered desktop, every section a window with a pinstriped title bar, Pixelify Sans, selection in reverse |
 | 1991, 1995, 1996 | `web1` | The early web: bare structure (lists, blue links, no images), then a grey page with bevelled buttons, then CSS1 colour and Verdana |
 | 2004, 2009 | `web2` | Web 2.0: flat blue, then gloss, rounded panels, a pill badge and app-icon tiles |
@@ -196,7 +196,7 @@ Inside a past era, the design rules above don't apply: light pages, other fonts,
 - The content is the page's own. An era changes how it looks, never what it says: no fake prompts, logs or banners, and decorative characters are generated content with empty alt text.
 - WCAG 2.2 AA, measured the way the mesh is: text at 4.5:1 over the rendered era at phone and desktop width (the glow and the app bar's shadow included), focus visible on everything (where an era replaces a button's shadow, it gives focus an outline), 24px targets, phone widths in all three languages.
 - `prefers-reduced-motion` stops the era's motion, and forced colours get a plain page: each world drops its patterns and keeps solid colours under any gradient.
-- A world uses system fonts or a self-hosted OFL font in `public/eras/fonts/` (latin subset, licence beside it), loaded only in that world. No images: patterns are CSS.
+- A world uses system fonts or a self-hosted open font in `public/eras/fonts/`, its licence beside it, loaded only in that world: OFL for Courier Prime and Pixelify Sans, CC BY-SA 4.0 for VileR's IBM VGA 8×16 (redistributed unmodified, credited in `ATTRIBUTION-ibm-vga-8x16.txt`). No images: patterns are CSS.
 - A light era's ghosts are mixed most of the way into the page (`globals.css`), since dark on light stands out more than light on carbon.
 
 Design-oriented agent skills live in `.claude/skills/`, shadcn's among them. Use them for visual work, but this section wins where they disagree.

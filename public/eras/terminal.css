@@ -1,14 +1,17 @@
-/* 1978, x86 Assembly: a video terminal. Green phosphor on black, one
-   monospaced bitmap face, a soft glow on the text and faint scan lines
-   over the glass. Loaded by src/quantum/time.ts; everything here is
+/* 1978, x86 Assembly: a video terminal on a CRT. Green phosphor on
+   black in the IBM PC's text-mode face, inside a monitor's bezel, with
+   what a cathode-ray tube does to an image: the glow and smear of the
+   phosphor, a faint ghost image, scan lines, glass that darkens towards
+   its curved corners, a bright bar rolling down and a gentle flicker. Loaded by src/quantum/time.ts; everything here is
    scoped to <html data-era="terminal">, and unlayered, so it wins over
    the page's Tailwind utilities without !important. */
 
+/* VileR's WebPlus IBM VGA 8x16, from the Ultimate Oldschool PC Font
+   Pack, CC BY-SA 4.0 (fonts/ATTRIBUTION-ibm-vga-8x16.txt). */
 @font-face {
-  font-family: "VT323";
-  src: url("fonts/vt323-latin-400-normal.woff2") format("woff2");
+  font-family: "IBM VGA 8x16";
+  src: url("fonts/ibm-vga-8x16.woff") format("woff");
   font-display: swap;
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 html[data-era="terminal"] {
@@ -34,15 +37,21 @@ html[data-era="terminal"] {
   --ring: #b6ffc8;
   --signal: #b6ffc8;
   --mesh: transparent;
-  --font-geist: "VT323", ui-monospace, monospace;
-  --font-geist-mono: "VT323", ui-monospace, monospace;
-  /* The face is small for its size, as terminal type was. */
-  font-size: 125%;
+  --font-geist: "IBM VGA 8x16", ui-monospace, monospace;
+  --font-geist-mono: "IBM VGA 8x16", ui-monospace, monospace;
+  /* The monitor's frame: thinner on a phone. */
+  --bezel: clamp(8px, 1.6vw, 22px);
   background: var(--background);
-  /* Kept faint: the haze sits behind the text, so it costs contrast. */
+  /* The phosphor: a glow, a smear to the right where the beam's trace
+     fades slowly, and a faint ghost of the image a little to the left.
+     All kept faint, since they sit behind the text and cost contrast. */
   text-shadow:
     0 0 1px rgb(109 252 143 / 45%),
-    0 0 8px rgb(109 252 143 / 16%);
+    2px 0 2px rgb(109 252 143 / 20%),
+    -0.4em 0 0 rgb(109 252 143 / 5%),
+    0 0 8px rgb(109 252 143 / 14%);
+  /* Bitmap type stays crisp only at whole pixels. */
+  -webkit-font-smoothing: none;
 
   & *,
   & ::before,
@@ -51,7 +60,17 @@ html[data-era="terminal"] {
     letter-spacing: 0;
   }
 
-  /* The glass: scan lines, and the corners falling off into the dark. */
+  /* The page sits inside the screen; the header sticks to the glass's
+     top edge, under the bezel. */
+  & body {
+    padding: var(--bezel);
+  }
+  & .site-header {
+    top: var(--bezel);
+  }
+
+  /* The glass: scan lines, and the corners falling off into the dark,
+     flickering very slightly. */
   & body::after {
     content: "";
     position: fixed;
@@ -60,7 +79,36 @@ html[data-era="terminal"] {
     pointer-events: none;
     background:
       repeating-linear-gradient(to bottom, rgb(0 0 0 / 22%) 0 1px, transparent 1px 3px),
-      radial-gradient(ellipse at center, transparent 62%, rgb(0 0 0 / 32%));
+      radial-gradient(ellipse 75% 70% at center, transparent 55%, rgb(0 0 0 / 38%));
+    animation: crt-flicker 5.3s steps(1) infinite;
+  }
+
+  /* The bezel: dark plastic all round the glass, which has rounded
+     corners and a shadow where it meets the frame. */
+  & body::before {
+    content: "";
+    position: fixed;
+    inset: var(--bezel);
+    z-index: 46;
+    pointer-events: none;
+    border-radius: calc(var(--bezel) * 1.6);
+    box-shadow:
+      0 0 0 100vmax #191a17,
+      0 0 0 1px #000,
+      inset 0 0 calc(var(--bezel) * 2) rgb(0 0 0 / 75%),
+      inset 0 0 0 1px rgb(255 255 255 / 4%);
+  }
+
+  /* A bright bar rolling slowly down the tube. */
+  &::after {
+    content: "";
+    position: fixed;
+    inset: 0 0 auto;
+    height: 28vh;
+    z-index: 44;
+    pointer-events: none;
+    background: linear-gradient(to bottom, transparent, rgb(109 252 143 / 3.5%) 50%, transparent);
+    animation: crt-roll 9s linear infinite;
   }
 
   & ::selection {
@@ -171,6 +219,36 @@ html[data-era="terminal"] {
   }
 }
 
+@keyframes crt-roll {
+  from {
+    transform: translateY(-30vh);
+  }
+  to {
+    transform: translateY(105vh);
+  }
+}
+
+/* Small and uneven, never a strobe: the glass dims by a few percent now
+   and then. */
+@keyframes crt-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  23% {
+    opacity: 0.94;
+  }
+  24% {
+    opacity: 1;
+  }
+  61% {
+    opacity: 0.96;
+  }
+  62% {
+    opacity: 1;
+  }
+}
+
 @keyframes terminal-cursor {
   50% {
     opacity: 0;
@@ -178,15 +256,21 @@ html[data-era="terminal"] {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html[data-era="terminal"] [data-branch-echo]::after {
+  html[data-era="terminal"] [data-branch-echo]::after,
+  html[data-era="terminal"] body::after {
     animation: none;
+  }
+  html[data-era="terminal"]::after {
+    display: none;
   }
 }
 
 @media (forced-colors: active) {
   html[data-era="terminal"] {
     text-shadow: none;
-    & body::after {
+    & body::after,
+    & body::before,
+    &::after {
       display: none;
     }
   }
