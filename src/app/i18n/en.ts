@@ -90,6 +90,10 @@ const en = {
           name: "Superposition nav",
           note: "Each link in the header sits in a few faint places at once and collapses into one as your pointer comes near. On a touch screen, the first tap collapses a link and the second follows it.",
         },
+        interference: {
+          name: "Interference background",
+          note: "Faint waves from three sources, bright where they add up and dark where they cancel. One follows your pointer, and each branch places the others.",
+        },
         tunneling: {
           name: "Tunneling transitions",
           note: "Moving to another section passes through a barrier.",

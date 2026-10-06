@@ -86,6 +86,10 @@ const es: Dictionary = {
           name: "Navegación en superposición",
           note: "Cada enlace del encabezado está en varios lugares tenues a la vez y colapsa en uno cuando el puntero se acerca. En una pantalla táctil, el primer toque colapsa un enlace y el segundo lo sigue.",
         },
+        interference: {
+          name: "Fondo de interferencia",
+          note: "Ondas tenues de tres fuentes, brillantes donde se suman y oscuras donde se anulan. Una sigue al puntero, y cada rama ubica las otras.",
+        },
         tunneling: {
           name: "Transiciones de efecto túnel",
           note: "Pasar a otra sección atraviesa una barrera.",

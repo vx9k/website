@@ -18,6 +18,7 @@ const BranchMap = lazy(() => import("./BranchMap"));
 const Timeline = lazy(() => import("./Timeline"));
 const EffectsPanel = lazy(() => import("./EffectsPanel"));
 const EraStrip = lazy(() => import("./EraStrip"));
+const Interference = lazy(() => import("./Interference"));
 
 export type Echo = { lang: Locale; line: string };
 
@@ -85,6 +86,8 @@ export default function QuantumRoot({
       </p>
       <Suspense fallback={null}>
         {on.ghosts && <Ghosts lang={lang} places={places} echoes={echoes} />}
+        {/* Today only: the past eras paint their own backgrounds. */}
+        {on.interference && year === null && <Interference still={still} />}
         {year !== null && <EraStrip copy={copy.time} />}
         {opened.branches && (
           <BranchMap

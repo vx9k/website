@@ -685,3 +685,22 @@ html[data-superposed] .site-header :is(nav a, [data-panel]) {
 html[data-superposed] .site-header :is(nav a, [data-panel]):is(:focus-visible, [data-collapsed], [aria-current="page"]) {
   --held: 0;
 }
+
+/* Interference (Interference.tsx): a canvas behind everything, fixed to
+   the viewport. It's the one fixed layer besides the dialogs, so Safari
+   on iOS may leave it out under its bars, which costs nothing. The shader
+   keeps it faint; contrast themes and the past eras don't show it. */
+.interference {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+}
+
+@media (forced-colors: active) {
+  .interference {
+    display: none;
+  }
+}

@@ -86,6 +86,10 @@ const pt: Dictionary = {
           name: "Navegação em superposição",
           note: "Cada link do cabeçalho fica em vários lugares suaves ao mesmo tempo e colapsa em um só quando o ponteiro se aproxima. Em uma tela sensível ao toque, o primeiro toque colapsa um link e o segundo o abre.",
         },
+        interference: {
+          name: "Fundo de interferência",
+          note: "Ondas suaves de três fontes, claras onde se somam e escuras onde se anulam. Uma segue o ponteiro, e cada ramificação posiciona as outras.",
+        },
         tunneling: {
           name: "Transições por tunelamento",
           note: "Passar para outra seção atravessa uma barreira.",
