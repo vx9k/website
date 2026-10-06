@@ -51,6 +51,7 @@ const es: Dictionary = {
     body: "Mis proyectos son públicos en GitHub.",
   },
   footer: {
+    site: "Este sitio",
     source: "Código de este sitio",
     top: "Volver arriba",
   },

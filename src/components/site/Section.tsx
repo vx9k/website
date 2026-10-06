@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 import { sections } from "@/app/content";
 
-/** The frame every section below the intro shares: its number and title
- *  above the content, in the one centred column. */
+/** The frame every section below the intro shares, as a band across the
+ *  page: from lg up, its number and title stay pinned on the left while
+ *  the content scrolls past on the right; below that, they stack. */
 export default function Section({
   id,
   title,
@@ -14,16 +15,23 @@ export default function Section({
 }) {
   const number = String(sections.indexOf(id) + 1).padStart(2, "0");
   return (
-    <section id={id} aria-labelledby={`${id}-title`} data-branch-view={id} className="shell relative isolate py-12 sm:py-16">
-      <header className="mb-8 flex flex-col gap-2">
-        <p aria-hidden className="label">
-          {number}
-        </p>
-        <h2 id={`${id}-title`} className="text-2xl font-semibold tracking-tight sm:text-3xl">
-          {title}
-        </h2>
-      </header>
-      {children}
-    </section>
+    <div className="band">
+      <section
+        id={id}
+        aria-labelledby={`${id}-title`}
+        data-branch-view={id}
+        className="split shell relative isolate grid gap-10 py-16 sm:py-24 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16"
+      >
+        <header className="flex flex-col gap-4 self-start lg:sticky lg:top-24">
+          <p aria-hidden className="label">
+            {number} / {String(sections.length).padStart(2, "0")}
+          </p>
+          <h2 id={`${id}-title`} className="text-title font-medium text-balance">
+            {title}
+          </h2>
+        </header>
+        <div className="reveal min-w-0">{children}</div>
+      </section>
+    </div>
   );
 }

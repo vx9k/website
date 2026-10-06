@@ -1,30 +1,33 @@
 import type { Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
 import { worlds } from "./content";
 
 // Shared by the root layout and the global 404, which renders its own
 // <html> and so can't inherit anything from the layout.
 
-// Both are variable, so every weight comes from the same files, and the
-// latin subset already has every accent Spanish and Portuguese use.
-const geist = Geist({
-  variable: "--font-geist",
+// Instrument Sans is variable, so every weight comes from the same file;
+// Plex Mono isn't, so it loads the two weights the labels use. The latin
+// subset already has every accent Spanish and Portuguese use. The era
+// stylesheets swap the faces by redefining these two variables.
+const sans = Instrument_Sans({
+  variable: "--font-face-sans",
   subsets: ["latin"],
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const mono = IBM_Plex_Mono({
+  variable: "--font-face-mono",
   subsets: ["latin"],
+  weight: ["400", "500"],
   display: "swap",
 });
 
-export const fontVariables = `${geist.variable} ${geistMono.variable}`;
+export const fontVariables = `${sans.variable} ${mono.variable}`;
 
-// The browser chrome matches the page, which is always carbon: the
-// background token, oklch(0.155 0 0).
+// The browser chrome matches the page, which is black: the background
+// token.
 export const viewport: Viewport = {
-  themeColor: "#0c0c0c",
+  themeColor: "#000000",
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
@@ -55,10 +58,18 @@ export const trustedTypesPolicy = `(function () {
 // finds the year (from the history entry's branch, or else the era the
 // tab was last in), sets <html data-era> and adds the world's stylesheet,
 // render-blocking where browsers support it. Unless time travel is off.
+// Before that, it also rolls the order of the headline's words.
 const past = worlds.filter((w) => w.id !== "now").map((w) => [w.from, w.id]);
 const today = worlds.find((w) => w.id === "now")!.from;
 
 export const eraScript = `(function () {
+  try {
+    // The order the headline's words arrive in (.word in globals.css),
+    // fresh on every load.
+    var r = crypto.getRandomValues(new Uint8Array(2));
+    document.documentElement.style.setProperty("--wa", String(1 + (r[0] % 10)));
+    document.documentElement.style.setProperty("--wb", String(r[1] % 11));
+  } catch (e) {}
   try {
     if (/[?&]quantum=off(&|$)/.test(location.search)) return;
     if (JSON.parse(localStorage.getItem("vx-quantum") || "{}").time === false) return;

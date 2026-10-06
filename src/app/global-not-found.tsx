@@ -5,7 +5,6 @@ import { getDictionary, localeKeys, locales } from "./i18n";
 import { ArrowLeftIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 export { viewport } from "./document";
@@ -54,30 +53,24 @@ export default function GlobalNotFound() {
         <script dangerouslySetInnerHTML={{ __html: pickScript }} />
       </head>
       <body className="min-h-dvh overflow-x-clip antialiased">
-        <main id="main" className="shell flex min-h-dvh flex-col justify-center py-16">
+        <main id="main" className="shell flex min-h-dvh flex-col items-center justify-center py-16 text-center">
           {localeKeys.map((l) => {
             const t = getDictionary(l).notFound;
             return (
-              <Card key={l} lang={locales[l].tag} className={cn("max-w-xl", visibility[l])}>
-                <CardHeader className="gap-4">
-                  <Badge variant="outline" className="gap-2 font-mono">
-                    <span aria-hidden className="size-1.5 rounded-[1px] bg-signal" />
-                    404
-                  </Badge>
-                  <CardTitle role="heading" aria-level={1} className="text-3xl tracking-tight text-balance sm:text-4xl">
-                    {t.title}
-                  </CardTitle>
-                  <CardDescription className="text-base text-pretty">{t.body}</CardDescription>
-                </CardHeader>
-                <CardFooter>
-                  <Button asChild size="lg">
-                    <a href={`/${l}`}>
-                      <ArrowLeftIcon data-icon="inline-start" />
-                      {t.back}
-                    </a>
-                  </Button>
-                </CardFooter>
-              </Card>
+              <div key={l} lang={locales[l].tag} className={cn("flex max-w-2xl flex-col items-center gap-6", visibility[l])}>
+                <Badge variant="outline" className="gap-2 font-mono">
+                  <span aria-hidden className="size-1.5 rounded-[1px] bg-signal" />
+                  404
+                </Badge>
+                <h1 className="text-title font-medium text-balance">{t.title}</h1>
+                <p className="text-lg text-muted-foreground text-pretty">{t.body}</p>
+                <Button asChild size="lg" className="mt-2">
+                  <a href={`/${l}`}>
+                    <ArrowLeftIcon data-icon="inline-start" />
+                    {t.back}
+                  </a>
+                </Button>
+              </div>
             );
           })}
         </main>

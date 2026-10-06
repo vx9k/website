@@ -34,9 +34,9 @@ html[data-era="web1"] {
   --input: #808080;
   --ring: #000000;
   --signal: #000000;
-  --mesh: transparent;
-  --font-geist: "Times New Roman", Times, serif;
-  --font-geist-mono: "Courier New", Courier, monospace;
+  --rule: transparent;
+  --font-face-sans: "Times New Roman", Times, serif;
+  --font-face-mono: "Courier New", Courier, monospace;
   background: var(--background);
   -webkit-font-smoothing: auto;
 
@@ -147,7 +147,7 @@ html[data-era="web1"] {
     color: var(--link);
     text-decoration: underline;
     background: transparent;
-    font-family: var(--font-geist-mono);
+    font-family: var(--font-face-mono);
   }
   & .site-header [hreflang][aria-current="page"] {
     color: #000000;
@@ -340,7 +340,7 @@ html[data-era="web1"][data-year="1996"] {
   --background: #ffffff;
   --popover: #ffffff;
   --navy: #000080;
-  --font-geist: Verdana, Geneva, Tahoma, sans-serif;
+  --font-face-sans: Verdana, Geneva, Tahoma, sans-serif;
   /* The coloured band down the side, from a background image or a
      table cell with bgcolor. */
   background: linear-gradient(to right, var(--navy) 0 0.75rem, #ffffff 0.75rem);

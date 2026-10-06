@@ -13,11 +13,24 @@ const icons = { branches: GitBranchIcon, time: HistoryIcon };
  *  QuantumRoot. The header's two show only their icons below lg, where
  *  the section links need the room, and the timeline's goes when time
  *  travel is switched off. */
-export default function PanelButton({ panel, label }: { panel: Exclude<Panel, null>; label: string }) {
+export default function PanelButton({
+  panel,
+  label,
+  className,
+}: {
+  panel: Exclude<Panel, null>;
+  label: string;
+  className?: string;
+}) {
   const on = useStore(flags);
   if (panel === "effects") {
     return (
-      <Button variant="link" size="sm" aria-haspopup="dialog" onClick={(event) => open(panel, event.currentTarget)}>
+      <Button
+        variant="link"
+        size="sm"
+        className={className}
+        aria-haspopup="dialog"
+        onClick={(event) => open(panel, event.currentTarget)}>
         {label}
       </Button>
     );

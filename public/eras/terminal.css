@@ -36,9 +36,9 @@ html[data-era="terminal"] {
   --input: rgb(109 252 143 / 50%);
   --ring: #b6ffc8;
   --signal: #b6ffc8;
-  --mesh: transparent;
-  --font-geist: "IBM VGA 8x16", ui-monospace, monospace;
-  --font-geist-mono: "IBM VGA 8x16", ui-monospace, monospace;
+  --rule: transparent;
+  --font-face-sans: "IBM VGA 8x16", ui-monospace, monospace;
+  --font-face-mono: "IBM VGA 8x16", ui-monospace, monospace;
   /* The monitor's frame: thinner on a phone. */
   --bezel: clamp(8px, 1.6vw, 22px);
   background: var(--background);

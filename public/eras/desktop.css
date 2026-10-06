@@ -40,9 +40,9 @@ html[data-era="desktop"] {
   --input: var(--black);
   --ring: var(--black);
   --signal: var(--black);
-  --mesh: transparent;
-  --font-geist: "Pixelify Sans", Geneva, Verdana, sans-serif;
-  --font-geist-mono: "Pixelify Sans", Geneva, Verdana, sans-serif;
+  --rule: transparent;
+  --font-face-sans: "Pixelify Sans", Geneva, Verdana, sans-serif;
+  --font-face-mono: "Pixelify Sans", Geneva, Verdana, sans-serif;
   background: var(--dither);
   -webkit-font-smoothing: none;
 
@@ -71,8 +71,8 @@ html[data-era="desktop"] {
   }
 
   /* Windows: the introduction, every section and the footer. */
-  & main > [data-branch-view],
-  & footer.shell {
+  & main [data-branch-view],
+  & footer {
     width: calc(100% - 1.5rem);
     max-width: 64rem;
     margin: 1.5rem auto;
@@ -83,7 +83,7 @@ html[data-era="desktop"] {
     box-shadow: 2px 2px 0 var(--black);
   }
 
-  & footer.shell {
+  & footer {
     padding-bottom: 0;
     & [data-slot="separator"] {
       display: none;
@@ -92,7 +92,7 @@ html[data-era="desktop"] {
 
   /* Its title bar: pinstripes, a close box on the left (the section's
      number, which only screens draw), the title in a gap in the middle. */
-  & main > [data-branch-view] > header {
+  & main [data-branch-view] > header {
     position: relative;
     flex-direction: row;
     align-items: center;
@@ -122,7 +122,7 @@ html[data-era="desktop"] {
   }
 
   /* The introduction's window has an empty title bar. */
-  & main > [data-branch-view="top"]::before {
+  & main [data-branch-view="top"]::before {
     content: "";
     display: block;
     height: calc(1.6rem + 0.4rem);
@@ -133,8 +133,8 @@ html[data-era="desktop"] {
   }
 
   @media (width >= 40rem) {
-    & main > [data-branch-view] > header,
-    & main > [data-branch-view="top"]::before {
+    & main [data-branch-view] > header,
+    & main [data-branch-view="top"]::before {
       margin-inline: -1.5rem;
     }
   }
@@ -251,8 +251,8 @@ html[data-era="desktop"] {
 @media (forced-colors: active) {
   html[data-era="desktop"] {
     background: Canvas;
-    & main > [data-branch-view] > header,
-    & main > [data-branch-view="top"]::before {
+    & main [data-branch-view] > header,
+    & main [data-branch-view="top"]::before {
       background: none;
     }
   }

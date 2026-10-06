@@ -6,52 +6,53 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ---------------------------------------------------------------- palette
-   Carbon: one dark theme, neutral greys on near-black, in shadcn/ui's
-   token names so its components read them directly. The one colour is
-   signal orange, kept for marks (the square before "vx", the status
-   square), never text. The brand colours in the skill icons are the only
-   other colour on the page. */
+   Black and off-white: one dark theme, the greys taken as steps of the
+   foreground's opacity over black, in shadcn/ui's token names so its
+   components read them directly. The one colour is signal orange, kept
+   for marks (the square before "vx", the status square), never text. The
+   brand colours in the skill icons are the only other colour on the page. */
 
 :root {
   color-scheme: dark;
-  --radius: 0.375rem;
+  /* Nearly square: 3px on buttons, cells and panels. */
+  --radius: 3px;
 
-  --background: oklch(0.155 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.185 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.185 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: #000;
+  --foreground: #f5f5f5;
+  --card: #0f0f0f;
+  --card-foreground: #f5f5f5;
+  --popover: #0f0f0f;
+  --popover-foreground: #f5f5f5;
+  --primary: #f5f5f5;
+  --primary-foreground: #000;
+  --secondary: #1f1f1f;
+  --secondary-foreground: #f5f5f5;
+  --muted: #1f1f1f;
+  /* The foreground at 62% over black: 8.2:1 on the page, 7.5:1 on a card. */
+  --muted-foreground: #a2a2a2;
+  --accent: #1f1f1f;
+  --accent-foreground: #f5f5f5;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  /* Lighter than shadcn/ui's default, so the focus ring (drawn at half
-     strength) still clears 3:1 against carbon. */
-  --ring: oklch(0.8 0 0);
+  --border: rgb(245 245 245 / 14%);
+  --input: rgb(245 245 245 / 20%);
+  /* Light enough that the focus ring, drawn at half strength, still
+     clears 3:1 on black and on the cells. */
+  --ring: #d4d4d4;
 
   --signal: #f04800;
 
-  /* The mesh: hairlines on a 3rem grid, and the glint on the skill tiles. */
-  --mesh: oklch(1 0 0 / 7%);
+  /* The page's hairlines, and the glint on the skill tiles. */
+  --rule: rgb(245 245 245 / 14%);
   --glint: oklch(1 0 0 / 18%);
+
+  /* The one easing: quick out, long settle. */
+  --ease: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* Contrast themes replace every colour: marks draw in the text colour and
-   the mesh goes. */
+/* Contrast themes replace every colour: marks draw in the text colour. */
 @media (forced-colors: active) {
   :root {
     --signal: CanvasText;
-  }
-  html {
-    background-image: none;
   }
   /* The ink behind the JavaScript and TypeScript letters keeps its own
      fill, so it would merge with the forced text colour. */
@@ -61,8 +62,8 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-sans: var(--font-face-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-face-mono), ui-monospace, monospace;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -84,10 +85,12 @@
   --color-ring: var(--ring);
   --color-signal: var(--signal);
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  /* shadcn/ui's scale subtracts from --radius, which goes negative this
+     close to square, so the steps are spelled out. */
+  --radius-sm: 2px;
+  --radius-md: var(--radius);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xl: 4px;
 }
 
 /* ------------------------------------------------------------------ base */
@@ -98,30 +101,15 @@
   }
 }
 
-/* The mesh is painted on the page's own background, not on a fixed layer
-   or on <body>: Safari 26 on iOS clips fixed layers to the area between
-   its status bar and toolbar, but draws the root background edge to edge
-   behind them. From the bottom layer up: the grid of hairlines, a veil of
-   carbon that leaves the grid at full strength only around the top of the
-   page, and a faint light over the hero. */
+/* The page is plain black. Its structure is drawn in hairlines instead:
+   the column's two edges run the length of the page (see `shell`), and a
+   rule crosses the full width between sections. */
 html {
   background-color: var(--background);
-  background-image:
-    radial-gradient(56rem 28rem at 50% 0, oklch(1 0 0 / 5%), transparent 70%),
-    radial-gradient(72rem 44rem at 50% 0, transparent 30%, color-mix(in oklab, var(--background) 65%, transparent)),
-    linear-gradient(to right, var(--mesh) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--mesh) 1px, transparent 1px);
-  background-size:
-    100% 100%,
-    100% 100%,
-    3rem 3rem,
-    3rem 3rem;
-  background-position: center top;
-  background-repeat: no-repeat, no-repeat, repeat, repeat;
   color: var(--foreground);
   scroll-behavior: smooth;
   /* Anchored sections land below the sticky header. */
-  scroll-padding-top: 5rem;
+  scroll-padding-top: 4rem;
 }
 
 body {
@@ -152,25 +140,46 @@ body {
 /* ------------------------------------------------------------- utilities */
 
 /* The one centred column that the header, every section and the footer
-   share, so their edges line up at every width. */
+   share, so their edges line up at every width. Its edges are drawn: two
+   hairlines that run down the page from the header to the footer. */
 @utility shell {
   width: 100%;
-  max-width: 64rem;
+  max-width: 80rem;
   margin-inline: auto;
-  padding-inline: 1.25rem;
+  padding-inline: 1rem;
+  border-inline: 1px solid var(--rule);
   @media (width >= 40rem) {
-    padding-inline: 1.5rem;
+    padding-inline: 2rem;
   }
 }
 
-/* Small uppercase metadata: section numbers. */
+/* Small uppercase metadata in mono: section numbers, labels, years. */
 @utility label {
   font-family: var(--font-mono);
   font-size: 0.75rem;
   line-height: 1rem;
-  letter-spacing: 0.06em;
+  font-weight: 500;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--muted-foreground);
+}
+
+/* A rule across the full width of the page, between the bands. */
+@utility band {
+  border-top: 1px solid var(--rule);
+}
+
+/* Fluid display type, from phone to desktop without breakpoints. */
+@utility text-display {
+  font-size: clamp(2.5rem, 1.1rem + 5.6vw, 6rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+}
+
+@utility text-title {
+  font-size: clamp(2rem, 1.2rem + 3.2vw, 4rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
 }
 
 /* ------------------------------------------------------------ skill icons
@@ -782,26 +791,224 @@ html[data-superposed] .site-header :is(nav a, [data-panel]):is(:focus-visible, [
   }
 }
 
-/* The orbital (Orbital.tsx): beside the introduction, behind its text,
-   from lg up where the column leaves room for it. */
+/* The orbital (Orbital.tsx): large and faint, centred behind the
+   headline, from md up. Its ink is the foreground at under a third,
+   so the densest dots stay well below the text over them. */
 .orbital {
   display: none;
   position: absolute;
   z-index: -1;
   top: 50%;
-  right: 0;
-  width: 20rem;
-  height: 20rem;
-  translate: 0 -50%;
-  color: var(--foreground);
+  left: 50%;
+  width: min(40rem, 80vw);
+  height: min(40rem, 80vw);
+  translate: -50% -50%;
+  color: rgb(245 245 245 / 30%);
   pointer-events: none;
-  @media (width >= 64rem) {
+  @media (width >= 48rem) {
     display: block;
   }
 }
 
 @media (forced-colors: active) {
   .orbital {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------- motion
+   Today's page moves a little of its own accord, and all of it stops when
+   the system asks for less motion. None of it applies in the past eras. */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The headline's words resolve out of a blur one at a time. The order
+     is a permutation of the words: the early script in <head> picks --wa
+     (1 to 10) and --wb (0 to 10) from crypto.getRandomValues on every
+     load, and 11 is prime, so w·a + b mod 11 never repeats for up to
+     eleven words. Without mod() support they all arrive together. */
+  html:not([data-era]) .word {
+    display: inline-block;
+    animation: word-in 1000ms var(--ease) both;
+    animation-delay: calc(100ms + mod(var(--w) * var(--wa, 1) + var(--wb, 0), 11) * 75ms);
+  }
+
+  /* Then the rest of the introduction rises in after them. */
+  html:not([data-era]) .reveal-now {
+    animation: rise 900ms var(--ease) both;
+    animation-delay: 700ms;
+  }
+  html:not([data-era]) .reveal-now + .reveal-now {
+    animation-delay: 800ms;
+  }
+  html:not([data-era]) .reveal-now + .reveal-now + .reveal-now {
+    animation-delay: 900ms;
+  }
+
+  /* Below the introduction, each block rises in as it scrolls into view,
+     driven by the scroll position rather than a timer, so anything already
+     on screen (after a jump to a section, say) is simply there. */
+  @supports (animation-timeline: view()) {
+    html:not([data-era]) :is(.split h2, .skill-group, .split blockquote, .principle, .panel-light) {
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+    /* The name in the footer climbs into place as the footer arrives. */
+    html:not([data-era]) .wordmark {
+      animation: wordmark linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 40%;
+    }
+  }
+}
+
+@keyframes word-in {
+  from {
+    opacity: 0;
+    filter: blur(14px);
+    translate: 0 0.2em;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 1.5rem;
+  }
+}
+
+@keyframes wordmark {
+  from {
+    translate: 0 35%;
+  }
+}
+
+/* Small answers to the pointer: a cell lights, an arrow leans the way it
+   points. */
+.skill {
+  transition: background-color 240ms var(--ease);
+  &:hover {
+    background-color: color-mix(in oklab, var(--foreground) 4%, transparent);
+  }
+}
+
+[data-slot="button"] :is(.lucide-arrow-up-right, .lucide-arrow-down) {
+  transition: translate 240ms var(--ease);
+}
+[data-slot="button"]:hover .lucide-arrow-up-right {
+  translate: 2px -2px;
+}
+[data-slot="button"]:hover .lucide-arrow-down {
+  translate: 0 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skill,
+  [data-slot="button"] svg {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------- surfaces */
+
+/* Contact's panel: the one light surface, black on off-white, with its
+   button turned black to match. Only in today's world; the eras style it
+   as a card like any other. */
+html:not([data-era]) .panel-light {
+  --ring: #000;
+  border-color: transparent;
+  background: var(--foreground);
+  color: var(--background);
+  & [data-slot="card-description"] {
+    /* Black at 68% on off-white: 7.6:1. */
+    color: rgb(0 0 0 / 68%);
+  }
+  & [data-slot="button"][data-variant="default"] {
+    background: var(--background);
+    color: var(--foreground);
+    &:hover {
+      background: #262626;
+    }
+  }
+}
+
+/* The name in the footer, its foot cut off by the end of the page. */
+.wordmark {
+  margin-bottom: -0.2em;
+  font-size: clamp(9rem, 2rem + 24vw, 24rem);
+  font-weight: 600;
+  line-height: 0.8;
+  letter-spacing: -0.07em;
+  user-select: none;
+}
+
+/* ------------------------------------------------------------------ eras
+   The past eras (public/eras/) were drawn over the earlier layout: one
+   plain column, everything left-aligned, each section's title above its
+   content. This puts that layout back under them, at the lowest weight
+   (:where), so each era's own rules still win. */
+:where(html[data-era]) {
+  & .shell {
+    max-width: 64rem;
+    padding-inline: 1.25rem;
+    border-inline: 0;
+    @media (width >= 40rem) {
+      padding-inline: 1.5rem;
+    }
+  }
+  & .band {
+    border-top: 0;
+  }
+  & .intro {
+    display: block;
+    min-height: 0;
+    text-align: left;
+    padding-block: 5rem 2rem;
+    @media (width >= 40rem) {
+      padding-block: 7rem 2.5rem;
+    }
+    & > div {
+      justify-content: flex-start;
+    }
+  }
+  & .intro h1 {
+    max-width: 48rem;
+    font-size: clamp(2.25rem, 1.5rem + 3vw, 3.75rem);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+  }
+  & .split {
+    display: block;
+    padding-block: 3rem;
+    @media (width >= 40rem) {
+      padding-block: 4rem;
+    }
+    & > header {
+      position: static;
+      top: auto;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    & h2 {
+      font-size: clamp(1.5rem, 1.25rem + 1vw, 1.875rem);
+      font-weight: 600;
+      line-height: 1.2;
+      letter-spacing: -0.025em;
+    }
+  }
+  & .split blockquote {
+    font-size: 1.25rem;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+  /* Today's principles are rows between rules; an era that boxes them
+     as cards needs the number clear of the edge. */
+  & .principle {
+    padding-inline: 1rem;
+  }
+  & .skill-year,
+  & .wordmark {
     display: none;
   }
 }

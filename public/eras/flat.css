@@ -36,9 +36,9 @@ html[data-era="flat"] {
   --input: rgb(0 0 0 / 24%);
   --ring: var(--app);
   --signal: var(--accent-color);
-  --mesh: transparent;
-  --font-geist: Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-geist-mono: "Roboto Mono", Menlo, Consolas, monospace;
+  --rule: transparent;
+  --font-face-sans: Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-face-mono: "Roboto Mono", Menlo, Consolas, monospace;
   background: var(--background);
 
   & *,
@@ -234,7 +234,7 @@ html[data-era="flat"][data-year="2012"] {
   --radius: 0px;
   --background: #ffffff;
   --muted-foreground: #555555;
-  --font-geist: "Segoe UI", "Segoe UI Web (West European)", "Helvetica Neue", Arial, sans-serif;
+  --font-face-sans: "Segoe UI", "Segoe UI Web (West European)", "Helvetica Neue", Arial, sans-serif;
 
   & .site-header {
     box-shadow: none;
@@ -344,7 +344,7 @@ html[data-era="flat"][data-year="2017"] {
   --foreground: #32325d;
   --card-foreground: #32325d;
   --muted-foreground: #525f7f;
-  --font-geist: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-face-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
 
   & .site-header {
     background: linear-gradient(120deg, #4f46e5, #7c3aed 55%, #a21caf);

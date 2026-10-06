@@ -34,9 +34,9 @@ html[data-era="web2"] {
   --input: #a9bdd4;
   --ring: #2f6fb5;
   --signal: #f07800;
-  --mesh: transparent;
-  --font-geist: "Lucida Grande", "Lucida Sans Unicode", "Trebuchet MS", Verdana, sans-serif;
-  --font-geist-mono: Monaco, "Lucida Console", monospace;
+  --rule: transparent;
+  --font-face-sans: "Lucida Grande", "Lucida Sans Unicode", "Trebuchet MS", Verdana, sans-serif;
+  --font-face-mono: Monaco, "Lucida Console", monospace;
   background:
     linear-gradient(to bottom, var(--sky), var(--background) 32rem) no-repeat,
     var(--background);
@@ -249,7 +249,7 @@ html[data-era="web2"] {
 /* 2004: before the gloss. */
 html[data-era="web2"][data-year="2004"] {
   --radius: 0px;
-  --font-geist: Verdana, Geneva, Tahoma, sans-serif;
+  --font-face-sans: Verdana, Geneva, Tahoma, sans-serif;
   background: var(--background);
 
   & body {

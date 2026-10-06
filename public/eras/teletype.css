@@ -46,9 +46,9 @@ html[data-era="teletype"] {
   --input: #6f6a5f;
   --ring: var(--ink);
   --signal: #b3261e;
-  --mesh: transparent;
-  --font-geist: "Courier Prime", "Courier New", Courier, monospace;
-  --font-geist-mono: "Courier Prime", "Courier New", Courier, monospace;
+  --rule: transparent;
+  --font-face-sans: "Courier Prime", "Courier New", Courier, monospace;
+  --font-face-mono: "Courier Prime", "Courier New", Courier, monospace;
   /* From the edges in: the tractor-feed holes, the perforations beside
      them, and the green bars every three lines between. */
   background-color: var(--paper);
