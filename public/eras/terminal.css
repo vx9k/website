@@ -1,0 +1,277 @@
+/* 1978, x86 Assembly: a video terminal on a CRT. Green phosphor on
+   black in the IBM PC's text-mode face, inside a monitor's bezel, with
+   what a cathode-ray tube does to an image: the glow and smear of the
+   phosphor, a faint ghost image, scan lines, glass that darkens towards
+   its curved corners, a bright bar rolling down and a gentle flicker. Loaded by src/quantum/time.ts; everything here is
+   scoped to <html data-era="terminal">, and unlayered, so it wins over
+   the page's Tailwind utilities without !important. */
+
+/* VileR's WebPlus IBM VGA 8x16, from the Ultimate Oldschool PC Font
+   Pack, CC BY-SA 4.0 (fonts/ATTRIBUTION-ibm-vga-8x16.txt). */
+@font-face {
+  font-family: "IBM VGA 8x16";
+  src: url("fonts/ibm-vga-8x16.woff") format("woff");
+  font-display: swap;
+}
+
+html[data-era="terminal"] {
+  color-scheme: dark;
+  --phosphor: #6dfc8f;
+  --radius: 0px;
+  --background: #020a04;
+  --foreground: var(--phosphor);
+  --card: #03120a;
+  --card-foreground: var(--phosphor);
+  --popover: #03120a;
+  --popover-foreground: var(--phosphor);
+  --primary: var(--phosphor);
+  --primary-foreground: #020a04;
+  --secondary: #0d3b1b;
+  --secondary-foreground: var(--phosphor);
+  --muted: #0d3b1b;
+  --muted-foreground: #5fe07f;
+  --accent: #0d3b1b;
+  --accent-foreground: #b6ffc8;
+  --border: rgb(109 252 143 / 38%);
+  --input: rgb(109 252 143 / 50%);
+  --ring: #b6ffc8;
+  --signal: #b6ffc8;
+  --rule: transparent;
+  --font-face-sans: "IBM VGA 8x16", ui-monospace, monospace;
+  --font-face-mono: "IBM VGA 8x16", ui-monospace, monospace;
+  /* The monitor's frame: thinner on a phone. */
+  --bezel: clamp(8px, 1.6vw, 22px);
+  background: var(--background);
+  /* The phosphor: a glow, a smear to the right where the beam's trace
+     fades slowly, and a faint ghost of the image a little to the left.
+     All kept faint, since they sit behind the text and cost contrast. */
+  text-shadow:
+    0 0 1px rgb(109 252 143 / 45%),
+    2px 0 2px rgb(109 252 143 / 20%),
+    -0.4em 0 0 rgb(109 252 143 / 5%),
+    0 0 8px rgb(109 252 143 / 14%);
+  /* Bitmap type stays crisp only at whole pixels. */
+  -webkit-font-smoothing: none;
+
+  & *,
+  & ::before,
+  & ::after {
+    border-radius: 0;
+    letter-spacing: 0;
+  }
+
+  /* The page sits inside the screen; the header sticks to the glass's
+     top edge, under the bezel. */
+  & body {
+    padding: var(--bezel);
+  }
+  & .site-header {
+    top: var(--bezel);
+  }
+
+  /* The glass: scan lines, and the corners falling off into the dark,
+     flickering very slightly. */
+  & body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 45;
+    pointer-events: none;
+    background:
+      repeating-linear-gradient(to bottom, rgb(0 0 0 / 22%) 0 1px, transparent 1px 3px),
+      radial-gradient(ellipse 75% 70% at center, transparent 55%, rgb(0 0 0 / 38%));
+    animation: crt-flicker 5.3s steps(1) infinite;
+  }
+
+  /* The bezel: dark plastic all round the glass, which has rounded
+     corners and a shadow where it meets the frame. */
+  & body::before {
+    content: "";
+    position: fixed;
+    inset: var(--bezel);
+    z-index: 46;
+    pointer-events: none;
+    border-radius: calc(var(--bezel) * 1.6);
+    box-shadow:
+      0 0 0 100vmax #191a17,
+      0 0 0 1px #000,
+      inset 0 0 calc(var(--bezel) * 2) rgb(0 0 0 / 75%),
+      inset 0 0 0 1px rgb(255 255 255 / 4%);
+  }
+
+  /* A bright bar rolling slowly down the tube. */
+  &::after {
+    content: "";
+    position: fixed;
+    inset: 0 0 auto;
+    height: 28vh;
+    z-index: 44;
+    pointer-events: none;
+    background: linear-gradient(to bottom, transparent, rgb(109 252 143 / 3.5%) 50%, transparent);
+    animation: crt-roll 9s linear infinite;
+  }
+
+  & ::selection {
+    background: var(--phosphor);
+    color: var(--background);
+    text-shadow: none;
+  }
+
+  & .site-header {
+    background: var(--background);
+    backdrop-filter: none;
+    border-color: var(--border);
+  }
+
+  & h1,
+  & h2,
+  & [data-slot="card-title"] {
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  /* A block cursor after the headline, blinking as the hardware did. */
+  & [data-branch-echo]::after {
+    content: "█" / "";
+    margin-left: 0.15em;
+    animation: terminal-cursor 1.06s steps(1) infinite;
+  }
+
+  & [data-slot="card"] {
+    background: transparent;
+    border: 1px solid var(--border);
+    box-shadow: none;
+  }
+
+  & [data-slot="badge"] {
+    border-color: var(--border);
+    font-size: 0.85rem;
+  }
+
+  /* Buttons in reverse video, the way a terminal highlighted a field. */
+  & [data-slot="button"] {
+    box-shadow: none;
+    text-shadow: inherit;
+  }
+  & [data-slot="button"][data-variant="default"] {
+    background: var(--phosphor);
+    color: var(--background);
+    text-shadow: none;
+  }
+  & [data-slot="button"][data-variant="outline"] {
+    background: transparent;
+    border: 1px solid var(--phosphor);
+  }
+  & [data-slot="button"]:is([data-variant="outline"], [data-variant="ghost"]):hover,
+  & [data-slot="button"][data-variant="default"]:hover {
+    background: var(--accent-foreground);
+    color: var(--background);
+    text-shadow: none;
+  }
+
+  /* A button's own focus ring is a shadow, which the styles above
+     replace, so a focused button gets an outline instead. */
+  & [data-slot="button"]:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+
+  & blockquote {
+    border-color: var(--phosphor);
+  }
+
+  /* The icons in phosphor too; an icon for a skill that hadn't appeared
+     yet is an empty frame. */
+  & .icon-tile {
+    color: var(--phosphor);
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--border);
+    &::after {
+      display: none;
+    }
+    & .ink {
+      fill: var(--background);
+    }
+  }
+  & [data-future] .icon-tile {
+    box-shadow: inset 0 0 0 1px rgb(109 252 143 / 22%);
+    & svg {
+      visibility: hidden;
+    }
+  }
+  & [data-new] .icon-tile {
+    background: var(--phosphor);
+    color: var(--background);
+    & .ink {
+      fill: var(--phosphor);
+    }
+  }
+
+  & [data-slot="dialog-content"] {
+    border: 1px solid var(--phosphor);
+    box-shadow: none;
+  }
+
+  /* Without the glow, so the ghosts stay faint. */
+  & .ghosts > span,
+  & .echo {
+    text-shadow: none;
+  }
+}
+
+@keyframes crt-roll {
+  from {
+    transform: translateY(-30vh);
+  }
+  to {
+    transform: translateY(105vh);
+  }
+}
+
+/* Small and uneven, never a strobe: the glass dims by a few percent now
+   and then. */
+@keyframes crt-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  23% {
+    opacity: 0.94;
+  }
+  24% {
+    opacity: 1;
+  }
+  61% {
+    opacity: 0.96;
+  }
+  62% {
+    opacity: 1;
+  }
+}
+
+@keyframes terminal-cursor {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-era="terminal"] [data-branch-echo]::after,
+  html[data-era="terminal"] body::after {
+    animation: none;
+  }
+  html[data-era="terminal"]::after {
+    display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  html[data-era="terminal"] {
+    text-shadow: none;
+    & body::after,
+    & body::before,
+    &::after {
+      display: none;
+    }
+  }
+}

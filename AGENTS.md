@@ -42,120 +42,205 @@ src/worker.ts         runs for "/" only: redirects to /en, /es or /pt
 src/app/
   [lang]/layout.tsx   root layout per language: <html lang class="dark">, metadata, hreflang, skip link
   [lang]/page.tsx     the page: header, the sections, footer
-  document.ts         fonts and viewport, shared with the 404
+  document.ts         fonts and viewport, shared with the 404; the Trusted Types policy and the early era script
   global-not-found.tsx  exported as 404.html; carries all three languages
-  content.ts          language-neutral data (links, section ids, the skills and their colours)
+  content.ts          language-neutral data (links, section ids and their spectral lines, the skills,
+                      their colours and years, the worlds)
   i18n/               en.ts (source of truth), es.ts, pt.ts, locales.ts
-  globals.css         shadcn/ui's tokens in carbon, the mesh, two utilities and the skill icons
+  globals.css         the tokens (ink and the four lines), the utilities, the spectrum, the blocks,
+                      the page's motion, the skill icons and the layout the eras are drawn over
   marks.ts            brand marks (the skills, GitHub), as SVG paths from Simple Icons (CC0)
-  manifest.ts, icon.svg, apple-icon.png  the signal square on carbon; the PNG is a
-                      180px render of the same square on whole pixels (62–118)
+  manifest.ts, icon.svg, apple-icon.png  the four lines on ink; the PNG is a 180px render
+                      of the SVG
 src/components/
-  ui/                 shadcn/ui: button, card, badge, separator
+  ui/                 shadcn/ui: button, card, badge, separator, dialog, switch, label, field
   site/
-    Intro.tsx         the status badge, the introduction and the GitHub button
-    Section.tsx       the numbered frame every section below the intro uses
-    Skills.tsx        a card per skill group, an icon tile per skill
+    Intro.tsx         the first screen: status, headline (one span per word), lede, two buttons,
+                      and the spectrum index under it
+    Spectrum.tsx      the four lines: the mark before "vx", the index, the strip above the footer
+    Section.tsx       every section below the intro: its line, number and wavelength, a huge title
+    Skills.tsx        the years as a spectrum, then a column per group, a row per skill
     SkillIcon.tsx     the icons: brand marks, and the glyphs drawn for the rest
-    Principles.tsx    the quote, then a card per principle
-    Contact.tsx       a card: open to work, and the GitHub button again
+    Principles.tsx    on an H-beta block: the quote, then the three principles under numerals
+    Contact.tsx       on an H-alpha block: open to work, and the GitHub button again
     GitHubLink.tsx    the GitHub button both of them use
     LanguageLinks.tsx EN / ES / PT; remembers the choice for "/" and the 404
+  quantum/
+    QuantumRoot.tsx   the quantum layer's one mount point, after the page; lazy-loads the rest
+    PanelButton.tsx   opens the branch map or the timeline (header), or the effects panel (footer)
+    BranchMap.tsx     the branch tree in a dialog: a graph beside a keyboard tree
+    Timeline.tsx      the skills by year, grouped by world; choosing one travels there
+    EraStrip.tsx      the year, the world and "Back to now", under the header in the past
+    EffectsPanel.tsx  a switch per effect, and one for all of them
+    Ghosts.tsx        faint previews of the places you haven't been
+    Background.tsx    the waves and the foam: one canvas, WebGPU or else WebGL, loaded only when on
+    ProbabilityCursor.tsx  the Gaussian cloud round a mouse pointer, and a click's collapse
+    Entanglement.tsx  the paired skills, and the arc between them
+    Orbital.tsx       a hydrogen orbital sampled from |ψ|², behind the right of the introduction
+src/quantum/
+  store.ts            a tiny store for useSyncExternalStore
+  flags.ts            which effects are on (localStorage), and whether motion is reduced
+  branches.ts         the branch tree (sessionStorage)
+  navigate.ts         ties the tree to the links, history and view transitions
+  time.ts             the year the page is shown in: loads and applies the worlds
+  superposition.ts    the header links' copies: pointer distance, and two taps on touch
+  foam/               the background's shader (WGSL and GLSL), and the foam's WebAssembly:
+                      foam.wat (source), foam.ts (loads public/quantum/foam.wasm, seeds it)
+  seed.ts             seeded randomness, so each branch (and each visit) lays things out its own way
+  ui.ts               which dialog is open, and the button that opened it
 src/lib/utils.ts      shadcn/ui's cn()
+public/eras/          one stylesheet per past world, and its fonts (licences beside them)
+public/quantum/       foam.wasm, built from src/quantum/foam/foam.wat with wabt's wat2wasm
 ```
 
-The page is deliberately flat: server components that render static markup, and one client component for the language links. There's no theme script, no toggle and no app state. Keep it that way.
+The page is deliberately flat: server components that render static markup. On top of it sits the quantum layer (below), which renders nothing on the server and loads what it draws on demand. There's no theme script and no app state beyond the layer's small stores. Keep it that way.
+
+## The quantum layer
+
+Moving around the page branches it, many-worlds style: every place you go is a node in a tree that splits wherever you took a different path, and a few effects make the page feel like it's in superposition. It's decoration over a page that works without it: the server's HTML is the same, every link is still a real link, and each effect can be switched off.
+
+- **Branches.** `branches.ts` keeps the tree in sessionStorage (`vx-branches`). A node is a language and a place (`top` or a section id) plus the choice that led there: arrival, a link, a language change, a map jump or a direct visit. Taking the same choice from the same node again goes back into that branch rather than growing a new one. The tree keeps 48 nodes, pruning the oldest leaves off the current line.
+- **Navigation.** `navigate.ts` handles clicks on this page's own section links: it takes a branch, pushes a history entry tagged with the branch's id (`vxBranch`), scrolls, and moves keyboard focus into the section. Back and forward follow the tag. Next.js patches `history` and reloads the page on a popstate whose state lacks its `__NA` marker, so every entry keeps Next's fields; write history only the way `navigate.ts` does. The language links still load the other document, and a sessionStorage key (`vx-branch-pending`) carries the branch across.
+- **The map.** The header's Branches button opens the tree in a dialog: an SVG graph, `aria-hidden`, beside a WAI-ARIA tree (arrows, Home, End, Enter). Choosing a branch collapses the others into it, then goes there.
+- **Flags.** `flags.ts` lists the effects. All are on by default and saved in localStorage (`vx-quantum`); `?quantum=off` and `?quantum=on` set them all. Each is mirrored on `<html>` as `data-q-<effect>` for CSS. The footer's Effects button opens a switch per effect. A new effect adds its name to `effects`, its copy to `quantum.effects.items` in all three dictionaries, and checks its flag before it draws anything.
+- **Ghost previews.** The places you haven't been, faint behind the one you're in: the other sections' titles, and on the introduction the headline in the other languages lying over the real one. Each flickers every few seconds and goes for good once you've been there. They're CSS generated content with empty alt text, so they're not page text, and they're seeded by the branch, so each branch lays them out its own way.
+- **Randomness.** Two kinds. Layouts are seeded (`seed.ts`) by the branch mixed with a salt drawn once per visit from `crypto.getRandomValues` (sessionStorage, `vx-salt`): a branch keeps its layout for the whole visit, and the next visit lays the same branch out afresh. That covers the ghosts, the orbital, the wave sources and the superposition angles. Then a few things are drawn fresh every time: the waves' phases, the foam (below), and the order the headline's words arrive in (`--wa` and `--wb`, set by the early script in `<head>`).
+- **Superposition nav.** Every link in the header sits in three faint places at once: text shadows in its own colour, offset at an angle seeded by its URL (`--a`). They draw together as the pointer comes near: `superposition.ts` sets `--q` on each link, from 1 at 180px or more to 0 on top of it, at most once a frame and only while the pointer moves. Keyboard focus collapses a link at once, and so does being the current language. On a touch screen there's no pointer to come near, so the first tap on a header link collapses it and the second, within four seconds, follows it; the panel buttons and keyboard activation always go straight through. The copies are measured against their own link: at least 4.5:1 at every width and in every era, which is why the worlds with a coloured header bar turn them down (`--copies`).
+- **Interference and foam.** One canvas fixed behind the page (`Background.tsx`) draws two effects, each with its own switch. The interference: three wave sources, each summing sin(k·r − ωt), bright where they add and dark where they cancel; one follows the pointer (on touch, the scroll), the current branch's id places the other two and sets every wavenumber, and each visit draws its phases at random. The foam: 32 pairs of virtual particles that appear at random, split apart and close up again, and annihilate in a small ring. Their randomness is a WebAssembly module (`foam.wat`, xoshiro128**) seeded from `crypto.getRandomValues` on every visit; that's cryptographically unpredictable, not quantum, and the copy doesn't claim otherwise. It renders with WebGPU where the browser has it and WebGL otherwise, from the same shader written twice (`foam/shaders.ts`); `?renderer=webgl` forces WebGL, to compare. It loads only when one of the two is on and only in today's world, draws at a fraction of the screen's pixels (lowered when frames run long, raised when there's room), runs only while the tab is visible, and draws one still frame under reduced motion. With both on, and the orbital and ghosts over them, muted text still measures above 5.9:1. Headless Chromium here can't present a WebGPU canvas (it shows white or nothing), so check WebGPU in a real browser; the shader's output was read back from an offscreen texture instead.
+- **Probability cursor.** With a mouse (`hover: hover` and `pointer: fine`), a small canvas follows the pointer with a Gaussian cloud of dots where it might be; the real cursor stays. A click is a measurement: the cloud collapses to one sampled point, which flashes in signal, then spreads again. It draws only while the pointer moves or a flash fades, and never under reduced motion or on touch.
+- **Entangled skills.** The owner's pairs, in `content.ts`: C and x86 Assembly, JavaScript and TypeScript, HTML and CSS, Next.js and Node.js, nftables and L4, nginx and L6 · L7, how LLMs work and working with AI. Pointing at one (tapping, on touch) marks both: they spin opposite ways and a faint arc joins them under their tiles. Under reduced motion they're marked and joined without spinning.
+- **Orbital.** From md up, large and faint behind the right of the introduction, a cloud of 1,600 points sampled by rejection from a hydrogen orbital's |ψ|² (2p, 3d z² or 3d xz, picked by the branch), turning slowly about its axis with the nucleus as a mark in the introduction's own line (H-delta, which the headline over it clears by 4:1). It turns only while it's on screen and motion is allowed.
+- **Tunneling.** Going to a section, or to another language, is a view transition: a barrier sweeps down the screen, the new view resolves above it, and the old one leaks through, faintly, until it ends. The same-document transition starts in `navigate.ts`; the cross-document one is `@view-transition` in CSS, skipped on `pageswap` when the flag is off. Without the API, or with the flag off, the page scrolls the way it always has.
+- **Time travel.** Every skill has the year it first appeared (`content.ts`), and the header's Timeline button lists them, grouped by the world the page turns into there. Travelling to one is a branch like any other (the choice is "time travel"), so back and forward travel too. The page stays where it is, the barrier sweeps up into the past and down into the future, and it restyles to look as it might have then; see "Eras" under the design direction. `time.ts` follows the current branch's year: it sets `data-era` (the world) and `data-year` (the stop) on `<html>`, loads the world's stylesheet from `public/eras/` the first time, marks each skill `data-future` (not there yet) or `data-new` (that year's), and matches the browser's toolbar to the page. An early script in `<head>` (`eraScript` in `document.ts`) does the same before the body paints, so a reload, a language switch or back from another page never flashes today's design first. Today's world needs no stylesheet, and travelling to its stop (2022) comes back to it.
+
+Rules for the layer:
+- It never changes the content or what the server renders. `QuantumRoot` mounts after the page and renders nothing until it has run in the browser.
+- What it draws is `aria-hidden` or generated content with empty alt text. The dialogs are shadcn/ui's, and focus goes back to the button that opened them.
+- Every effect sits behind its flag and keeps still under `prefers-reduced-motion`: superposition doesn't start at all (and with it the two taps), the transitions become 160ms fades, the dialogs fade without zooming, the ghosts stop flickering and the map's lines and pulse stop. In forced colours the ghosts are hidden and the map draws in `CanvasText`.
+- Load anything bigger than a store on demand: `QuantumRoot` imports the dialogs and the ghosts with `import()`, so the first load carries only it and `src/quantum/`.
+- The ghosts, the background and the orbital sit under real text, so they're measured with it: muted text stays above 5.8:1 with them at rest and above 4.5:1 at the brief peak of the ghosts' flicker.
+- In the past, "Back to now" stays under the header, so nobody is more than one click from today, and a polite live region says the year and the world whenever they change.
 
 ## Languages
 
 - Every visible string lives in `src/app/i18n/`. `en.ts` defines the shape; `es.ts` and `pt.ts` are typed against it, so a missing key fails the build. Change all three together, and keep them saying the same thing.
 - The root `/` is the only dynamic route. `src/worker.ts` (wired up by `main` and `assets.run_worker_first: ["/"]` in `wrangler.jsonc`) sends a 302 to a saved choice (the `vx-lang` cookie), then the best match in `Accept-Language`, then English. Every other path is served from static files without touching the Worker. The 404 page picks its language client-side, using the URL prefix first.
-- Client components import `i18n/locales`, never `i18n`, so the dictionaries stay out of the browser bundle. Pass strings down as props.
+- Client components import `i18n/locales`, never `i18n` (a type-only import is fine), so the dictionaries stay out of the browser bundle. Pass strings down as props.
 - Spanish uses tú and Latin American vocabulary; Portuguese uses você. Neither assigns vx a grammatical gender ("me dedico a la ingeniería de software", not "soy ingeniero"). Quotes from English READMEs stay in English.
 - Check new copy in all three languages at phone width: Spanish and Portuguese run about 20% longer than English.
 
 ## Content rules
 
 - **Only true claims.** The skills are vx's own list; everything else in `content.ts` and the dictionaries comes from vx's GitHub profile and the public repos on github.com/vx9k. Don't add skills vx hasn't named, and don't invent projects, stats, clients, dates or testimonials. The page doesn't list projects: GitHub does.
+- **The timeline's years are facts too.** Each skill's year is when it first appeared, and `quantum.time.events` names the event it stands for (C at Bell Labs in 1972, the OSI model in 1984 for the network layers, the Transformer paper in 2017, ChatGPT's release in 2022, and so on). Change a year only with its event, in all three languages. vx's own mark, 2011, is in vx's words ("using tech since"); the page doesn't give vx's age or birth year.
 - Copy goes in the dictionaries in `src/app/i18n/`, never inline in a component. Language-neutral data (links, product names, colours) goes in `content.ts`.
 - **Say "software engineer" once at most** in visible copy (and its translations). It's in the introduction's headline, so nothing else repeats it.
 - Write plainly: sentence case, active voice, no exclamation marks, and none of the marketing words ("elevate", "seamless", "unleash", "next-gen" and so on).
 
 ## Design direction
 
-Carbon and shadcn/ui: one dark theme, neutral greys on near-black, content in shadcn/ui's cards and buttons in one centred column, over a faint mesh. The page earns its character from type, spacing and the mesh, not effects. The skill icons are the only colour beyond one signal orange, and the only motion.
+Hydrogen's emission spectrum. The page is ink, and its colour comes from the four visible lines hydrogen emits, the Balmer series: H-delta (410 nm, violet), H-gamma (434 nm, indigo), H-beta (486 nm, cyan) and H-alpha (656 nm, red). Each place on the page takes one, in order of wavelength going down (`lines` in `content.ts`), so the page shifts from violet to red as it scrolls. The type stretches: one variable family, set wide for the headline and condensed for the section titles. The skill icons are the only colour beyond the four lines.
 
-**Palette.** Only carbon: `color-scheme: dark`, and `<html>` carries the `dark` class so shadcn/ui's `dark:` variants always apply. There's no light theme and no toggle. The tokens are shadcn/ui's names on `:root` in `globals.css`, in neutral oklch greys:
+All of this is today's design, the page as it loads. The past eras of time travel are costumes over the same page and have their own rules ("Eras", below).
+
+**Palette.** `color-scheme: dark`, and `<html>` carries the `dark` class so shadcn/ui's `dark:` variants always apply. There's no theme toggle. The tokens are shadcn/ui's names on `:root` in `globals.css`:
 
 | Token | Value | Use |
 | --- | --- | --- |
-| `--background` | oklch 0.155 (≈ `#0c0c0c`) | the page |
-| `--foreground` | oklch 0.985 | text |
-| `--card` | oklch 0.185 | cards, and the base of the skill tiles |
-| `--muted-foreground` | oklch 0.708 | secondary text, labels |
-| `--primary` | oklch 0.922 | the solid button |
-| `--secondary`, `--muted`, `--accent` | oklch 0.269 | the current language, hovers |
-| `--border`, `--input` | white at 10%, 15% | card edges, rules |
-| `--ring` | oklch 0.8 | focus rings; lighter than shadcn/ui's default so the half-strength ring still clears 3:1 |
-| `--signal` | `#f04800` | marks only |
-| `--mesh` | white at 7% | the mesh lines |
+| `--background` | `#0a0812` (ink) | the page |
+| `--foreground` | `#f4efe6` (paper) | text |
+| `--card` | `#14101f` | the base of the skill tiles, popovers |
+| `--muted-foreground` | `#aba4bf` | secondary text, labels |
+| `--primary` | `#f4efe6` | the solid button |
+| `--secondary`, `--muted`, `--accent` | `#241d36` | the current language, hovers |
+| `--border`, `--input` | paper at 13%, 20% | rules between rows |
+| `--ring` | `#d8d0ee` | focus rings; light enough that the half-strength ring still clears 3:1 |
+| `--line-410`, `--line-434`, `--line-486`, `--line-656` | `#b45cff`, `#7a6bff`, `#3ddcf7`, `#ff4b3e` | the four lines |
+| `--signal` | `--line-656` | marks: the status square, the quote's rule, the drawn skill glyphs, the tunneling barrier's edge, the current branch in the map, the text selection |
+| `--rule` | paper at 13% | hairlines |
 
-Contrast decides what each token may do. Foreground is about 18:1 on carbon and muted-foreground about 7.5:1. Measured over the rendered mesh and cards at every width and scroll position, muted text stays above 5.8:1. If you touch the mesh, the light or the greys, measure it again the same way. `--signal` is for marks and never for text: the square before "vx", the status square in the badge and in Contact, the rule beside the quote, the drawn skill glyphs, the mark on the 404 and the text selection. Don't add colours to the tokens; use shadcn/ui's semantic names (`bg-card`, `text-muted-foreground`), never raw palette classes.
+Contrast decides what each colour may do. Paper is about 17:1 on ink and muted about 8.3:1. Measured over the rendered background, orbital and ghosts at every width and scroll position, muted text stays above 6.8:1; measure again the same way if you touch the greys or anything drawn behind text. The lines are bright enough on ink for large text (H-gamma, the Skills title, is 5:1) but they're for titles, bars and marks, not body text. Use shadcn/ui's semantic names (`bg-card`, `text-muted-foreground`), never raw palette classes.
 
-**Brand colours.** The skills are the one place with more colour: each brand mark keeps its brand's colour, on a tile tinted with it (`--c` at 10% over the card, its edge at 28%). Where the original colour vanishes on carbon, `content.ts` gives a lighter shade. The glyphs drawn for skills without a brand use signal. Nothing else takes a brand colour.
+**The blocks.** Principles sits on a full-width block of H-beta and Contact on H-alpha (`tone="block"` on `<Section>`). A block swaps the tokens for everything inside it: the background becomes the line, text becomes ink, muted text ink at 86% (9.5:1 on H-beta, 5.3:1 on H-alpha), the primary button ink on the colour, marks and focus rings ink. Only in today's world; the eras see ordinary sections.
 
-**The mesh.** A grid of 1px lines every 3rem, painted on the `html` element's own background, with a veil of carbon over it that leaves it at full strength only around the top of the page and at about a third of that further down, and a faint white light over the hero. It should catch the eye at the top and then get out of the way. It isn't a fixed layer, and nothing else should be: Safari 26 on iOS clips `position: fixed` layers to the area between its status bar and toolbar, but paints the root background edge to edge. For the same reason, don't hide things by parking them just off screen (the skip link uses `not-focus:sr-only`). Keep `<body>` without a background, or it covers the mesh.
+**The spectrum.** The four lines are drawn at their true wavelengths on a scale from 380 to 700 nm (`position()` in `Spectrum.tsx`), each a column of light with a glow in its own colour, breathing slowly. They appear three times: the mark before "vx" (and the favicon), the index under the introduction, where each line is a link to its place, and a strip above the footer. In the index the lines alternate, one down from the top with its link there and the next up from the bottom, so no link crosses its neighbour's line; on phones the index is a 2×2 grid of links, each with its line as a bar. The skills' years are a spectrum of their own: a line per skill in its colour at its year, on a scale from 1968 to 2026, with vx's start in 2011 dashed. It's `aria-hidden` (the timeline lists the same years with their events), and pointing at a skill lights its line.
 
-**Corners.** `--radius` is 0.375rem, so buttons and tiles are 4px, cards 10px. The badge is `rounded-md`, edited from shadcn/ui's pill: no `rounded-full` anywhere.
+**The redshift.** The header's bottom rule takes the colour of the line you've scrolled to, violet at the top of the page through to red at the bottom, from a scroll-driven animation on a registered custom property (`--shift`).
 
-**Type.** Geist for everything, Geist Mono for the section numbers (the `label` utility), the language codes and the 404 badge. The headline is `text-4xl` to `text-6xl`, `font-semibold`, `tracking-tight`; section titles `text-2xl`/`text-3xl`. Sentence case throughout.
+**Corners.** `--radius` is 3px, and the radius scale is spelled out (`sm` 2px, `md` and `lg` 3px, `xl` 4px) because shadcn/ui's subtracts from it. No `rounded-full` anywhere.
+
+**Type.** Anybody for everything, Martian Mono for labels: the numbers and wavelengths, the status badge, the years, the footer's links, the language codes and the 404 badge. Both are OFL, variable in weight and width, self-hosted by `next/font` with the width axis, and exposed as `--font-face-sans` and `--font-face-mono`, which the eras redefine. Width is part of the design: the headline is `text-display` (wide, 112%, heavy, 2.6rem to 8.5rem), section titles `text-title` (condensed, 58%, 4.25rem to 13rem), the logo and Contact's line wide, the principles' numerals at 50%. Sentence case throughout, and mono labels in capitals.
 
 **Layout.**
-- `shell` is the one centred column (64rem) that the header, every section and the footer share. Don't put page chrome outside it.
-- The header is sticky, full width with a bottom border, frosted (`bg-background/80` and a blur), and solid with `prefers-reduced-transparency`. It's the only blur on the page.
-- Below the intro every section is a `<Section>`: a mono number, the title, then the content. Numbers come from the order of `sections` in `content.ts`.
-- Skills: a card per group, stacked. From md up the group's name sits left of its skills, and every card uses the same column grid (1, 2 from 380px, 3 from sm, 5 from lg), so the icons line up from card to card.
-- Principles: the quote, then three cards. Contact: one card.
+- `shell` is the frame (96rem, generous gutters) that the header, every section and the footer share.
+- The header is sticky and solid ink, with the redshifting rule under it.
+- The introduction fills the first screen above the index: the status badge, the headline left-aligned across the width, then the buttons on the left and the lede on the right (stacked on phones).
+- Every section is a `<Section>`: a rule across the page in its line's colour, a bar of it beside the number and wavelength ("01 · 434 nm"), the title huge and condensed in its line's colour (in ink on a block), then the content.
+- Skills: the years' spectrum, then a column per group (two from md, four from xl), each a list of skills between hairlines with the year in mono on the right. The groups stay shadcn/ui cards, flat, because the eras style them as cards.
+- Principles: the quote, large, then the three principles side by side, each under a tall condensed numeral. Contact: "I'm open to work." large and wide, the line under it and the button to the right.
+- Footer: the spectrum strip, then the mark and the links in one row.
 
 **Components.**
-- shadcn/ui's `Button` (`asChild` around an `<a>` for links), `Card` with its full composition, `Badge` and `Separator`. Use their variants before custom classes, and `className` for layout only.
+- shadcn/ui's `Button` (`asChild` around an `<a>` for links), `Card` with its full composition, and `Badge`, and `Dialog`, `Switch`, `Field` and `Separator` for the quantum layer's panels. `DialogContent` takes a `closeLabel` for its translated close button, and the switch is square-cornered, not a pill. Use their variants before custom classes. Keep the skill groups, the principles and Contact as `Card`s even where today's design flattens them: the eras style them through `data-slot`.
 - Card titles are `div`s; give them `role="heading"` and an `aria-level` so the outline stays h1 → h2 → h3.
 - The language switch is a small segmented control: ghost `xs` buttons in a bordered group, the current one `secondary` and underlined in contrast themes. Its class strings are built on the server and passed in, so `cn()` and tailwind-merge stay out of the browser bundle.
 - Skill icons: a 36px tile (`icon-tile`), the icon 20px inside it, `aria-hidden` with the name as text beside it. Brand marks come from `marks.ts`; skills without a brand get a glyph drawn in `SkillIcon.tsx` on the same 24px grid, with one small part that moves.
-- Skill motion is CSS only, on `transform` and `opacity`: a glint that runs across the tiles once every 12s and leaves them still in between, a small lift when a row is hovered (not a bounce: the skills aren't links), and the glyphs' own loops. `prefers-reduced-motion` stops all of it.
+
+**Motion.** CSS only, only in today's world, and all of it off under `prefers-reduced-motion`:
+- The headline's words resolve out of a smear one at a time, stretched wide and blurred, then sharp (on `transform`, so the lines don't reflow), in a random order: `Intro.tsx` gives each word its index (`--w`), the early script picks `--wa` (1 to 10) and `--wb` (0 to 10) on every load, and the delay is (w·a + b) mod 11, a permutation for up to eleven words. Then the badge and the rest rise in.
+- The section titles stretch into place as they scroll in, from 150% wide to condensed, and the skill groups, the years, the quote, the principles and Contact rise in. These are scroll-driven (`animation-timeline: view()`): they follow the scroll position, so anything already on screen is simply there, and a block is all there once its top is 6rem into the screen. Browsers without scroll-driven animations show everything still.
+- The spectrum's lines breathe, each at its own pace, and brighten when their link is pointed at.
+- The skills: a glint that runs across the tiles once every 12s, a small lift when a row is hovered (not a bounce: the skills aren't links), the row lighting, and the glyphs' own loops. Arrows in buttons lean the way they point on hover.
 
 **Don't:**
-- A light theme, a second accent, colour on large surfaces, or signal used for text.
-- Pills, heavy or coloured shadows, or blur anywhere but the header.
+- More colours than the four lines and the brand marks, or a line colour for body text.
+- Pills, shadows (the lines' glow aside), or a backdrop blur. (The ghosts and the tunneling transition blur their own text, which is different.)
 - Imagery or illustration; icons beyond lucide's in buttons, the skill icons and the GitHub mark.
-- Terminal or hacker clichés: fake shells, `$` prompts, boot logs, blinking cursors, ASCII brackets, crosshairs, HUD or telemetry cosplay. The mesh is a background, not a HUD: no labels, coordinates or scan lines on it.
+- Terminal or hacker clichés: fake shells, `$` prompts, boot logs, blinking cursors, ASCII brackets, crosshairs, HUD or telemetry cosplay. The wavelengths and years are real values labelling real things, not decoration. (The 1978 era is the one exception, and only for the look: see "Eras".)
 - Copy that performs: taglines, slogans, claims about impact. State what the thing is and what it does.
+
+**Eras.** Each world is one stylesheet in `public/eras/`, scoped to `html[data-era="<world>"]`, with notches on `data-year`. It's plain CSS, not built: it's unlayered, so it wins over the Tailwind utilities without `!important`, and it uses native nesting. It restyles mostly through shadcn/ui's tokens and `data-slot`/`data-variant` hooks, never by changing markup. The eras were drawn over an earlier, simpler layout (one 64rem column, everything left-aligned, each title above its content in ordinary type, cards with room inside), and `globals.css` puts that layout back under them, wrapped in `:where(html[data-era])` so it weighs nothing and each era's own rules win. Today's motion, blocks, spectrum, years and wavelengths don't apply there; the mark before "vx" takes the era's `--signal`.
+
+| Years | World | Look |
+| --- | --- | --- |
+| 1972 | `teletype` | A printout: green-bar paper with tractor-feed holes, Courier Prime, black and red ribbon, dashed boxes |
+| 1978 | `terminal` | A video terminal on a CRT: a monitor bezel round the screen, green phosphor on black in the IBM PC's text-mode face (VGA 8×16), glow, smear and a faint ghost image, scan lines, darkened corners, a rolling bar, a gentle flicker and a blinking block cursor |
+| 1984 | `desktop` | One-bit: a dithered desktop, every section a window with a pinstriped title bar, Pixelify Sans, selection in reverse |
+| 1991, 1995, 1996 | `web1` | The early web: bare structure (lists, blue links, no images), then a grey page with bevelled buttons, then CSS1 colour and Verdana |
+| 2004, 2009 | `web2` | Web 2.0: flat blue, then gloss, rounded panels, a pill badge and app-icon tiles |
+| 2012, 2014, 2016, 2017 | `flat` | Tiles, then Material paper and an app bar, then a quieter version, then gradients and floating cards |
+
+Inside a past era, the design rules above don't apply: light pages, other fonts, colour, gloss, pills, shadows and patterns are all fine, and so are the terminal of 1978 (scan lines, glow, a blinking cursor; the owner allowed it there). Everything else still holds:
+- The content is the page's own. An era changes how it looks, never what it says: no fake prompts, logs or banners, and decorative characters are generated content with empty alt text.
+- WCAG 2.2 AA, measured the way today's page is: text at 4.5:1 over the rendered era at phone and desktop width (the glow and the app bar's shadow included), focus visible on everything (where an era replaces a button's shadow, it gives focus an outline), 24px targets, phone widths in all three languages.
+- `prefers-reduced-motion` stops the era's motion, and forced colours get a plain page: each world drops its patterns and keeps solid colours under any gradient.
+- A world uses system fonts or a self-hosted open font in `public/eras/fonts/`, its licence beside it, loaded only in that world: OFL for Courier Prime and Pixelify Sans, CC BY-SA 4.0 for VileR's IBM VGA 8×16 (redistributed unmodified, credited in `ATTRIBUTION-ibm-vga-8x16.txt`). No images: patterns are CSS.
+- A light era's ghosts are mixed most of the way into the page (`globals.css`), since dark on light stands out more than light on ink.
 
 Design-oriented agent skills live in `.claude/skills/`, shadcn's among them. Use them for visual work, but this section wins where they disagree.
 
 ## Themes and accessibility
 
-Target WCAG 2.2 AA. There's one theme; `viewport.themeColor` in `document.ts` matches the browser chrome to carbon.
+Target WCAG 2.2 AA. There's one theme; `viewport.themeColor` in `document.ts` matches the browser chrome to ink.
 
 For every visual change:
 - Keep semantic landmarks, `aria-labelledby` on sections, the skip link, visible focus (shadcn/ui's ring on its controls, a 2px `--ring` outline on everything else) and `aria-hidden` on purely decorative marks.
-- Targets are at least 24px (WCAG 2.2 AA); the buttons are 32–40px and the language segments 28px.
-- Keep motion to the skill icons and smooth scrolling to anchors, and make sure `prefers-reduced-motion` turns all of it off.
-- In forced colours (Windows contrast themes) the mesh is hidden, text and borders follow the system, `--signal` becomes `CanvasText`, the skill icons draw in the text colour and the ink behind the JavaScript and TypeScript letters turns to `Canvas`. Check any new element there too.
-- With `prefers-reduced-transparency`, check that the header is opaque.
+- Targets are at least 24px (WCAG 2.2 AA); the buttons are 32–40px and the language segments 28px. The effect switches are smaller, but their labels toggle them too.
+- Keep motion to what "Motion" above lists, the quantum layer and smooth scrolling to anchors, and make sure `prefers-reduced-motion` turns all of it off (the tunneling transition becomes a short fade).
+- In forced colours (Windows contrast themes) text and borders follow the system, `--signal` becomes `CanvasText`, the skill icons draw in the text colour and the ink behind the JavaScript and TypeScript letters turns to `Canvas`, the blocks follow the system like any section, the spectrum's lines, the bars and the marks draw in `CanvasText`, the ghosts, the orbital and the background canvas are hidden and the branch map draws in `CanvasText`. Check any new element there too.
 
 ## Performance
 
-The page is static and small; keep it that way. The runtime dependencies are Next, React and shadcn/ui's (Radix, class-variance-authority, clsx, tailwind-merge, lucide), and almost all of it renders on the server: the only client code is the language links, the separator and the 404's language picker. Two variable fonts, self-hosted by `next/font`, and no image files on the page: the icons are inline SVG. The mesh is four CSS gradients on the page background, the skill animations run on `transform` and `opacity`, and only the header pays for a backdrop blur. Keep any new idea to that standard: no canvas, no animation libraries, nothing running in JavaScript on a timer.
+The page is static and small; keep it that way. The runtime dependencies are Next, React and shadcn/ui's (Radix, class-variance-authority, clsx, tailwind-merge, lucide), and almost all of it renders on the server: the only client code is the language links, the separator, the 404's language picker and the quantum layer. Of the layer, the first load carries `QuantumRoot`, its buttons and `src/quantum/`, under 7 KB gzipped, plus the early era script inline; the dialogs, the ghosts and the era strip are separate chunks, fetched when the page is idle or when they're needed. An era's stylesheet (2–3 KB gzipped) and its font (12–19 KB) load only when someone travels there. Two variable fonts with a width axis, self-hosted by `next/font` (Anybody and Martian Mono, about 95 KB preloaded), and no image files on the page: the icons are inline SVG. The spectrum is a handful of positioned elements, the page's motion is CSS on `transform`, `opacity`, `filter` and `font-stretch` (scroll-driven where it follows the scroll), and nothing pays for a backdrop blur. Keep any new idea to that standard: no animation libraries and nothing running in JavaScript on a timer. The canvases (the background, the probability cursor, the orbital) and the foam's 414-byte WebAssembly module are the owner's call: each is lazy-loaded, behind its switch, and stops when it isn't seen.
 
 ## Security headers
 
 Every static response, the 404 included, carries:
 
-- **Content-Security-Policy.** `default-src 'none'`, then only what the page uses, all from `'self'`: scripts, styles, images, fonts, the manifest and `connect-src`. `base-uri`, `form-action` and `frame-ancestors` are `'none'`, requests are upgraded to HTTPS, and Trusted Types are required with no policy allowed.
-  - Scripts: `'self'` plus a hash of each inline script. Next.js writes its bootstrap and each page's data inline, and the 404 carries its language picker, so `scripts/csp.mjs` hashes every inline `<script>` in `out/` after `next build` and puts the hashes in place of `INLINE_SCRIPT_HASHES` in `out/_headers`. The hashes change with every build, so never write them by hand, and never add `'unsafe-inline'` to `script-src`. The script fails the build if the token is missing or a line passes Cloudflare's 2,000-character limit.
-  - Styles: `'self' 'unsafe-inline'`, because the stylesheet is inlined and each skill tile's colour is a `style` attribute.
-  - Trusted Types: nothing on the page writes script into the DOM (`dangerouslySetInnerHTML` is only rendered on the server), so any sink that tries is blocked. Don't add code that sets `innerHTML`, `script.src` or similar in the browser.
+- **Content-Security-Policy.** `default-src 'none'`, then only what the page uses, all from `'self'`: scripts, styles, images, fonts, the manifest and `connect-src`. `base-uri`, `form-action` and `frame-ancestors` are `'none'`, requests are upgraded to HTTPS, and Trusted Types are required, with one policy allowed: `default`.
+  - Scripts: `'self'`, `'wasm-unsafe-eval'` (which lets the foam compile its WebAssembly module and allows nothing else: no `eval`) and a hash of each inline script. Next.js writes its bootstrap and each page's data inline, and the 404 carries its language picker, so `scripts/csp.mjs` hashes every inline `<script>` in `out/` after `next build` and puts the hashes in place of `INLINE_SCRIPT_HASHES` in `out/_headers`. The hashes change with every build, so never write them by hand, and never add `'unsafe-inline'` to `script-src`. The script fails the build if the token is missing or a line passes Cloudflare's 2,000-character limit.
+  - Styles: `'self' 'unsafe-inline'`, because the stylesheet is inlined and each skill tile's colour is a `style` attribute. The era stylesheets and their fonts come from `'self'` (`public/eras/`).
+  - Trusted Types: Next.js loads its lazy chunks by setting `script.src` to a string, which Trusted Types blocks, so the first thing in each page's `<head>` is an inline script (`trustedTypesPolicy` in `document.ts`) that creates the `default` policy. It lets through script URLs under this origin's `/_next/static/` and throws for anything else, and it has no HTML or script conversions, so every other sink stays blocked. It returns the URL exactly as given: Turbopack recognises a loaded chunk by its `src` attribute, and a rewritten URL leaves the `import()` waiting forever with no error. The early era script (`eraScript`) runs right after it; it only reads storage and adds a stylesheet link, which Trusted Types doesn't cover. The 404 loads no chunks and carries neither. Nothing on the page writes HTML or script into the DOM (`dangerouslySetInnerHTML` is only rendered on the server); don't add code that sets `innerHTML`, `script.text` or similar in the browser.
 - **Strict-Transport-Security** for two years, subdomains included (the zone's other records are iCloud mail). It isn't marked `preload`: that list is hard to leave, so it's the owner's call.
 - **X-Content-Type-Options** `nosniff`, **X-Frame-Options** `DENY`, **Referrer-Policy** `strict-origin-when-cross-origin`, and a **Permissions-Policy** that turns off every powerful feature.
 - **Cross-Origin-Opener-Policy** `same-origin` and **Cross-Origin-Embedder-Policy** `require-corp`, so the page is cross-origin isolated, and **Cross-Origin-Resource-Policy** `same-origin`. Also **Origin-Agent-Cluster** and **X-Permitted-Cross-Domain-Policies** `none`.

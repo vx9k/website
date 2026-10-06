@@ -1,56 +1,68 @@
 @import "tailwindcss" source("..");
+@import "tw-animate-css";
 
 /* shadcn/ui's components style their dark variants with `dark:`. The page
    is only ever carbon, so <html> carries the class and they always apply. */
 @custom-variant dark (&:is(.dark *));
 
 /* ---------------------------------------------------------------- palette
-   Carbon: one dark theme, neutral greys on near-black, in shadcn/ui's
-   token names so its components read them directly. The one colour is
-   signal orange, kept for marks (the square before "vx", the status
-   square), never text. The brand colours in the skill icons are the only
-   other colour on the page. */
+   Hydrogen's emission spectrum. The page is ink, a black with a little
+   violet in it, and the text is warm paper. The accents are the four
+   visible lines hydrogen emits (the Balmer series), one for each place on
+   the page in order of wavelength, so the page shifts from violet to red
+   as it scrolls down (content.ts, `lines`). Principles and Contact sit on
+   full-width blocks of their own line's colour. The brand colours in the
+   skill icons are the only other colour on the page. */
 
 :root {
   color-scheme: dark;
-  --radius: 0.375rem;
+  /* Nearly square: 3px on buttons, tiles and panels. */
+  --radius: 3px;
 
-  --background: oklch(0.155 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.185 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.185 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: #0a0812;
+  --foreground: #f4efe6;
+  --card: #14101f;
+  --card-foreground: #f4efe6;
+  --popover: #14101f;
+  --popover-foreground: #f4efe6;
+  --primary: #f4efe6;
+  --primary-foreground: #0a0812;
+  --secondary: #241d36;
+  --secondary-foreground: #f4efe6;
+  --muted: #241d36;
+  /* Lavender grey: 8.3:1 on ink, 7.8:1 on a card. */
+  --muted-foreground: #aba4bf;
+  --accent: #241d36;
+  --accent-foreground: #f4efe6;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  /* Lighter than shadcn/ui's default, so the focus ring (drawn at half
-     strength) still clears 3:1 against carbon. */
-  --ring: oklch(0.8 0 0);
+  --border: rgb(244 239 230 / 13%);
+  --input: rgb(244 239 230 / 20%);
+  /* Light enough that the focus ring, drawn at half strength, still
+     clears 3:1 on ink and on the cards. */
+  --ring: #d8d0ee;
 
-  --signal: #f04800;
+  /* The four lines: H-delta, H-gamma, H-beta and H-alpha. */
+  --line-410: #b45cff;
+  --line-434: #7a6bff;
+  --line-486: #3ddcf7;
+  --line-656: #ff4b3e;
 
-  /* The mesh: hairlines on a 3rem grid, and the glint on the skill tiles. */
-  --mesh: oklch(1 0 0 / 7%);
+  /* Marks (the status square, the quote's rule, the drawn skill glyphs,
+     the text selection) take H-alpha, the line hydrogen is known by. */
+  --signal: var(--line-656);
+
+  /* Hairlines, and the glint on the skill tiles. */
+  --rule: rgb(244 239 230 / 13%);
   --glint: oklch(1 0 0 / 18%);
+
+  /* The one easing: quick out, long settle. */
+  --ease: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* Contrast themes replace every colour: marks draw in the text colour and
-   the mesh goes. */
+/* Contrast themes replace every colour: marks draw in the text colour. */
 @media (forced-colors: active) {
   :root {
     --signal: CanvasText;
-  }
-  html {
-    background-image: none;
   }
   /* The ink behind the JavaScript and TypeScript letters keeps its own
      fill, so it would merge with the forced text colour. */
@@ -60,8 +72,8 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-sans: var(--font-face-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-face-mono), ui-monospace, monospace;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -83,10 +95,12 @@
   --color-ring: var(--ring);
   --color-signal: var(--signal);
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  /* shadcn/ui's scale subtracts from --radius, which goes negative this
+     close to square, so the steps are spelled out. */
+  --radius-sm: 2px;
+  --radius-md: var(--radius);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xl: 4px;
 }
 
 /* ------------------------------------------------------------------ base */
@@ -97,30 +111,13 @@
   }
 }
 
-/* The mesh is painted on the page's own background, not on a fixed layer
-   or on <body>: Safari 26 on iOS clips fixed layers to the area between
-   its status bar and toolbar, but draws the root background edge to edge
-   behind them. From the bottom layer up: the grid of hairlines, a veil of
-   carbon that leaves the grid at full strength only around the top of the
-   page, and a faint light over the hero. */
+/* The page is plain ink; the colour comes from the lines and the blocks. */
 html {
   background-color: var(--background);
-  background-image:
-    radial-gradient(56rem 28rem at 50% 0, oklch(1 0 0 / 5%), transparent 70%),
-    radial-gradient(72rem 44rem at 50% 0, transparent 30%, color-mix(in oklab, var(--background) 65%, transparent)),
-    linear-gradient(to right, var(--mesh) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--mesh) 1px, transparent 1px);
-  background-size:
-    100% 100%,
-    100% 100%,
-    3rem 3rem,
-    3rem 3rem;
-  background-position: center top;
-  background-repeat: no-repeat, no-repeat, repeat, repeat;
   color: var(--foreground);
   scroll-behavior: smooth;
   /* Anchored sections land below the sticky header. */
-  scroll-padding-top: 5rem;
+  scroll-padding-top: 3.5rem;
 }
 
 body {
@@ -150,26 +147,48 @@ body {
 
 /* ------------------------------------------------------------- utilities */
 
-/* The one centred column that the header, every section and the footer
-   share, so their edges line up at every width. */
+/* The page's frame: wide, with generous gutters, that the header, every
+   section and the footer share, so their edges line up at every width. */
 @utility shell {
   width: 100%;
-  max-width: 64rem;
+  max-width: 96rem;
   margin-inline: auto;
-  padding-inline: 1.25rem;
+  padding-inline: 1rem;
   @media (width >= 40rem) {
-    padding-inline: 1.5rem;
+    padding-inline: 2rem;
+  }
+  @media (width >= 80rem) {
+    padding-inline: 3rem;
   }
 }
 
-/* Small uppercase metadata: section numbers. */
+/* Small metadata in mono capitals: numbers, wavelengths, labels, years. */
 @utility label {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   line-height: 1rem;
-  letter-spacing: 0.06em;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
   color: var(--muted-foreground);
+}
+
+/* The headline: wide and heavy, as large as the screen allows. */
+@utility text-display {
+  font-size: clamp(2.6rem, 0.9rem + 7.2vw, 8.5rem);
+  font-stretch: 112%;
+  font-weight: 760;
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+}
+
+/* Section titles: condensed and very tall. */
+@utility text-title {
+  font-size: clamp(4.25rem, 1.5rem + 12vw, 13rem);
+  font-stretch: 58%;
+  font-weight: 820;
+  line-height: 0.82;
+  letter-spacing: -0.02em;
 }
 
 /* ------------------------------------------------------------ skill icons
@@ -264,5 +283,1106 @@ body {
   }
   .icon-tile * {
     animation: none !important;
+  }
+}
+
+/* --------------------------------------------------------------- quantum
+   The quantum layer (src/quantum/, src/components/quantum/). Its effects
+   can each be turned off in the Effects panel, and all of them keep still
+   when the system asks for less motion. */
+
+/* Tunneling. Moving to another section, or to another language (a full
+   page load), passes through a barrier sweeping down the screen. Above it
+   the new branch has resolved; below it the old one is still there; and
+   the old one keeps leaking through above the barrier, faintly, until the
+   end. The script only starts a transition when the effect is on, and
+   cancels the cross-page one when it's off. */
+@view-transition {
+  navigation: auto;
+}
+
+@property --barrier {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: -20%;
+}
+
+@keyframes barrier {
+  from {
+    --barrier: -20%;
+  }
+  to {
+    --barrier: 105%;
+  }
+}
+
+@keyframes tunnel-out {
+  80% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes tunnel-in {
+  from {
+    filter: blur(4px);
+  }
+}
+
+/* In the band where neither view shows, this is what you see: ink,
+   with a thin light line edged in signal. */
+::view-transition {
+  background-color: var(--background);
+  background-image: linear-gradient(
+    to bottom,
+    transparent calc(var(--barrier) + 3%),
+    color-mix(in oklab, var(--signal) 20%, transparent) calc(var(--barrier) + 6.5%),
+    oklch(1 0 0 / 55%) calc(var(--barrier) + 7%),
+    color-mix(in oklab, var(--signal) 20%, transparent) calc(var(--barrier) + 7.5%),
+    transparent calc(var(--barrier) + 11%)
+  );
+  animation: barrier 700ms cubic-bezier(0.5, 0, 0.3, 1) both;
+}
+
+::view-transition-old(root) {
+  mask-image: linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0.25) var(--barrier),
+    transparent calc(var(--barrier) + 3%),
+    transparent calc(var(--barrier) + 11%),
+    black calc(var(--barrier) + 17%)
+  );
+  animation:
+    barrier 700ms cubic-bezier(0.5, 0, 0.3, 1) both,
+    tunnel-out 700ms linear both;
+}
+
+::view-transition-new(root) {
+  mask-image: linear-gradient(to bottom, black calc(var(--barrier) - 1%), transparent calc(var(--barrier) + 3%));
+  animation:
+    barrier 700ms cubic-bezier(0.5, 0, 0.3, 1) both,
+    tunnel-in 700ms ease-out both;
+}
+
+/* The header stays put: it's the one fixed point while the content moves. */
+.site-header {
+  view-transition-name: site-header;
+}
+
+::view-transition-group(site-header) {
+  animation: none;
+}
+
+::view-transition-old(site-header) {
+  display: none;
+}
+
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition {
+    background-image: none;
+    animation: none;
+  }
+  ::view-transition-old(root) {
+    mask-image: none;
+    animation: fade-out 160ms ease both;
+  }
+  ::view-transition-new(root) {
+    mask-image: none;
+    animation: fade-in 160ms ease both;
+  }
+}
+
+/* A view the page moved focus to for a keyboard user (navigate.ts): the
+   jump itself shows where they are, so no outline round the section. */
+[data-branch-view]:focus {
+  outline: none;
+}
+
+/* Ghost previews: the places you haven't been, faint behind the one you're
+   in (Ghosts.tsx). The text is generated content with empty alt text, so
+   it isn't page text and screen readers skip it. */
+.ghosts {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* The other sections' titles, anchored from the right so they never run
+   off the edge: anywhere down the introduction, and in a section only by
+   its heading, clear of the text below. */
+.ghosts > span {
+  position: absolute;
+  right: var(--r);
+  top: calc(0.5rem + var(--y) * 4rem);
+  font-size: clamp(2rem, 1rem + 4vw, 4rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+}
+
+/* On the introduction they're smaller and kept to the right edge, where
+   the headline and the text below it stop short. */
+.ghosts[data-in="intro"] > span {
+  right: calc(var(--r) / 4);
+  top: calc(6% + var(--y) * 80%);
+  font-size: clamp(1.75rem, 1rem + 2.5vw, 2.75rem);
+}
+
+/* The headline in the other languages, lying over the real one: it
+   inherits the headline's type and width, so it wraps the same way. At
+   the headline's size it would crowd it, so it's fainter than the
+   titles. */
+.echo {
+  position: absolute;
+  top: var(--dy);
+  left: var(--dx);
+  z-index: -1;
+  width: 100%;
+  font-size: calc(var(--fit) * 1em);
+  pointer-events: none;
+}
+
+.ghosts > span,
+.echo {
+  color: var(--foreground);
+  opacity: var(--o);
+  filter: blur(var(--b));
+  animation: ghost-flicker var(--t) linear var(--delay) infinite;
+  &::before {
+    content: attr(data-ghost) / "";
+  }
+}
+
+.echo {
+  color: color-mix(in oklab, var(--foreground) 55%, var(--background));
+}
+
+@keyframes ghost-flicker {
+  0%,
+  46%,
+  51%,
+  83%,
+  86%,
+  100% {
+    opacity: var(--o);
+    translate: 0 0;
+  }
+  47% {
+    opacity: calc(var(--o) * 0.25);
+    translate: 3px 0;
+  }
+  49% {
+    opacity: calc(var(--o) * 1.8);
+    translate: -2px 0;
+  }
+  84% {
+    opacity: calc(var(--o) * 0.4);
+  }
+}
+
+/* The branch map (BranchMap.tsx): lines draw in from the root, the branch
+   you're on pulses, and choosing one collapses the rest into it. */
+.branch-map path {
+  fill: none;
+  stroke: color-mix(in oklab, var(--foreground) 28%, transparent);
+  stroke-width: 1.5;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: branch-draw 500ms ease-out forwards;
+  animation-delay: calc(var(--row) * 40ms);
+}
+
+@keyframes branch-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.branch-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 1px;
+  background: var(--muted-foreground);
+}
+
+.branch-dot-here {
+  width: 9px;
+  height: 9px;
+  background: var(--signal);
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border: 1px solid var(--signal);
+    border-radius: 2px;
+    animation: branch-ping 1.8s ease-out infinite;
+  }
+}
+
+@keyframes branch-ping {
+  from {
+    opacity: 0.8;
+    scale: 0.6;
+  }
+  to {
+    opacity: 0;
+    scale: 1.6;
+  }
+}
+
+.branch-map [data-row] {
+  transition:
+    opacity 320ms ease,
+    translate 320ms ease,
+    scale 320ms ease;
+}
+
+.branch-map[data-collapsing] {
+  [data-row]:not([data-chosen]) {
+    opacity: 0;
+    translate: 0 var(--pull);
+    scale: 0.96;
+  }
+  path {
+    opacity: 0;
+    transition: opacity 240ms ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ghosts > span,
+  .echo {
+    animation: none;
+  }
+  .branch-map path {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+  .branch-dot-here::after {
+    display: none;
+  }
+  .branch-map [data-row] {
+    transition: none;
+  }
+  /* The dialogs still fade in and out, without the zoom. */
+  [data-slot="dialog-content"] {
+    --tw-enter-scale: 1;
+    --tw-exit-scale: 1;
+  }
+}
+
+@media (forced-colors: active) {
+  .ghosts,
+  .echo {
+    display: none;
+  }
+  .branch-map path {
+    stroke: CanvasText;
+  }
+  .branch-dot {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+}
+
+/* The timeline (Timeline.tsx): a line down the left, a dot per stop, and
+   a ring for vx's own start. It shares the branch map's collapse. */
+.timeline > ol {
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0.75rem;
+    bottom: 0.75rem;
+    left: 0.75rem;
+    width: 1.5px;
+    background: color-mix(in oklab, var(--foreground) 28%, transparent);
+  }
+}
+
+.timeline-dot,
+.timeline-mark {
+  position: absolute;
+  left: 0.75rem;
+  top: 1.125rem;
+  translate: -50% -50%;
+}
+
+.timeline-mark {
+  width: 9px;
+  height: 9px;
+  border-radius: 1px;
+  border: 1.5px solid var(--muted-foreground);
+  background: var(--background);
+}
+
+@media (forced-colors: active) {
+  .timeline > ol::before {
+    background: CanvasText;
+  }
+  .timeline-mark {
+    border-color: CanvasText;
+  }
+}
+
+/* Time travel: the barrier sweeps up the screen into the past (navigate.ts
+   marks the direction), so the new view resolves from the bottom. */
+html[data-travel="past"] {
+  &::view-transition {
+    background-image: linear-gradient(
+      to top,
+      transparent calc(var(--barrier) + 3%),
+      color-mix(in oklab, var(--signal) 20%, transparent) calc(var(--barrier) + 6.5%),
+      oklch(1 0 0 / 55%) calc(var(--barrier) + 7%),
+      color-mix(in oklab, var(--signal) 20%, transparent) calc(var(--barrier) + 7.5%),
+      transparent calc(var(--barrier) + 11%)
+    );
+  }
+  &::view-transition-old(root) {
+    mask-image: linear-gradient(
+      to top,
+      rgb(0 0 0 / 0.25) var(--barrier),
+      transparent calc(var(--barrier) + 3%),
+      transparent calc(var(--barrier) + 11%),
+      black calc(var(--barrier) + 17%)
+    );
+  }
+  &::view-transition-new(root) {
+    mask-image: linear-gradient(to top, black calc(var(--barrier) - 1%), transparent calc(var(--barrier) + 3%));
+  }
+}
+
+/* The strip under the header while the page is in the past (EraStrip.tsx). */
+.era-strip {
+  background: var(--background);
+}
+
+/* In the past eras with light pages (public/eras/), dark ghosts stand
+   out more than light ones do on carbon, so they're mixed most of the
+   way into the page. */
+html[data-era]:not([data-era="terminal"]) :is(.ghosts > span, .echo) {
+  color: color-mix(in srgb, var(--foreground) 40%, var(--background));
+}
+
+/* Superposition (superposition.ts): every link in the header sits in a
+   few faint places at once, offset at its own angle (--a), and draws
+   together as the pointer comes near (--q: 1 far away, 0 on top of it).
+   Keyboard focus, and a link tapped once on a touch screen, collapse it
+   at once, and the current language never spreads. The script only runs with motion allowed; contrast themes drop
+   text shadows by themselves. */
+html[data-superposed] .site-header :is(nav a, [data-panel]) {
+  --s: calc(var(--q, 1) * var(--held, 1));
+  /* How strong the copies are; worlds with a coloured bar turn it down. */
+  --o: calc(var(--s) * var(--copies, 1));
+  text-shadow:
+    calc(cos(var(--a, 0deg)) * var(--s) * 11px) calc(sin(var(--a, 0deg)) * var(--s) * 7px) calc(var(--s) * 2px)
+      color-mix(in oklab, currentColor calc(var(--o) * 40%), transparent),
+    calc(cos(var(--a, 0deg) + 140deg) * var(--s) * 9px) calc(sin(var(--a, 0deg) + 140deg) * var(--s) * 6px)
+      calc(var(--s) * 2.5px) color-mix(in oklab, currentColor calc(var(--o) * 30%), transparent),
+    calc(cos(var(--a, 0deg) + 250deg) * var(--s) * 6px) calc(sin(var(--a, 0deg) + 250deg) * var(--s) * 8px)
+      calc(var(--s) * 3.5px) color-mix(in oklab, currentColor calc(var(--o) * 20%), transparent);
+  transition: text-shadow 200ms ease-out;
+}
+
+/* The language you're reading in has been observed: it stays collapsed. */
+html[data-superposed] .site-header :is(nav a, [data-panel]):is(:focus-visible, [data-collapsed], [aria-current="page"]) {
+  --held: 0;
+}
+
+/* The background (Background.tsx): the interference and the foam, on a
+   canvas behind everything, fixed to the viewport. It's the one fixed
+   layer besides the dialogs, so Safari on iOS may leave it out under its
+   bars, which costs nothing. The shader keeps it faint; contrast themes
+   and the past eras don't show it. */
+.quantum-background {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+}
+
+@media (forced-colors: active) {
+  .quantum-background {
+    display: none;
+  }
+}
+
+/* The probability cursor (ProbabilityCursor.tsx): a small canvas that the
+   script moves with the pointer. Above the page, under the header's
+   dialogs, never in the way of a click. */
+.probability-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 45;
+  width: 220px;
+  height: 220px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms;
+}
+
+@media (forced-colors: active) {
+  .probability-cursor {
+    display: none;
+  }
+}
+
+/* Entanglement (Entanglement.tsx): the two skills of a pair answer
+   together, spinning opposite ways, joined by a faint arc. */
+.entangle-line {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 1;
+  & path {
+    fill: none;
+    stroke: color-mix(in oklab, var(--foreground) 35%, transparent);
+    stroke-width: 1.25;
+    stroke-dasharray: 0.012 0.012;
+    animation: entangle-flow 1.6s linear infinite;
+  }
+}
+
+@keyframes entangle-flow {
+  to {
+    stroke-dashoffset: -0.24;
+  }
+}
+
+[data-entangled] .icon-tile {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--c) 70%, transparent),
+    0 0 0 3px color-mix(in oklab, var(--c) 18%, transparent);
+  & svg {
+    transition: rotate 300ms ease-out;
+  }
+}
+[data-entangled="up"] .icon-tile svg {
+  rotate: -14deg;
+}
+[data-entangled="down"] .icon-tile svg {
+  rotate: 14deg;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entangle-line path {
+    animation: none;
+  }
+  [data-entangled] .icon-tile svg {
+    rotate: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .entangle-line path {
+    stroke: CanvasText;
+  }
+}
+
+/* The orbital (Orbital.tsx): large and faint behind the right of the
+   introduction, from md up. Its ink is the foreground at under a third,
+   so the densest dots stay well below the text over them. */
+.orbital {
+  display: none;
+  position: absolute;
+  z-index: -1;
+  top: 46%;
+  right: -4rem;
+  width: min(44rem, 70vw);
+  height: min(44rem, 70vw);
+  translate: 0 -50%;
+  color: rgb(244 239 230 / 30%);
+  /* The nucleus is drawn in the introduction's own line, H-delta, which
+     the headline over it still clears by 4:1. */
+  --signal: var(--line-410);
+  pointer-events: none;
+  @media (width >= 48rem) {
+    display: block;
+  }
+}
+
+@media (forced-colors: active) {
+  .orbital {
+    display: none;
+  }
+}
+
+/* -------------------------------------------------------------- spectrum
+   The page's signature: hydrogen's emission spectrum, four bright lines
+   on the dark, each placed at its true wavelength on a scale from 380 to
+   700 nm (--x, from content.ts). It appears three times: the vx mark in
+   the header, the index under the introduction (each line a link to its
+   place), and a strip above the footer. */
+
+/* The mark before "vx": the four lines, small. */
+.spectrum-mark {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 2px;
+  height: 0.875rem;
+  & > span {
+    width: 3px;
+    border-radius: 1px;
+    background: var(--line);
+  }
+}
+
+/* The lines themselves, wherever they're drawn at full width: a column
+   of light at --x, with a soft glow in its own colour. */
+.spectrum-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--x);
+  width: 2px;
+  translate: -1px 0;
+  background: var(--line);
+  box-shadow:
+    0 0 6px 1px color-mix(in oklab, var(--line) 70%, transparent),
+    0 0 22px 4px color-mix(in oklab, var(--line) 35%, transparent);
+  animation: line-glow var(--t, 5s) ease-in-out infinite;
+}
+
+@keyframes line-glow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.72;
+  }
+}
+
+/* The index under the introduction. On phones the four places are a grid
+   of links, each with its line as a bar; from md up the lines stand at
+   their wavelengths across the page and each link hangs beside its line.
+   The lines alternate: one runs down from the top with its link at the
+   top, the next up from the bottom with its link at the bottom, so a
+   link never crosses its neighbour's line. */
+.spectrum {
+  position: relative;
+  border-block: 1px solid var(--rule);
+  /* The faint continuum the lines stand out from. */
+  background:
+    linear-gradient(
+      to right,
+      rgb(130 0 200 / 7%) 0%,
+      rgb(40 60 255 / 7%) 18%,
+      rgb(0 200 255 / 7%) 33%,
+      rgb(40 230 90 / 6%) 50%,
+      rgb(255 220 0 / 6%) 64%,
+      rgb(255 120 0 / 7%) 78%,
+      rgb(255 30 30 / 7%) 92%,
+      rgb(150 0 0 / 5%) 100%
+    ),
+    var(--background);
+}
+
+.spectrum-index {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  & > li {
+    display: flex;
+  }
+  & .spectrum-line {
+    display: none;
+  }
+}
+
+.spectrum-link {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-height: 3.5rem;
+  padding: 0.75rem 0.75rem 0.75rem 1rem;
+  border-left: 3px solid var(--line);
+  transition: background-color 240ms var(--ease);
+  & .name {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  &:hover {
+    background: color-mix(in oklab, var(--line) 12%, transparent);
+  }
+}
+
+@media (width >= 48rem) {
+  .spectrum-index {
+    display: block;
+    position: relative;
+    height: 10rem;
+    & > li {
+      display: contents;
+    }
+    & .spectrum-line {
+      display: block;
+    }
+  }
+  .spectrum-link {
+    position: absolute;
+    left: calc(var(--x) + 0.875rem);
+    min-height: 0;
+    padding: 0.25rem 0.5rem;
+    border-left: 0;
+    [data-side="up"] > & {
+      top: 1rem;
+    }
+    [data-side="down"] > & {
+      bottom: 1rem;
+    }
+    & .name {
+      font-size: 1.125rem;
+    }
+  }
+  .spectrum-index > li[data-side="up"] .spectrum-line {
+    bottom: 30%;
+    mask-image: linear-gradient(to bottom, black 60%, transparent);
+  }
+  .spectrum-index > li[data-side="down"] .spectrum-line {
+    top: 30%;
+    mask-image: linear-gradient(to top, black 60%, transparent);
+  }
+  /* The line brightens when its link is pointed at or focused. */
+  .spectrum-index > li:has(.spectrum-link:is(:hover, :focus-visible)) .spectrum-line {
+    width: 4px;
+    translate: -2px 0;
+    animation: none;
+  }
+}
+
+/* The strip above the footer: the same lines, without words. */
+.spectrum-strip {
+  position: relative;
+  height: 2.5rem;
+}
+
+/* The skills' years, as a spectrum of their own: each skill a line in
+   its own colour at the year it first appeared, on a scale from 1968 to
+   2026, with the decades marked and vx's own start dashed. Pointing at a
+   skill in the list below lights its line (the rules come from
+   Skills.tsx). */
+.years {
+  position: relative;
+  height: 9rem;
+  margin-bottom: 3.5rem;
+  border-bottom: 1px solid var(--rule);
+  & .spectrum-line {
+    --line: var(--c);
+    top: calc(1.5rem + var(--k) * 0.75rem);
+    left: calc(var(--x) + var(--k) * 5px);
+    width: 2px;
+    opacity: 0.85;
+    animation: none;
+    transition:
+      opacity 200ms var(--ease),
+      width 200ms var(--ease),
+      translate 200ms var(--ease);
+  }
+}
+
+.years-tick {
+  position: absolute;
+  bottom: -1.5rem;
+  left: var(--x);
+  translate: -50% 0;
+  &::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 1.5rem;
+    height: 0.375rem;
+    width: 1px;
+    background: var(--muted-foreground);
+  }
+}
+
+.years-start {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--x);
+  border-left: 1px dashed var(--muted-foreground);
+  /* 2011 sits right of centre, so the words go to its left. */
+  & > span {
+    position: absolute;
+    top: 0;
+    right: 0.5rem;
+    white-space: nowrap;
+  }
+}
+
+/* While any skill is pointed at, the others' lines dim. */
+.skills-body:has([data-skill]:hover) .years .spectrum-line {
+  opacity: 0.25;
+}
+
+@media (forced-colors: active) {
+  .spectrum-mark > span,
+  .spectrum-line {
+    forced-color-adjust: none;
+    background: CanvasText;
+    box-shadow: none;
+  }
+  .spectrum {
+    background: Canvas;
+  }
+  .spectrum-link {
+    border-left-color: CanvasText;
+  }
+}
+
+/* ------------------------------------------------------------- sections
+   Each section takes its line (--line, set by Section.tsx): a rule across
+   the top of the page in its colour, its number and wavelength beside a
+   short bar of it, and the title in it. Principles and Contact sit on
+   full-width blocks of their colour instead, with ink text, which swaps
+   the tokens for everything inside. Only in today's world. */
+
+.sect-wrap {
+  border-top: 1px solid color-mix(in oklab, var(--line) 55%, transparent);
+}
+
+.line-tick {
+  width: 2.5rem;
+  height: 3px;
+  background: var(--line);
+}
+
+html:not([data-era]) .sect-wrap:not([data-tone="block"]) .sect-title {
+  color: var(--line);
+}
+
+/* On a block the line is the background, so its bar is drawn in ink. */
+html:not([data-era]) [data-tone="block"] .line-tick {
+  background: var(--foreground);
+}
+
+html:not([data-era]) [data-tone="block"] {
+  --background: var(--line);
+  --foreground: #0a0812;
+  --card: transparent;
+  --card-foreground: #0a0812;
+  --primary: #0a0812;
+  --primary-foreground: #f4efe6;
+  --secondary: rgb(10 8 18 / 10%);
+  --secondary-foreground: #0a0812;
+  --accent: rgb(10 8 18 / 10%);
+  --accent-foreground: #0a0812;
+  /* Ink at 86%: 9.5:1 on H-beta, 5.3:1 on H-alpha. */
+  --muted-foreground: rgb(10 8 18 / 86%);
+  --border: rgb(10 8 18 / 22%);
+  --input: rgb(10 8 18 / 30%);
+  --rule: rgb(10 8 18 / 22%);
+  --ring: #0a0812;
+  --signal: #0a0812;
+  border-top: 0;
+  background: var(--background);
+  color: var(--foreground);
+  & ::selection {
+    background: #0a0812;
+    color: #f4efe6;
+  }
+}
+
+/* The redshift: the header's rule takes the colour of the line you've
+   scrolled to, violet at the top of the page and red at the bottom. */
+@property --shift {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: #b45cff;
+}
+
+@keyframes redshift {
+  0% {
+    --shift: var(--line-410);
+  }
+  30% {
+    --shift: var(--line-434);
+  }
+  62% {
+    --shift: var(--line-486);
+  }
+  100% {
+    --shift: var(--line-656);
+  }
+}
+
+html:not([data-era]) .site-header {
+  border-bottom-color: color-mix(in oklab, var(--shift) 80%, transparent);
+  @supports (animation-timeline: scroll()) {
+    animation: redshift linear both;
+    animation-timeline: scroll(root);
+  }
+}
+
+/* Contrast themes force backgrounds to Canvas unless they're system
+   colours, so the bars and the marks on the blocks are drawn in the text
+   colour. */
+@media (forced-colors: active) {
+  .line-tick {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+  html:not([data-era]) [data-tone="block"] {
+    --signal: CanvasText;
+  }
+}
+
+/* ---------------------------------------------------------------- motion
+   Today's page moves a little of its own accord, and all of it stops when
+   the system asks for less motion. None of it applies in the past eras. */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The headline's words resolve out of a smear one at a time: stretched
+     wide and blurred, then sharp. The order is a permutation of the
+     words: the early script in <head> picks --wa (1 to 10) and --wb (0 to
+     10) from crypto.getRandomValues on every load, and 11 is prime, so
+     w·a + b mod 11 never repeats for up to eleven words. Without mod()
+     support they all arrive together. */
+  html:not([data-era]) .word {
+    display: inline-block;
+    transform-origin: left center;
+    animation: word-in 1100ms var(--ease) both;
+    animation-delay: calc(100ms + mod(var(--w) * var(--wa, 1) + var(--wb, 0), 11) * 80ms);
+  }
+
+  /* Then the rest of the introduction rises in after them. */
+  html:not([data-era]) .reveal-now {
+    animation: rise 900ms var(--ease) both;
+    animation-delay: 750ms;
+  }
+  html:not([data-era]) .intro-foot.reveal-now {
+    animation-delay: 900ms;
+  }
+
+  @supports (animation-timeline: view()) {
+    /* Section titles stretch into place as they scroll in: wide, then
+       condensed. Their bands clip them on the way. */
+    html:not([data-era]) .sect-title {
+      animation: title-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 35%;
+    }
+    /* The blocks of content rise in, following the scroll position, so
+       anything already on screen (after a jump, say) is simply there. A
+       block is all there once its top is 6rem into the screen, however
+       tall it is, so only the bottom edge of the screen is ever faded. */
+    html:not([data-era]) :is(.skill-group, .years, .sect blockquote, .principle, .contact-card) {
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 6rem;
+    }
+  }
+}
+
+@keyframes word-in {
+  from {
+    opacity: 0;
+    filter: blur(12px);
+    transform: scaleX(1.8);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 1.5rem;
+  }
+}
+
+@keyframes title-in {
+  from {
+    font-stretch: 150%;
+    letter-spacing: 0.04em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spectrum-line {
+    animation: none;
+  }
+}
+
+/* Small answers to the pointer: a skill lights, an arrow leans the way
+   it points. */
+.skill {
+  transition: background-color 240ms var(--ease);
+  &:hover {
+    background-color: color-mix(in oklab, var(--foreground) 5%, transparent);
+  }
+}
+
+[data-slot="button"] :is(.lucide-arrow-up-right, .lucide-arrow-down) {
+  transition: translate 240ms var(--ease);
+}
+[data-slot="button"]:hover .lucide-arrow-up-right {
+  translate: 2px -2px;
+}
+[data-slot="button"]:hover .lucide-arrow-down {
+  translate: 0 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skill,
+  .spectrum-link,
+  [data-slot="button"] svg {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------------ eras
+   The past eras (public/eras/) were drawn over an earlier layout: one
+   plain column, everything left-aligned, each section's title above its
+   content in ordinary type. This puts that layout back under them, at the
+   lowest weight (:where), so each era's own rules still win, and hides
+   today's spectrum. */
+:where(html[data-era]) {
+  & .shell {
+    max-width: 64rem;
+    padding-inline: 1.25rem;
+    @media (width >= 40rem) {
+      padding-inline: 1.5rem;
+    }
+  }
+  & .spectrum,
+  & .spectrum-strip,
+  & .years,
+  & .skill-year,
+  & .numeral,
+  & .nm {
+    display: none;
+  }
+  /* The mark before "vx" takes the era's own signal colour. */
+  & .spectrum-mark > span {
+    background: var(--signal);
+  }
+  & .sect-wrap {
+    border-top: 0;
+  }
+  & .intro {
+    display: block;
+    min-height: 0;
+    padding-block: 5rem 2rem;
+    @media (width >= 40rem) {
+      padding-block: 7rem 2.5rem;
+    }
+  }
+  & .intro-body {
+    display: block;
+    padding: 0;
+    & > * + * {
+      margin-top: 1.5rem;
+    }
+  }
+  & .intro h1 {
+    max-width: 48rem;
+    font-size: clamp(2.25rem, 1.5rem + 3vw, 3.75rem);
+    font-stretch: normal;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+  }
+  & .intro-foot {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2rem;
+    & > p {
+      max-width: 42rem;
+    }
+  }
+  & .sect {
+    padding-block: 3rem;
+    @media (width >= 40rem) {
+      padding-block: 4rem;
+    }
+  }
+  & .sect-head {
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+  & .sect-title {
+    font-size: clamp(1.5rem, 1.25rem + 1vw, 1.875rem);
+    font-stretch: normal;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+  }
+  & .line-tick {
+    display: none;
+  }
+  & .skill-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  & .skill-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+    gap: 0.75rem;
+    border-bottom: 0;
+    & > li {
+      border-top: 0;
+      padding: 0;
+    }
+  }
+  /* Today's cards are flat and bare; an era's cards need room inside. */
+  & :is(.skill-group, .contact-card) {
+    padding: 1.25rem 1.5rem 1.5rem;
+  }
+  & .contact-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+  & .sect blockquote {
+    max-width: 42rem;
+    font-size: 1.25rem;
+    font-weight: 400;
+    font-stretch: normal;
+    letter-spacing: 0;
+  }
+  & .sect blockquote + ol {
+    margin-top: 2rem;
+  }
+  & .principle {
+    padding: 1.25rem 1rem;
+  }
+  & .contact-heading {
+    font-size: 1.5rem;
+    font-stretch: normal;
+  }
+  & .site-footer > .shell {
+    padding-block: 1.5rem;
   }
 }

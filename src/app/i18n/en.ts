@@ -56,6 +56,104 @@ const en = {
     source: "Source for this site",
     top: "Back to top",
   },
+  // The quantum layer: the branch map in the header and the effects
+  // panel in the footer.
+  quantum: {
+    close: "Close",
+    branches: {
+      open: "Branches",
+      title: "Branches",
+      description: "Every place you’ve been on this page, splitting wherever you took a different path. Pick one to go back to it.",
+      here: "You are here",
+      top: "Introduction",
+      choice: {
+        start: "Arrival",
+        nav: "Link",
+        lang: "Language change",
+        map: "Map jump",
+        link: "Direct visit",
+        time: "Time travel",
+      },
+    },
+    effects: {
+      open: "Effects",
+      title: "Effects",
+      description: "The visual effects on this page. Your choice is saved in this browser.",
+      all: "All effects",
+      reduced: "Your system asks for less motion, so the effects stay still.",
+      items: {
+        ghosts: {
+          name: "Ghost previews",
+          note: "Faint echoes of the parts of the page you haven’t opened yet.",
+        },
+        superposition: {
+          name: "Superposition nav",
+          note: "Each link in the header sits in a few faint places at once and collapses into one as your pointer comes near. On a touch screen, the first tap collapses a link and the second follows it.",
+        },
+        interference: {
+          name: "Interference background",
+          note: "Faint waves from three sources, bright where they add up and dark where they cancel. One follows your pointer, and each branch places the others.",
+        },
+        foam: {
+          name: "Quantum foam",
+          note: "Pairs of particles that flicker into being behind the page and annihilate a moment later, at random. Drawn with WebGPU where your browser has it, and seeded fresh on every visit.",
+        },
+        cursor: {
+          name: "Probability cursor",
+          note: "On a computer with a mouse, a cloud of where your pointer might be. A click collapses it to one point.",
+        },
+        entanglement: {
+          name: "Entangled skills",
+          note: "Skills come in pairs, like C and x86 Assembly. Point at or tap one and its partner answers, spinning the other way.",
+        },
+        orbital: {
+          name: "Orbital",
+          note: "On wide screens, beside the introduction, a hydrogen orbital drawn from its probability density. Each branch shows its own: 2p or one of two 3d.",
+        },
+        tunneling: {
+          name: "Tunneling transitions",
+          note: "Moving to another section passes through a barrier.",
+        },
+        time: {
+          name: "Time travel",
+          note: "The timeline in the header, and this page as it might have looked in each skill’s year.",
+        },
+      },
+    },
+    // The timeline: each skill's year (content.ts) and the event it
+    // stands for, and the world the page turns into there.
+    time: {
+      open: "Timeline",
+      title: "Timeline",
+      description: "Each skill in the year it first appeared. Travel to one to see this page as it might have looked then. The content stays the same.",
+      now: "Back to now",
+      started: "vx starts using tech",
+      events: {
+        1972: "C, at Bell Labs",
+        1978: "Intel’s 8086",
+        1984: "The OSI model, published by ISO",
+        1991: "Python 0.9.0, and the first description of HTML",
+        1995: "JavaScript, announced by Netscape",
+        1996: "CSS level 1, a W3C Recommendation",
+        2004: "nginx’s first public release",
+        2009: "Node.js’s first release",
+        2012: "TypeScript’s first public release",
+        2014: "nftables, merged into Linux 3.13",
+        2016: "Next.js’s first release",
+        2017: "The Transformer paper, “Attention Is All You Need”",
+        2022: "ChatGPT’s release",
+      },
+      worlds: {
+        teletype: "Teletype printout",
+        terminal: "Video terminal",
+        desktop: "Desktop",
+        web1: "Early web",
+        web2: "Web 2.0",
+        flat: "Flat design",
+        now: "Today",
+      },
+    },
+  },
   notFound: {
     title: "Page not found",
     body: "There’s no page at this address. The link may be old, or the URL may have a typo.",

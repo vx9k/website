@@ -1,0 +1,335 @@
+/* 2004 to 2011, nginx and Node.js: Web 2.0, in two steps
+   (<html data-year>).
+   2009: the glossy web. A sky gradient, a glassy blue bar along the top,
+   rounded white panels with soft shadows, buttons with a shine on the
+   top half, a pill-shaped badge, and the skills as glossy app icons.
+   2004: the same, before the gloss: flat blue, small Verdana, square
+   corners cut from images, thin borders.
+   Loaded by src/quantum/time.ts; everything here is scoped to
+   <html data-era="web2">, and unlayered, so it wins over the page's
+   Tailwind utilities without !important. */
+
+html[data-era="web2"] {
+  color-scheme: light;
+  --sky: #dbe8f5;
+  --bar-top: #3a6dab;
+  --bar-bottom: #1e4778;
+  --ink: #1f2a37;
+  --radius: 0.625rem;
+  --background: #f3f7fb;
+  --foreground: var(--ink);
+  --card: #ffffff;
+  --card-foreground: var(--ink);
+  --popover: #ffffff;
+  --popover-foreground: var(--ink);
+  --primary: #2a6409;
+  --primary-foreground: #ffffff;
+  --secondary: #dfeaf6;
+  --secondary-foreground: #1e4778;
+  --muted: #eef3f8;
+  --muted-foreground: #4f5b68;
+  --accent: #e3edf8;
+  --accent-foreground: #1e4778;
+  --border: #c4d3e4;
+  --input: #a9bdd4;
+  --ring: #2f6fb5;
+  --signal: #f07800;
+  --rule: transparent;
+  --font-face-sans: "Lucida Grande", "Lucida Sans Unicode", "Trebuchet MS", Verdana, sans-serif;
+  --font-face-mono: Monaco, "Lucida Console", monospace;
+  background:
+    linear-gradient(to bottom, var(--sky), var(--background) 32rem) no-repeat,
+    var(--background);
+
+  & *,
+  & ::before,
+  & ::after {
+    letter-spacing: normal;
+  }
+
+  & ::selection {
+    background: #b5d5ff;
+    color: var(--ink);
+  }
+
+  /* The glassy bar along the top, white type on it. */
+  & .site-header {
+    background: linear-gradient(to bottom, var(--bar-top) 0%, #2d5f9c 49%, #24548f 50%, var(--bar-bottom) 100%);
+    /* Under the gradient, for contrast themes, which drop it. */
+    background-color: var(--bar-bottom);
+    backdrop-filter: none;
+    border-bottom: 1px solid #163759;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 25%);
+    color: #ffffff;
+    text-shadow: 0 -1px 0 rgb(0 0 0 / 35%);
+    & [data-slot="button"] {
+      color: #ffffff;
+    }
+    & [data-slot="button"]:hover {
+      background: rgb(255 255 255 / 18%);
+      color: #ffffff;
+    }
+    & nav ul {
+      border-color: rgb(255 255 255 / 35%);
+    }
+    & [hreflang] {
+      color: #ffffff;
+    }
+    & [hreflang][aria-current="page"] {
+      background: linear-gradient(to bottom, #ffffff, #dbe6f3);
+      color: #1e4778;
+      text-shadow: none;
+      border-radius: 999px;
+    }
+    & [aria-hidden].bg-signal {
+      background: linear-gradient(to bottom, #ffb04d, var(--signal));
+      border-radius: 2px;
+    }
+  }
+
+  /* The header links' superposed copies (globals.css), fainter on the
+     coloured bar so the links keep their contrast. */
+  & .site-header {
+    --copies: 0.4;
+  }
+
+  & .era-strip {
+    background: #e7eff8;
+    border-top: 1px solid #b6c9de;
+    color: var(--ink);
+    text-shadow: none;
+  }
+
+  & h1 {
+    color: #1e4778;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-shadow: 0 1px 0 #ffffff;
+  }
+  & h2 {
+    color: #1e4778;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-shadow: 0 1px 0 #ffffff;
+  }
+  & .label {
+    color: #4f5b68;
+  }
+
+  /* Panels: white, rounded, a soft shadow, and a band of light under the
+     top edge. */
+  & [data-slot="card"] {
+    background: linear-gradient(to bottom, #ffffff, #f7fafd);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    box-shadow:
+      0 2px 6px rgb(30 71 120 / 12%),
+      inset 0 1px 0 #ffffff;
+  }
+  & [data-slot="card-title"] {
+    color: #1e4778;
+    font-weight: 700;
+  }
+
+  /* The badge: a glossy orange pill. */
+  & [data-slot="badge"] {
+    background: linear-gradient(to bottom, #b85a0c 0%, #a85006 50%, #9c4800 51%, #8f4200 100%);
+    border: 1px solid #8f4000;
+    border-radius: 999px;
+    color: #ffffff;
+    font-weight: 700;
+    text-shadow: 0 -1px 0 rgb(0 0 0 / 30%);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 35%);
+    & [aria-hidden].bg-signal {
+      background: #ffffff;
+      border-radius: 999px;
+    }
+  }
+
+  /* Buttons with a shine across the top half. */
+  & [data-slot="button"][data-variant="default"] {
+    background: linear-gradient(to bottom, #3d7f1a 0%, #336f13 50%, #2c640d 51%, #255a08 100%);
+    border: 1px solid #1d4a05;
+    border-radius: 0.5rem;
+    color: #ffffff;
+    font-weight: 700;
+    text-shadow: 0 -1px 0 rgb(0 0 0 / 35%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 30%),
+      0 1px 3px rgb(0 0 0 / 25%);
+    &:hover {
+      background: linear-gradient(to bottom, #44891f 0%, #397716 50%, #316b10 51%, #29600a 100%);
+    }
+  }
+  & [data-slot="button"]:is([data-variant="outline"], [data-variant="secondary"]) {
+    background: linear-gradient(to bottom, #ffffff 0%, #f2f6fa 50%, #e6edf5 51%, #dce6f1 100%);
+    border: 1px solid #a9bdd4;
+    border-radius: 0.5rem;
+    color: #1e4778;
+    font-weight: 700;
+    text-shadow: 0 1px 0 #ffffff;
+    box-shadow: 0 1px 2px rgb(30 71 120 / 15%);
+    &:hover {
+      background: linear-gradient(to bottom, #ffffff 0%, #e9f1fa 50%, #dbe7f4 51%, #d0dfef 100%);
+    }
+  }
+  & main [data-slot="button"][data-variant="link"],
+  & footer [data-slot="button"][data-variant="link"] {
+    color: #1f5fa8;
+  }
+
+  /* A button's own focus ring is a shadow, which the styles above
+     replace, so a focused button gets an outline instead. */
+  & [data-slot="button"]:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+
+  & blockquote {
+    border-left: 4px solid #8fb6e0;
+    color: #2b3a4b;
+  }
+
+  & [data-slot="separator"] {
+    background: linear-gradient(to right, transparent, #b6c9de, transparent);
+  }
+
+  /* The skills as glossy app icons: the brand's colour, the mark in
+     white, and a curved shine over the top. */
+  & .icon-tile {
+    border-radius: 0.6rem;
+    color: #ffffff;
+    background: linear-gradient(to bottom, color-mix(in srgb, var(--c) 70%, #ffffff), var(--c) 60%, color-mix(in srgb, var(--c) 80%, #000000));
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 30%),
+      inset 0 0 0 1px rgb(0 0 0 / 12%);
+    &::after {
+      inset: 0 0 50% 0;
+      border-radius: 0.6rem 0.6rem 50% 50% / 0.6rem 0.6rem 0.4rem 0.4rem;
+      background: linear-gradient(to bottom, rgb(255 255 255 / 55%), rgb(255 255 255 / 10%));
+      transform: none;
+      animation: none;
+    }
+    & svg {
+      filter: drop-shadow(0 -1px 0 rgb(0 0 0 / 25%));
+    }
+  }
+  /* Next.js takes the page's text colour in today's design. */
+  & [data-skill-year="2016"] .icon-tile {
+    --c: #222222;
+  }
+  & [data-future] .icon-tile {
+    background: #e3e9f0;
+    box-shadow: inset 0 1px 2px rgb(0 0 0 / 15%);
+    & svg,
+    &::after {
+      visibility: hidden;
+    }
+  }
+  /* The year's own: a highlight round it, as on a new app. */
+  & [data-new] .icon-tile {
+    box-shadow:
+      0 0 0 2px #ffffff,
+      0 0 0 4px var(--signal),
+      0 2px 6px rgb(0 0 0 / 30%);
+  }
+
+  & [data-slot="dialog-content"] {
+    border: 1px solid #a9bdd4;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 30px rgb(30 71 120 / 30%);
+  }
+
+  & .ghosts > span,
+  & .echo {
+    text-shadow: none;
+  }
+}
+
+/* 2004: before the gloss. */
+html[data-era="web2"][data-year="2004"] {
+  --radius: 0px;
+  --font-face-sans: Verdana, Geneva, Tahoma, sans-serif;
+  background: var(--background);
+
+  & body {
+    font-size: 0.875rem;
+  }
+  & h1 {
+    font-size: clamp(1.75rem, 1.2rem + 2vw, 2.5rem);
+    text-shadow: none;
+    letter-spacing: -0.01em;
+  }
+  & h2 {
+    text-shadow: none;
+  }
+
+  & .site-header {
+    background: #336699;
+    box-shadow: none;
+    text-shadow: none;
+    & [hreflang][aria-current="page"] {
+      background: #ffffff;
+      border-radius: 0;
+    }
+  }
+
+  & [data-slot="card"] {
+    background: #ffffff;
+    border-radius: 0;
+    box-shadow: none;
+    border: 1px solid #99b3cc;
+    border-top: 3px solid #336699;
+  }
+
+  & [data-slot="badge"] {
+    background: #c25400;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    text-shadow: none;
+  }
+
+  & [data-slot="button"][data-variant="default"],
+  & [data-slot="button"]:is([data-variant="outline"], [data-variant="secondary"]) {
+    border-radius: 0;
+    text-shadow: none;
+    box-shadow: none;
+  }
+  & [data-slot="button"][data-variant="default"] {
+    background: #336699;
+    border-color: #224466;
+    &:hover {
+      background: #2b5986;
+    }
+  }
+  & [data-slot="button"]:is([data-variant="outline"], [data-variant="secondary"]) {
+    background: #eef3f8;
+    border-color: #99b3cc;
+  }
+
+  & .icon-tile {
+    border-radius: 0;
+    background: var(--c);
+    &::after {
+      display: none;
+    }
+    & svg {
+      filter: none;
+    }
+  }
+  & [data-future] .icon-tile {
+    background: #e3e9f0;
+  }
+  & [data-new] .icon-tile {
+    box-shadow:
+      0 0 0 2px #ffffff,
+      0 0 0 4px var(--signal);
+  }
+}
+
+@media (forced-colors: active) {
+  html[data-era="web2"] {
+    background: Canvas;
+  }
+}
