@@ -1,0 +1,193 @@
+/* 1978, x86 Assembly: a video terminal. Green phosphor on black, one
+   monospaced bitmap face, a soft glow on the text and faint scan lines
+   over the glass. Loaded by src/quantum/time.ts; everything here is
+   scoped to <html data-era="terminal">, and unlayered, so it wins over
+   the page's Tailwind utilities without !important. */
+
+@font-face {
+  font-family: "VT323";
+  src: url("fonts/vt323-latin-400-normal.woff2") format("woff2");
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+html[data-era="terminal"] {
+  color-scheme: dark;
+  --phosphor: #6dfc8f;
+  --radius: 0px;
+  --background: #020a04;
+  --foreground: var(--phosphor);
+  --card: #03120a;
+  --card-foreground: var(--phosphor);
+  --popover: #03120a;
+  --popover-foreground: var(--phosphor);
+  --primary: var(--phosphor);
+  --primary-foreground: #020a04;
+  --secondary: #0d3b1b;
+  --secondary-foreground: var(--phosphor);
+  --muted: #0d3b1b;
+  --muted-foreground: #5fe07f;
+  --accent: #0d3b1b;
+  --accent-foreground: #b6ffc8;
+  --border: rgb(109 252 143 / 38%);
+  --input: rgb(109 252 143 / 50%);
+  --ring: #b6ffc8;
+  --signal: #b6ffc8;
+  --mesh: transparent;
+  --font-geist: "VT323", ui-monospace, monospace;
+  --font-geist-mono: "VT323", ui-monospace, monospace;
+  /* The face is small for its size, as terminal type was. */
+  font-size: 125%;
+  background: var(--background);
+  /* Kept faint: the haze sits behind the text, so it costs contrast. */
+  text-shadow:
+    0 0 1px rgb(109 252 143 / 45%),
+    0 0 8px rgb(109 252 143 / 16%);
+
+  & *,
+  & ::before,
+  & ::after {
+    border-radius: 0;
+    letter-spacing: 0;
+  }
+
+  /* The glass: scan lines, and the corners falling off into the dark. */
+  & body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 45;
+    pointer-events: none;
+    background:
+      repeating-linear-gradient(to bottom, rgb(0 0 0 / 22%) 0 1px, transparent 1px 3px),
+      radial-gradient(ellipse at center, transparent 62%, rgb(0 0 0 / 32%));
+  }
+
+  & ::selection {
+    background: var(--phosphor);
+    color: var(--background);
+    text-shadow: none;
+  }
+
+  & .site-header {
+    background: var(--background);
+    backdrop-filter: none;
+    border-color: var(--border);
+  }
+
+  & h1,
+  & h2,
+  & [data-slot="card-title"] {
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  /* A block cursor after the headline, blinking as the hardware did. */
+  & [data-branch-echo]::after {
+    content: "█" / "";
+    margin-left: 0.15em;
+    animation: terminal-cursor 1.06s steps(1) infinite;
+  }
+
+  & [data-slot="card"] {
+    background: transparent;
+    border: 1px solid var(--border);
+    box-shadow: none;
+  }
+
+  & [data-slot="badge"] {
+    border-color: var(--border);
+    font-size: 0.85rem;
+  }
+
+  /* Buttons in reverse video, the way a terminal highlighted a field. */
+  & [data-slot="button"] {
+    box-shadow: none;
+    text-shadow: inherit;
+  }
+  & [data-slot="button"][data-variant="default"] {
+    background: var(--phosphor);
+    color: var(--background);
+    text-shadow: none;
+  }
+  & [data-slot="button"][data-variant="outline"] {
+    background: transparent;
+    border: 1px solid var(--phosphor);
+  }
+  & [data-slot="button"]:is([data-variant="outline"], [data-variant="ghost"]):hover,
+  & [data-slot="button"][data-variant="default"]:hover {
+    background: var(--accent-foreground);
+    color: var(--background);
+    text-shadow: none;
+  }
+
+  /* A button's own focus ring is a shadow, which the styles above
+     replace, so a focused button gets an outline instead. */
+  & [data-slot="button"]:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+
+  & blockquote {
+    border-color: var(--phosphor);
+  }
+
+  /* The icons in phosphor too; an icon for a skill that hadn't appeared
+     yet is an empty frame. */
+  & .icon-tile {
+    color: var(--phosphor);
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--border);
+    &::after {
+      display: none;
+    }
+    & .ink {
+      fill: var(--background);
+    }
+  }
+  & [data-future] .icon-tile {
+    box-shadow: inset 0 0 0 1px rgb(109 252 143 / 22%);
+    & svg {
+      visibility: hidden;
+    }
+  }
+  & [data-new] .icon-tile {
+    background: var(--phosphor);
+    color: var(--background);
+    & .ink {
+      fill: var(--phosphor);
+    }
+  }
+
+  & [data-slot="dialog-content"] {
+    border: 1px solid var(--phosphor);
+    box-shadow: none;
+  }
+
+  /* Without the glow, so the ghosts stay faint. */
+  & .ghosts > span,
+  & .echo {
+    text-shadow: none;
+  }
+}
+
+@keyframes terminal-cursor {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-era="terminal"] [data-branch-echo]::after {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  html[data-era="terminal"] {
+    text-shadow: none;
+    & body::after {
+      display: none;
+    }
+  }
+}

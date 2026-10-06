@@ -16,6 +16,7 @@ import {
   type Place,
 } from "./branches";
 import { flags } from "./flags";
+import { anchor, load, remember, remembered, worldOf } from "./time";
 
 // Hooks the branch tree into the browser's own navigation. Links stay real
 // links: the section links and "vx" are handled in the page (a branch, a
@@ -64,23 +65,37 @@ function focus(place: Place) {
 // resolves behind it (globals.css). Without the View Transitions API, or
 // with the effect off, the page scrolls there as it always has.
 function transition(update: (animated: boolean) => void): Promise<void> {
+  const done = () => delete document.documentElement.dataset.travel;
   if (!flags.get().tunneling || !document.startViewTransition) {
     update(false);
+    done();
     return Promise.resolve();
   }
-  return document.startViewTransition(() => update(true)).finished.catch(() => {});
+  return document
+    .startViewTransition(() => update(true))
+    .finished.catch(() => {})
+    .finally(done);
 }
 
 // The branch is taken inside the update, so the transition's picture of
-// the old view still has the old branch's ghosts.
-function go(take: () => Branch, keyboard: boolean) {
+// the old view still has the old branch's ghosts. A trip in time stays
+// where it is: `stay` puts the screen back where it was once the new
+// world has laid the page out.
+function go(take: () => Branch, keyboard: boolean, stay?: () => void) {
   let place: Place = "top";
   transition((animated) => {
     const node = take();
     place = node.place;
     history.pushState({ vxBranch: node.id }, "", place === "top" ? location.pathname : `#${place}`);
-    show(place, animated ? "instant" : "auto");
-  }).then(() => keyboard && focus(place));
+    if (stay) stay();
+    else show(place, animated ? "instant" : "auto");
+  }).then(() => keyboard && !stay && focus(place));
+}
+
+// The barrier sweeps up the screen into the past, and down into the
+// future (globals.css). The mark goes when the transition ends.
+function heading(from: number | null, to: number | null) {
+  document.documentElement.dataset.travel = (to ?? Infinity) < (from ?? Infinity) ? "past" : "future";
 }
 
 /** Follows a choice from the current branch to a place on this page. */
@@ -93,19 +108,34 @@ export function navigate(place: Place, choice: Choice, keyboard = false) {
   go(() => branch(lang, place, choice), keyboard);
 }
 
-/** Moves to a branch that already exists, from the branch map. */
-export function jump(id: string, keyboard = false) {
+/** Moves to a branch that already exists, from the branch map. Its world
+ *  is loaded first, so the page changes era inside the transition. */
+export async function jump(id: string, keyboard = false) {
   const node = find(id);
   if (!node) return;
   if (node.lang !== lang) {
     setPending({ jump: id });
+    remember(node.year);
     location.assign(hrefOf(node));
     return;
   }
+  const from = current()?.year ?? null;
+  await load(worldOf(node.year));
+  if (node.year !== from) heading(from, node.year);
   go(() => {
     moveTo(id);
     return node;
   }, keyboard);
+}
+
+/** Travels to a year (null for today) from the timeline, staying in the
+ *  same place on the page. */
+export async function travel(year: number | null, keyboard = false) {
+  const here = current();
+  if (!here || here.year === year) return;
+  await load(worldOf(year));
+  heading(here.year, year);
+  go(() => branch(lang, here.place, "time", here.id, year), keyboard, anchor());
 }
 
 function onClick(event: MouseEvent) {
@@ -179,7 +209,8 @@ export function startNavigation(pageLang: Locale) {
       node = branch(lang, place, pending.choice, pending.from);
     }
   }
-  node ??= branch(lang, place, tree.get().nodes.length ? "link" : "start");
+  // Anything else is a new path, in the era the early script showed.
+  node ??= branch(lang, place, tree.get().nodes.length ? "link" : "start", undefined, remembered());
   moveTo(node.id);
   tag(node.id);
 

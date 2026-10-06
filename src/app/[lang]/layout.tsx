@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import "../globals.css";
-import { fontVariables, trustedTypesPolicy } from "../document";
+import { eraScript, fontVariables, trustedTypesPolicy } from "../document";
+import { skills } from "../content";
 import { getDictionary, hasLocale, localeKeys, locales } from "../i18n";
 import QuantumRoot from "@/components/quantum/QuantumRoot";
 import { buttonVariants } from "@/components/ui/button";
@@ -53,9 +54,12 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   const t = getDictionary(lang);
 
   return (
-    <html lang={locales[lang].tag} dir="ltr" className={cn("dark", fontVariables)}>
+    // The early script sets data-era and data-year on <html> before React
+    // hydrates it, so React is told not to mind.
+    <html lang={locales[lang].tag} dir="ltr" className={cn("dark", fontVariables)} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: trustedTypesPolicy }} />
+        <script dangerouslySetInnerHTML={{ __html: eraScript }} />
       </head>
       <body className="min-h-dvh overflow-x-clip antialiased">
         {/* Out of the layout until it has focus. Parking it off screen isn't
@@ -70,6 +74,11 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
           copy={t.quantum}
           places={{ top: t.quantum.branches.top, skills: t.nav.skills, principles: t.nav.principles, contact: t.nav.contact }}
           echoes={localeKeys.filter((l) => l !== lang).map((l) => ({ lang: l, line: getDictionary(l).hero.line }))}
+          names={Object.fromEntries(
+            skills
+              .flatMap<{ id: string; name?: string }>((g) => g.items)
+              .map((i) => [i.id, i.name ?? t.skills.names[i.id as keyof typeof t.skills.names]]),
+          )}
         />
       </body>
     </html>

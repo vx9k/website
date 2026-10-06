@@ -1,23 +1,39 @@
 "use client";
 
-import { GitBranchIcon } from "lucide-react";
+import { GitBranchIcon, HistoryIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { flags } from "@/quantum/flags";
+import { useStore } from "@/quantum/store";
 import { open, type Panel } from "@/quantum/ui";
 
-/** Opens the branch map (in the header) or the effects panel (in the
- *  footer). The dialogs themselves are loaded by QuantumRoot. */
+const icons = { branches: GitBranchIcon, time: HistoryIcon };
+
+/** Opens the branch map or the timeline (in the header), or the effects
+ *  panel (in the footer). The dialogs themselves are loaded by
+ *  QuantumRoot. The header's two show only their icons below lg, where
+ *  the section links need the room, and the timeline's goes when time
+ *  travel is switched off. */
 export default function PanelButton({ panel, label }: { panel: Exclude<Panel, null>; label: string }) {
-  if (panel === "branches") {
+  const on = useStore(flags);
+  if (panel === "effects") {
     return (
-      <Button variant="ghost" size="sm" aria-haspopup="dialog" onClick={(event) => open(panel, event.currentTarget)}>
-        <GitBranchIcon data-icon="inline-start" />
-        <span className="max-sm:sr-only">{label}</span>
+      <Button variant="link" size="sm" aria-haspopup="dialog" onClick={(event) => open(panel, event.currentTarget)}>
+        {label}
       </Button>
     );
   }
+  if (panel === "time" && !on.time) return null;
+  const Icon = icons[panel];
   return (
-    <Button variant="link" size="sm" aria-haspopup="dialog" onClick={(event) => open(panel, event.currentTarget)}>
-      {label}
+    <Button
+      variant="ghost"
+      size="sm"
+      aria-haspopup="dialog"
+      data-panel={panel}
+      onClick={(event) => open(panel, event.currentTarget)}
+    >
+      <Icon data-icon="inline-start" />
+      <span className="max-lg:sr-only">{label}</span>
     </Button>
   );
 }

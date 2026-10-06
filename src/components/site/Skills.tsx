@@ -11,7 +11,8 @@ const order: string[] = skills.flatMap((g) => g.items.map((item) => item.id));
 /** A card per group: the group's name, then its skills on one shared
  *  column grid, so the icons line up from card to card. From md up the
  *  name sits to the left of the skills. One column below 380px, where two
- *  would leave "Ensamblador" no room beside its tile. */
+ *  would leave "Ensamblador" no room beside its tile. Each skill carries
+ *  its year, for the worlds of the timeline (src/quantum/time.ts). */
 export default function Skills({ t }: { t: Dictionary }) {
   const s = t.skills;
   const names: Partial<Record<string, string>> = s.names;
@@ -29,7 +30,7 @@ export default function Skills({ t }: { t: Dictionary }) {
             <CardContent className="flex-1 md:pl-0">
               <ul className="grid gap-3 min-[380px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
                 {items.map((item) => (
-                  <li key={item.id} className="skill flex items-center gap-3">
+                  <li key={item.id} data-skill-year={item.year} className="skill flex items-center gap-3">
                     <span
                       aria-hidden
                       className="icon-tile"

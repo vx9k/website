@@ -42,9 +42,9 @@ src/worker.ts         runs for "/" only: redirects to /en, /es or /pt
 src/app/
   [lang]/layout.tsx   root layout per language: <html lang class="dark">, metadata, hreflang, skip link
   [lang]/page.tsx     the page: header, the sections, footer
-  document.ts         fonts and viewport, shared with the 404; the Trusted Types policy
+  document.ts         fonts and viewport, shared with the 404; the Trusted Types policy and the early era script
   global-not-found.tsx  exported as 404.html; carries all three languages
-  content.ts          language-neutral data (links, section ids, the skills and their colours)
+  content.ts          language-neutral data (links, section ids, the skills, their colours and years, the worlds)
   i18n/               en.ts (source of truth), es.ts, pt.ts, locales.ts
   globals.css         shadcn/ui's tokens in carbon, the mesh, two utilities and the skill icons
   marks.ts            brand marks (the skills, GitHub), as SVG paths from Simple Icons (CC0)
@@ -63,8 +63,10 @@ src/components/
     LanguageLinks.tsx EN / ES / PT; remembers the choice for "/" and the 404
   quantum/
     QuantumRoot.tsx   the quantum layer's one mount point, after the page; lazy-loads the rest
-    PanelButton.tsx   opens the branch map (header) or the effects panel (footer)
+    PanelButton.tsx   opens the branch map or the timeline (header), or the effects panel (footer)
     BranchMap.tsx     the branch tree in a dialog: a graph beside a keyboard tree
+    Timeline.tsx      the skills by year, grouped by world; choosing one travels there
+    EraStrip.tsx      the year, the world and "Back to now", under the header in the past
     EffectsPanel.tsx  a switch per effect, and one for all of them
     Ghosts.tsx        faint previews of the places you haven't been
 src/quantum/
@@ -72,9 +74,11 @@ src/quantum/
   flags.ts            which effects are on (localStorage), and whether motion is reduced
   branches.ts         the branch tree (sessionStorage)
   navigate.ts         ties the tree to the links, history and view transitions
+  time.ts             the year the page is shown in: loads and applies the worlds
   seed.ts             seeded randomness, so each branch lays things out its own way
   ui.ts               which dialog is open, and the button that opened it
 src/lib/utils.ts      shadcn/ui's cn()
+public/eras/          one stylesheet per past world, and its fonts (OFL, licences beside them)
 ```
 
 The page is deliberately flat: server components that render static markup. On top of it sits the quantum layer (below), which renders nothing on the server and loads what it draws on demand. There's no theme script and no app state beyond the layer's small stores. Keep it that way.
@@ -89,6 +93,7 @@ Moving around the page branches it, many-worlds style: every place you go is a n
 - **Flags.** `flags.ts` lists the effects. All are on by default and saved in localStorage (`vx-quantum`); `?quantum=off` and `?quantum=on` set them all. Each is mirrored on `<html>` as `data-q-<effect>` for CSS. The footer's Effects button opens a switch per effect. A new effect adds its name to `effects`, its copy to `quantum.effects.items` in all three dictionaries, and checks its flag before it draws anything.
 - **Ghost previews.** The places you haven't been, faint behind the one you're in: the other sections' titles, and on the introduction the headline in the other languages lying over the real one. Each flickers every few seconds and goes for good once you've been there. They're CSS generated content with empty alt text, so they're not page text, and they're seeded by the branch, so each branch lays them out its own way.
 - **Tunneling.** Going to a section, or to another language, is a view transition: a barrier sweeps down the screen, the new view resolves above it, and the old one leaks through, faintly, until it ends. The same-document transition starts in `navigate.ts`; the cross-document one is `@view-transition` in CSS, skipped on `pageswap` when the flag is off. Without the API, or with the flag off, the page scrolls the way it always has.
+- **Time travel.** Every skill has the year it first appeared (`content.ts`), and the header's Timeline button lists them, grouped by the world the page turns into there. Travelling to one is a branch like any other (the choice is "time travel"), so back and forward travel too. The page stays where it is, the barrier sweeps up into the past and down into the future, and it restyles to look as it might have then; see "Eras" under the design direction. `time.ts` follows the current branch's year: it sets `data-era` (the world) and `data-year` (the stop) on `<html>`, loads the world's stylesheet from `public/eras/` the first time, marks each skill `data-future` (not there yet) or `data-new` (that year's), and matches the browser's toolbar to the page. An early script in `<head>` (`eraScript` in `document.ts`) does the same before the body paints, so a reload, a language switch or back from another page never flashes today's design first. Today's world needs no stylesheet, and travelling to its stop (2022) comes back to it.
 
 Rules for the layer:
 - It never changes the content or what the server renders. `QuantumRoot` mounts after the page and renders nothing until it has run in the browser.
@@ -96,6 +101,7 @@ Rules for the layer:
 - Every effect sits behind its flag and keeps still under `prefers-reduced-motion`: the transitions become 160ms fades, the dialogs fade without zooming, the ghosts stop flickering and the map's lines and pulse stop. In forced colours the ghosts are hidden and the map draws in `CanvasText`.
 - Load anything bigger than a store on demand: `QuantumRoot` imports the dialogs and the ghosts with `import()`, so the first load carries only it and `src/quantum/`.
 - The ghosts sit under real text, so they're measured like the mesh: muted text stays above 5.8:1 with them at rest and above 4.5:1 at the brief peak of their flicker.
+- In the past, "Back to now" stays under the header, so nobody is more than one click from today, and a polite live region says the year and the world whenever they change.
 
 ## Languages
 
@@ -108,6 +114,7 @@ Rules for the layer:
 ## Content rules
 
 - **Only true claims.** The skills are vx's own list; everything else in `content.ts` and the dictionaries comes from vx's GitHub profile and the public repos on github.com/vx9k. Don't add skills vx hasn't named, and don't invent projects, stats, clients, dates or testimonials. The page doesn't list projects: GitHub does.
+- **The timeline's years are facts too.** Each skill's year is when it first appeared, and `quantum.time.events` names the event it stands for (C at Bell Labs in 1972, the OSI model in 1984 for the network layers, the Transformer paper in 2017, ChatGPT's release in 2022, and so on). Change a year only with its event, in all three languages. vx's own mark, 2011, is in vx's words ("using tech since"); the page doesn't give vx's age or birth year.
 - Copy goes in the dictionaries in `src/app/i18n/`, never inline in a component. Language-neutral data (links, product names, colours) goes in `content.ts`.
 - **Say "software engineer" once at most** in visible copy (and its translations). It's in the introduction's headline, so nothing else repeats it.
 - Write plainly: sentence case, active voice, no exclamation marks, and none of the marketing words ("elevate", "seamless", "unleash", "next-gen" and so on).
@@ -115,6 +122,8 @@ Rules for the layer:
 ## Design direction
 
 Carbon and shadcn/ui: one dark theme, neutral greys on near-black, content in shadcn/ui's cards and buttons in one centred column, over a faint mesh. The page earns its character from type, spacing and the mesh, not effects. The skill icons are the only colour beyond one signal orange. The only motion is theirs and the quantum layer's.
+
+All of this is today's design, the page as it loads. The past eras of time travel are costumes over the same page and have their own rules ("Eras", below).
 
 **Palette.** Only carbon: `color-scheme: dark`, and `<html>` carries the `dark` class so shadcn/ui's `dark:` variants always apply. There's no light theme and no toggle. The tokens are shadcn/ui's names on `:root` in `globals.css`, in neutral oklch greys:
 
@@ -159,8 +168,26 @@ Contrast decides what each token may do. Foreground is about 18:1 on carbon and 
 - A light theme, a second accent, colour on large surfaces, or signal used for text.
 - Pills, heavy or coloured shadows, or a backdrop blur anywhere but the header. (The ghosts and the tunneling transition blur their own text, which is different.)
 - Imagery or illustration; icons beyond lucide's in buttons, the skill icons and the GitHub mark.
-- Terminal or hacker clichés: fake shells, `$` prompts, boot logs, blinking cursors, ASCII brackets, crosshairs, HUD or telemetry cosplay. The mesh is a background, not a HUD: no labels, coordinates or scan lines on it.
+- Terminal or hacker clichés: fake shells, `$` prompts, boot logs, blinking cursors, ASCII brackets, crosshairs, HUD or telemetry cosplay. The mesh is a background, not a HUD: no labels, coordinates or scan lines on it. (The 1978 era is the one exception, and only for the look: see "Eras".)
 - Copy that performs: taglines, slogans, claims about impact. State what the thing is and what it does.
+
+**Eras.** Each world is one stylesheet in `public/eras/`, scoped to `html[data-era="<world>"]`, with notches on `data-year`. It's plain CSS, not built: it's unlayered, so it wins over the Tailwind utilities without `!important`, and it uses native nesting. It restyles mostly through shadcn/ui's tokens and `data-slot`/`data-variant` hooks, never by changing markup.
+
+| Years | World | Look |
+| --- | --- | --- |
+| 1972 | `teletype` | A printout: green-bar paper with tractor-feed holes, Courier Prime, black and red ribbon, dashed boxes |
+| 1978 | `terminal` | A video terminal: green phosphor on black, VT323, a faint glow, scan lines, a blinking block cursor |
+| 1984 | `desktop` | One-bit: a dithered desktop, every section a window with a pinstriped title bar, Pixelify Sans, selection in reverse |
+| 1991, 1995, 1996 | `web1` | The early web: bare structure (lists, blue links, no images), then a grey page with bevelled buttons, then CSS1 colour and Verdana |
+| 2004, 2009 | `web2` | Web 2.0: flat blue, then gloss, rounded panels, a pill badge and app-icon tiles |
+| 2012, 2014, 2016, 2017 | `flat` | Tiles, then Material paper and an app bar, then a quieter version, then gradients and floating cards |
+
+Inside a past era, the design rules above don't apply: light pages, other fonts, colour, gloss, pills, shadows and patterns are all fine, and so are the terminal of 1978 (scan lines, glow, a blinking cursor; the owner allowed it there). Everything else still holds:
+- The content is the page's own. An era changes how it looks, never what it says: no fake prompts, logs or banners, and decorative characters are generated content with empty alt text.
+- WCAG 2.2 AA, measured the way the mesh is: text at 4.5:1 over the rendered era at phone and desktop width (the glow and the app bar's shadow included), focus visible on everything (where an era replaces a button's shadow, it gives focus an outline), 24px targets, phone widths in all three languages.
+- `prefers-reduced-motion` stops the era's motion, and forced colours get a plain page: each world drops its patterns and keeps solid colours under any gradient.
+- A world uses system fonts or a self-hosted OFL font in `public/eras/fonts/` (latin subset, licence beside it), loaded only in that world. No images: patterns are CSS.
+- A light era's ghosts are mixed most of the way into the page (`globals.css`), since dark on light stands out more than light on carbon.
 
 Design-oriented agent skills live in `.claude/skills/`, shadcn's among them. Use them for visual work, but this section wins where they disagree.
 
@@ -177,7 +204,7 @@ For every visual change:
 
 ## Performance
 
-The page is static and small; keep it that way. The runtime dependencies are Next, React and shadcn/ui's (Radix, class-variance-authority, clsx, tailwind-merge, lucide), and almost all of it renders on the server: the only client code is the language links, the separator, the 404's language picker and the quantum layer. Of the layer, the first load carries `QuantumRoot`, its two buttons and `src/quantum/`, about 5 KB gzipped; the dialogs and the ghosts are separate chunks, fetched when the page is idle or when they're needed. Two variable fonts, self-hosted by `next/font`, and no image files on the page: the icons are inline SVG. The mesh is four CSS gradients on the page background, the skill animations run on `transform` and `opacity`, and only the header pays for a backdrop blur. Keep any new idea to that standard: no canvas, no animation libraries, nothing running in JavaScript on a timer.
+The page is static and small; keep it that way. The runtime dependencies are Next, React and shadcn/ui's (Radix, class-variance-authority, clsx, tailwind-merge, lucide), and almost all of it renders on the server: the only client code is the language links, the separator, the 404's language picker and the quantum layer. Of the layer, the first load carries `QuantumRoot`, its buttons and `src/quantum/`, under 7 KB gzipped, plus the early era script inline; the dialogs, the ghosts and the era strip are separate chunks, fetched when the page is idle or when they're needed. An era's stylesheet (2–3 KB gzipped) and its font (12–19 KB) load only when someone travels there. Two variable fonts, self-hosted by `next/font`, and no image files on the page: the icons are inline SVG. The mesh is four CSS gradients on the page background, the skill animations run on `transform` and `opacity`, and only the header pays for a backdrop blur. Keep any new idea to that standard: no canvas, no animation libraries, nothing running in JavaScript on a timer.
 
 ## Security headers
 
@@ -185,8 +212,8 @@ Every static response, the 404 included, carries:
 
 - **Content-Security-Policy.** `default-src 'none'`, then only what the page uses, all from `'self'`: scripts, styles, images, fonts, the manifest and `connect-src`. `base-uri`, `form-action` and `frame-ancestors` are `'none'`, requests are upgraded to HTTPS, and Trusted Types are required, with one policy allowed: `default`.
   - Scripts: `'self'` plus a hash of each inline script. Next.js writes its bootstrap and each page's data inline, and the 404 carries its language picker, so `scripts/csp.mjs` hashes every inline `<script>` in `out/` after `next build` and puts the hashes in place of `INLINE_SCRIPT_HASHES` in `out/_headers`. The hashes change with every build, so never write them by hand, and never add `'unsafe-inline'` to `script-src`. The script fails the build if the token is missing or a line passes Cloudflare's 2,000-character limit.
-  - Styles: `'self' 'unsafe-inline'`, because the stylesheet is inlined and each skill tile's colour is a `style` attribute.
-  - Trusted Types: Next.js loads its lazy chunks by setting `script.src` to a string, which Trusted Types blocks, so the first thing in each page's `<head>` is an inline script (`trustedTypesPolicy` in `document.ts`) that creates the `default` policy. It lets through script URLs under this origin's `/_next/static/` and throws for anything else, and it has no HTML or script conversions, so every other sink stays blocked. It returns the URL exactly as given: Turbopack recognises a loaded chunk by its `src` attribute, and a rewritten URL leaves the `import()` waiting forever with no error. The 404 loads no chunks and doesn't carry it. Nothing on the page writes HTML or script into the DOM (`dangerouslySetInnerHTML` is only rendered on the server); don't add code that sets `innerHTML`, `script.text` or similar in the browser.
+  - Styles: `'self' 'unsafe-inline'`, because the stylesheet is inlined and each skill tile's colour is a `style` attribute. The era stylesheets and their fonts come from `'self'` (`public/eras/`).
+  - Trusted Types: Next.js loads its lazy chunks by setting `script.src` to a string, which Trusted Types blocks, so the first thing in each page's `<head>` is an inline script (`trustedTypesPolicy` in `document.ts`) that creates the `default` policy. It lets through script URLs under this origin's `/_next/static/` and throws for anything else, and it has no HTML or script conversions, so every other sink stays blocked. It returns the URL exactly as given: Turbopack recognises a loaded chunk by its `src` attribute, and a rewritten URL leaves the `import()` waiting forever with no error. The early era script (`eraScript`) runs right after it; it only reads storage and adds a stylesheet link, which Trusted Types doesn't cover. The 404 loads no chunks and carries neither. Nothing on the page writes HTML or script into the DOM (`dangerouslySetInnerHTML` is only rendered on the server); don't add code that sets `innerHTML`, `script.text` or similar in the browser.
 - **Strict-Transport-Security** for two years, subdomains included (the zone's other records are iCloud mail). It isn't marked `preload`: that list is hard to leave, so it's the owner's call.
 - **X-Content-Type-Options** `nosniff`, **X-Frame-Options** `DENY`, **Referrer-Policy** `strict-origin-when-cross-origin`, and a **Permissions-Policy** that turns off every powerful feature.
 - **Cross-Origin-Opener-Policy** `same-origin` and **Cross-Origin-Embedder-Policy** `require-corp`, so the page is cross-origin isolated, and **Cross-Origin-Resource-Policy** `same-origin`. Also **Origin-Agent-Cluster** and **X-Permitted-Cross-Domain-Policies** `none`.

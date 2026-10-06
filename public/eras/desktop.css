@@ -1,0 +1,259 @@
+/* 1984, the network layers: a one-bit desktop. Black and white only, a
+   dithered grey desktop, every part of the page in a window with a
+   pinstriped title bar and a hard shadow, the header as the menu bar,
+   round-cornered buttons, and selection drawn in reverse. Loaded by
+   src/quantum/time.ts; everything here is scoped to
+   <html data-era="desktop">, and unlayered, so it wins over the page's
+   Tailwind utilities without !important. */
+
+@font-face {
+  font-family: "Pixelify Sans";
+  src: url("fonts/pixelify-sans-latin-wght-normal.woff2") format("woff2");
+  font-weight: 400 700;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+html[data-era="desktop"] {
+  color-scheme: light;
+  --black: #000;
+  --white: #fff;
+  /* Half the dots on: the grey of a one-bit screen. */
+  --dither: repeating-conic-gradient(var(--black) 0 25%, var(--white) 0 50%) 0 0 / 2px 2px;
+  --stripes: repeating-linear-gradient(to bottom, var(--black) 0 1px, var(--white) 1px 2px);
+  --radius: 0px;
+  --background: var(--white);
+  --foreground: var(--black);
+  --card: var(--white);
+  --card-foreground: var(--black);
+  --popover: var(--white);
+  --popover-foreground: var(--black);
+  --primary: var(--black);
+  --primary-foreground: var(--white);
+  --secondary: var(--black);
+  --secondary-foreground: var(--white);
+  --muted: var(--white);
+  --muted-foreground: var(--black);
+  --accent: var(--black);
+  --accent-foreground: var(--white);
+  --border: var(--black);
+  --input: var(--black);
+  --ring: var(--black);
+  --signal: var(--black);
+  --mesh: transparent;
+  --font-geist: "Pixelify Sans", Geneva, Verdana, sans-serif;
+  --font-geist-mono: "Pixelify Sans", Geneva, Verdana, sans-serif;
+  background: var(--dither);
+  -webkit-font-smoothing: none;
+
+  & *,
+  & ::before,
+  & ::after {
+    border-radius: 0;
+    letter-spacing: 0;
+  }
+
+  & ::selection {
+    background: var(--black);
+    color: var(--white);
+  }
+
+  & :focus-visible {
+    outline: 2px dotted var(--black);
+    outline-offset: 2px;
+  }
+
+  /* The menu bar. */
+  & .site-header {
+    background: var(--white);
+    backdrop-filter: none;
+    border-bottom: 1px solid var(--black);
+  }
+
+  /* Windows: the introduction, every section and the footer. */
+  & main > [data-branch-view],
+  & footer.shell {
+    width: calc(100% - 1.5rem);
+    max-width: 64rem;
+    margin: 1.5rem auto;
+    padding-top: 0;
+    padding-bottom: 1.5rem;
+    background: var(--white);
+    border: 1px solid var(--black);
+    box-shadow: 2px 2px 0 var(--black);
+  }
+
+  & footer.shell {
+    padding-bottom: 0;
+    & [data-slot="separator"] {
+      display: none;
+    }
+  }
+
+  /* Its title bar: pinstripes, a close box on the left (the section's
+     number, which only screens draw), the title in a gap in the middle. */
+  & main > [data-branch-view] > header {
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin: 0 -1.25rem 1.5rem;
+    padding: 0.2rem 0.5rem;
+    border-bottom: 1px solid var(--black);
+    background: var(--stripes) content-box;
+    & .label {
+      position: absolute;
+      left: 0.75rem;
+      width: 0.9rem;
+      height: 0.9rem;
+      border: 1px solid var(--black);
+      background: var(--white);
+      box-shadow: 0 0 0 2px var(--white);
+      font-size: 0;
+    }
+    & h2 {
+      padding: 0 0.6rem;
+      background: var(--white);
+      font-size: 1.125rem;
+      line-height: 1.6rem;
+      font-weight: 700;
+    }
+  }
+
+  /* The introduction's window has an empty title bar. */
+  & main > [data-branch-view="top"]::before {
+    content: "";
+    display: block;
+    height: calc(1.6rem + 0.4rem);
+    margin: 0 -1.25rem 2rem;
+    border-bottom: 1px solid var(--black);
+    background: var(--stripes) content-box;
+    padding: 0.2rem 0.5rem;
+  }
+
+  @media (width >= 40rem) {
+    & main > [data-branch-view] > header,
+    & main > [data-branch-view="top"]::before {
+      margin-inline: -1.5rem;
+    }
+  }
+
+  & h1,
+  & h2,
+  & [data-slot="card-title"] {
+    letter-spacing: 0;
+  }
+
+  & h1 {
+    font-weight: 700;
+  }
+
+  & [data-slot="card"] {
+    border: 1px solid var(--black);
+    box-shadow: none;
+  }
+
+  & [data-slot="badge"] {
+    border: 1px solid var(--black);
+    background: var(--white);
+  }
+
+  & [data-slot="separator"] {
+    background: var(--black);
+  }
+
+  /* Round-cornered buttons; the main one has the heavy outer ring of a
+     default button. Pressed and hovered, they go black. */
+  & [data-slot="button"] {
+    box-shadow: none;
+  }
+  & [data-slot="button"]:is([data-variant="default"], [data-variant="outline"]) {
+    background: var(--white);
+    color: var(--black);
+    border: 1px solid var(--black);
+    border-radius: 0.5rem;
+  }
+  & [data-slot="button"][data-variant="default"] {
+    box-shadow:
+      0 0 0 2px var(--white),
+      0 0 0 5px var(--black);
+    border-radius: 0.5rem;
+  }
+  & [data-slot="button"]:hover {
+    background: var(--black);
+    color: var(--white);
+  }
+  /* Clear of the default button's heavy ring, so the dots show. */
+  & [data-slot="button"][data-variant="default"]:focus-visible {
+    outline-offset: 7px;
+  }
+  & [data-slot="button"][data-variant="link"]:hover {
+    background: transparent;
+    color: var(--black);
+  }
+
+  /* The language segments, as a group of radio buttons would be drawn. */
+  & .site-header nav ul {
+    border-color: var(--black);
+  }
+
+  & blockquote {
+    border-left: 2px solid var(--black);
+  }
+
+  /* The icons in black on white. A skill that hadn't appeared yet is
+     greyed out the way a desktop greyed what you couldn't open, and the
+     year's own is selected, in reverse. */
+  & .icon-tile {
+    color: var(--black);
+    background: var(--white);
+    box-shadow: inset 0 0 0 1px var(--black);
+    &::after {
+      display: none;
+    }
+    & .ink {
+      fill: var(--white);
+    }
+  }
+  & [data-future] .icon-tile {
+    background: var(--dither);
+    & svg {
+      visibility: hidden;
+    }
+  }
+  & [data-new] .icon-tile {
+    background: var(--black);
+    color: var(--white);
+    & .ink {
+      fill: var(--black);
+    }
+  }
+
+  & .era-strip {
+    background: var(--white);
+    border-color: var(--black);
+  }
+
+  /* Dialogs as alert boxes: a double frame. */
+  & [data-slot="dialog-content"] {
+    border: 1px solid var(--black);
+    box-shadow:
+      0 0 0 3px var(--white),
+      0 0 0 4px var(--black),
+      4px 4px 0 4px var(--black);
+  }
+  & [data-slot="dialog-overlay"] {
+    background: transparent;
+  }
+}
+
+@media (forced-colors: active) {
+  html[data-era="desktop"] {
+    background: Canvas;
+    & main > [data-branch-view] > header,
+    & main > [data-branch-view="top"]::before {
+      background: none;
+    }
+  }
+}

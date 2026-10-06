@@ -1,5 +1,6 @@
 import type { Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { worlds } from "./content";
 
 // Shared by the root layout and the global 404, which renders its own
 // <html> and so can't inherit anything from the layout.
@@ -46,4 +47,39 @@ export const trustedTypesPolicy = `(function () {
       throw new TypeError("Script URL outside /_next/static/: " + url);
     }
   });
+})();`;
+
+// Time travel (src/quantum/time.ts) shows the page in the year of the
+// current branch. On a full page load that would paint today's design
+// first and then switch, so this runs in <head>, before the body: it
+// finds the year (from the history entry's branch, or else the era the
+// tab was last in), sets <html data-era> and adds the world's stylesheet,
+// render-blocking where browsers support it. Unless time travel is off.
+const past = worlds.filter((w) => w.id !== "now").map((w) => [w.from, w.id]);
+const today = worlds.find((w) => w.id === "now")!.from;
+
+export const eraScript = `(function () {
+  try {
+    if (/[?&]quantum=off(&|$)/.test(location.search)) return;
+    if (JSON.parse(localStorage.getItem("vx-quantum") || "{}").time === false) return;
+    var worlds = ${JSON.stringify(past)};
+    var tree = JSON.parse(sessionStorage.getItem("vx-branches") || "null");
+    var id = history.state && history.state.vxBranch;
+    var node = null;
+    if (tree && id) for (var i = 0; i < tree.nodes.length; i++) if (tree.nodes[i].id === id) node = tree.nodes[i];
+    var year = node ? node.year : JSON.parse(sessionStorage.getItem("vx-era") || "null");
+    if (typeof year !== "number" || year >= ${today}) return;
+    var world = null;
+    for (var j = 0; j < worlds.length; j++) if (worlds[j][0] <= year) world = worlds[j][1];
+    if (!world) return;
+    var root = document.documentElement;
+    root.setAttribute("data-era", world);
+    root.setAttribute("data-year", String(year));
+    var link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "/eras/" + world + ".css";
+    link.setAttribute("data-world", world);
+    link.setAttribute("blocking", "render");
+    document.head.appendChild(link);
+  } catch (e) {}
 })();`;

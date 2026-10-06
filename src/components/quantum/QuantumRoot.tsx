@@ -7,13 +7,16 @@ import type { Place } from "@/quantum/branches";
 import { flags, loadFlags } from "@/quantum/flags";
 import { startNavigation } from "@/quantum/navigate";
 import { useStore } from "@/quantum/store";
+import { era, startTime, worldOf } from "@/quantum/time";
 import { openPanel } from "@/quantum/ui";
 
 // Everything visible is loaded on demand, so the first load only carries
 // this file and the small stores under src/quantum/.
 const Ghosts = lazy(() => import("./Ghosts"));
 const BranchMap = lazy(() => import("./BranchMap"));
+const Timeline = lazy(() => import("./Timeline"));
 const EffectsPanel = lazy(() => import("./EffectsPanel"));
+const EraStrip = lazy(() => import("./EraStrip"));
 
 export type Echo = { lang: Locale; line: string };
 
@@ -24,6 +27,7 @@ export default function QuantumRoot({
   copy,
   places,
   echoes,
+  names,
 }: {
   lang: Locale;
   copy: Dictionary["quantum"];
@@ -31,24 +35,33 @@ export default function QuantumRoot({
   places: Record<Place, string>;
   /** The headline in the other languages, echoed behind the introduction. */
   echoes: Echo[];
+  /** Each skill's name in this language, for the timeline. */
+  names: Record<string, string>;
 }) {
   const [ready, setReady] = useState(false);
   // A dialog stays mounted once opened, so it can animate closed.
-  const [opened, setOpened] = useState<{ branches?: true; effects?: true }>({});
+  const [opened, setOpened] = useState<{ branches?: true; time?: true; effects?: true }>({});
   const on = useStore(flags);
   const panel = useStore(openPanel);
+  const year = useStore(era);
 
   useEffect(() => {
     loadFlags();
-    const stop = startNavigation(lang);
+    const stopNavigation = startNavigation(lang);
+    const stopTime = startTime();
     setReady(true);
     // Fetch the dialogs while the page is idle, so they open at once.
     const idle = window.requestIdleCallback ?? ((fn: () => void) => setTimeout(fn, 2000));
     idle(() => {
       import("./BranchMap");
+      import("./Timeline");
       import("./EffectsPanel");
+      import("./EraStrip");
     });
-    return stop;
+    return () => {
+      stopNavigation();
+      stopTime();
+    };
   }, [lang]);
 
   useEffect(() => {
@@ -58,20 +71,36 @@ export default function QuantumRoot({
   if (!ready) return null;
   const close = (open: boolean) => !open && openPanel.set(null);
   return (
-    <Suspense fallback={null}>
-      {on.ghosts && <Ghosts lang={lang} places={places} echoes={echoes} />}
-      {opened.branches && (
-        <BranchMap
-          open={panel === "branches"}
-          onOpenChange={close}
-          copy={copy.branches}
-          closeLabel={copy.close}
-          places={places}
-        />
-      )}
-      {opened.effects && (
-        <EffectsPanel open={panel === "effects"} onOpenChange={close} copy={copy.effects} closeLabel={copy.close} />
-      )}
-    </Suspense>
+    <>
+      {/* Says where in time the page is whenever that changes. */}
+      <p aria-live="polite" className="sr-only">
+        {year === null ? copy.time.worlds.now : `${year}, ${copy.time.worlds[worldOf(year)]}`}
+      </p>
+      <Suspense fallback={null}>
+        {on.ghosts && <Ghosts lang={lang} places={places} echoes={echoes} />}
+        {year !== null && <EraStrip copy={copy.time} />}
+        {opened.branches && (
+          <BranchMap
+            open={panel === "branches"}
+            onOpenChange={close}
+            copy={copy.branches}
+            closeLabel={copy.close}
+            places={places}
+          />
+        )}
+        {opened.time && (
+          <Timeline
+            open={panel === "time"}
+            onOpenChange={close}
+            copy={copy.time}
+            closeLabel={copy.close}
+            names={names}
+          />
+        )}
+        {opened.effects && (
+          <EffectsPanel open={panel === "effects"} onOpenChange={close} copy={copy.effects} closeLabel={copy.close} />
+        )}
+      </Suspense>
+    </>
   );
 }

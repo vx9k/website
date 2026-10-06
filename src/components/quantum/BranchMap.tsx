@@ -190,7 +190,10 @@ export default function BranchMap({
                   <span className="flex min-w-0 flex-col leading-tight">
                     <span className="truncate text-sm font-medium">
                       {places[r.node.place]}
-                      <span className="ml-2 font-mono text-xs text-muted-foreground">{locales[r.node.lang].short}</span>
+                      <span className="ml-2 font-mono text-xs text-muted-foreground">
+                        {locales[r.node.lang].short}
+                        {r.node.year !== null && ` · ${r.node.year}`}
+                      </span>
                     </span>
                     <span className="truncate text-xs text-muted-foreground">
                       {here ? copy.here : copy.choice[r.node.choice]}

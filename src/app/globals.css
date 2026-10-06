@@ -581,3 +581,82 @@ body {
     background: CanvasText;
   }
 }
+
+/* The timeline (Timeline.tsx): a line down the left, a dot per stop, and
+   a ring for vx's own start. It shares the branch map's collapse. */
+.timeline > ol {
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0.75rem;
+    bottom: 0.75rem;
+    left: 0.75rem;
+    width: 1.5px;
+    background: color-mix(in oklab, var(--foreground) 28%, transparent);
+  }
+}
+
+.timeline-dot,
+.timeline-mark {
+  position: absolute;
+  left: 0.75rem;
+  top: 1.125rem;
+  translate: -50% -50%;
+}
+
+.timeline-mark {
+  width: 9px;
+  height: 9px;
+  border-radius: 1px;
+  border: 1.5px solid var(--muted-foreground);
+  background: var(--background);
+}
+
+@media (forced-colors: active) {
+  .timeline > ol::before {
+    background: CanvasText;
+  }
+  .timeline-mark {
+    border-color: CanvasText;
+  }
+}
+
+/* Time travel: the barrier sweeps up the screen into the past (navigate.ts
+   marks the direction), so the new view resolves from the bottom. */
+html[data-travel="past"] {
+  &::view-transition {
+    background-image: linear-gradient(
+      to top,
+      transparent calc(var(--barrier) + 3%),
+      color-mix(in oklab, var(--signal) 20%, transparent) calc(var(--barrier) + 6.5%),
+      oklch(1 0 0 / 55%) calc(var(--barrier) + 7%),
+      color-mix(in oklab, var(--signal) 20%, transparent) calc(var(--barrier) + 7.5%),
+      transparent calc(var(--barrier) + 11%)
+    );
+  }
+  &::view-transition-old(root) {
+    mask-image: linear-gradient(
+      to top,
+      rgb(0 0 0 / 0.25) var(--barrier),
+      transparent calc(var(--barrier) + 3%),
+      transparent calc(var(--barrier) + 11%),
+      black calc(var(--barrier) + 17%)
+    );
+  }
+  &::view-transition-new(root) {
+    mask-image: linear-gradient(to top, black calc(var(--barrier) - 1%), transparent calc(var(--barrier) + 3%));
+  }
+}
+
+/* The strip under the header while the page is in the past (EraStrip.tsx). */
+.era-strip {
+  background: var(--background);
+}
+
+/* In the past eras with light pages (public/eras/), dark ghosts stand
+   out more than light ones do on carbon, so they're mixed most of the
+   way into the page. */
+html[data-era]:not([data-era="terminal"]) :is(.ghosts > span, .echo) {
+  color: color-mix(in srgb, var(--foreground) 40%, var(--background));
+}

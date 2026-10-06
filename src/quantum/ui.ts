@@ -1,8 +1,8 @@
 import { createStore } from "./store";
 
-// Which of the two dialogs is open. The buttons that open them live in the
-// header and footer, the dialogs in QuantumRoot, so they meet here.
-export type Panel = "branches" | "effects" | null;
+// Which dialog is open. The buttons that open them live in the header
+// and footer, the dialogs in QuantumRoot, so they meet here.
+export type Panel = "branches" | "time" | "effects" | null;
 export const openPanel = createStore<Panel>(null);
 
 // The button that opened the dialog. Radix hands focus back to a dialog's

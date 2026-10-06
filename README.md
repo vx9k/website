@@ -4,7 +4,7 @@ Source for [kthread.dev](https://kthread.dev), the personal site of [vx](https:/
 
 It's a single static page built with Next.js, Tailwind CSS and [shadcn/ui](https://ui.shadcn.com), exported to plain HTML and served from Cloudflare Workers at [kthread.dev](https://kthread.dev). The design is carbon: one dark theme in neutral greys, shadcn/ui's cards and buttons in a single centred column, Geist type, and a faint mesh of hairlines behind it all that's strongest at the top of the page. The skills carry small animated icons in their own colours, drawn in CSS and SVG. It reads in English, Spanish and Portuguese.
 
-Over the page sits a quantum layer, all of it optional. Moving around the page branches it like many worlds, and a map in the header lets you jump back to any branch. The parts you haven't visited flicker faintly behind the one you're in, and moving between sections tunnels through a barrier. Each effect can be switched off from the footer, and they all keep still when your system asks for less motion.
+Over the page sits a quantum layer, all of it optional. Moving around the page branches it like many worlds, and a map in the header lets you jump back to any branch. The parts you haven't visited flicker faintly behind the one you're in, and moving between sections tunnels through a barrier. A timeline in the header lists each skill in the year it first appeared, and travelling to one shows the page as it might have looked then, from a 1972 teletype printout and a 1978 video terminal through the early web and Web 2.0 to flat design; the content stays the same. Each effect can be switched off from the footer, and they all keep still when your system asks for less motion.
 
 ## Running it
 
@@ -38,9 +38,10 @@ src/
 ├── components/
 │   ├── ui/                   shadcn/ui: button, card, badge, separator, dialog, switch, field
 │   ├── site/                 the intro, the sections, the skill icons and the language links
-│   └── quantum/              the branch map, the effects panel and the ghost previews
-├── quantum/                  the branch tree, navigation and history, and the effect flags
+│   └── quantum/              the branch map, the timeline, the effects panel and the ghost previews
+├── quantum/                  the branch tree, navigation and history, time travel, the effect flags
 └── lib/utils.ts              shadcn/ui's cn()
+public/eras/                  one stylesheet per past era of time travel, and its fonts
 ```
 
 Other files at the root:

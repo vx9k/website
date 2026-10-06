@@ -47,6 +47,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
               </ul>
             </nav>
             <PanelButton panel="branches" label={t.quantum.branches.open} />
+            <PanelButton panel="time" label={t.quantum.time.open} />
             <LanguageLinks lang={lang} label={t.nav.language} current={current} other={other} />
           </div>
         </div>

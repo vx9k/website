@@ -3,23 +3,26 @@ import { hasLocale, type Locale } from "@/app/i18n/locales";
 import { createStore } from "./store";
 
 // Many-worlds navigation: every visit is a branch, a place on the site
-// plus the choice that led there. Taking a different path from the same
-// place splits off a new branch; taking the same one again re-enters the
-// branch that's already there. The tree lives in sessionStorage, so it
-// lasts as long as the tab and survives the full page loads of a language
-// switch. Back and forward don't branch: they move along the tree, by the
-// branch id stored on each history entry (see navigate.ts).
+// and the year it's seen in (see time.ts), plus the choice that led
+// there. Taking a different path from the same place splits off a new
+// branch; taking the same one again re-enters the branch that's already
+// there. The tree lives in sessionStorage, so it lasts as long as the tab
+// and survives the full page loads of a language switch. Back and forward
+// don't branch: they move along the tree, by the branch id stored on each
+// history entry (see navigate.ts).
 
 export type Place = "top" | (typeof sections)[number];
 export const places: readonly Place[] = ["top", ...sections];
 
-export type Choice = "start" | "nav" | "lang" | "map" | "link";
+export type Choice = "start" | "nav" | "lang" | "map" | "link" | "time";
 
 export type Branch = {
   id: string;
   parent: string | null;
   lang: Locale;
   place: Place;
+  /** The year the page is seen in, or null for today. */
+  year: number | null;
   choice: Choice;
   /** When the branch was first taken, for ordering siblings. */
   at: number;
@@ -97,18 +100,26 @@ export function moveTo(id: string) {
 }
 
 /** Takes a path from a branch (the current one by default): re-enters the
- *  child that made the same choice to the same place, or splits off a new
- *  one, and makes it current. */
-export function branch(lang: Locale, place: Place, choice: Choice, from = tree.get().current): Branch {
+ *  child that made the same choice to the same place and year, or splits
+ *  off a new one, and makes it current. The year carries over unless the
+ *  choice was to travel. */
+export function branch(
+  lang: Locale,
+  place: Place,
+  choice: Choice,
+  from = tree.get().current,
+  year = find(from)?.year ?? null,
+): Branch {
   const { nodes } = tree.get();
   const existing = nodes.find(
-    (n) => n.parent === from && n.lang === lang && n.place === place && n.choice === choice,
+    (n) => n.parent === from && n.lang === lang && n.place === place && n.choice === choice && n.year === year,
   );
   if (existing) {
     moveTo(existing.id);
     return existing;
   }
-  const node: Branch = { id: newId(), parent: from && find(from) ? from : null, lang, place, choice, at: Date.now() };
+  const parent = from && find(from) ? from : null;
+  const node: Branch = { id: newId(), parent, lang, place, year, choice, at: Date.now() };
   save({ nodes: prune([...nodes, node], node.id), current: node.id });
   return node;
 }
@@ -116,7 +127,9 @@ export function branch(lang: Locale, place: Place, choice: Choice, from = tree.g
 export function loadTree() {
   try {
     const saved = JSON.parse(sessionStorage.getItem(key) ?? "null");
-    if (saved && Array.isArray(saved.nodes)) tree.set(saved);
+    // Trees saved before time travel have no years: they were today.
+    if (saved && Array.isArray(saved.nodes))
+      tree.set({ ...saved, nodes: saved.nodes.map((n: Branch) => ({ ...n, year: n.year ?? null })) });
   } catch {}
 }
 
