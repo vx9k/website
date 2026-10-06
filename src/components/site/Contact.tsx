@@ -3,22 +3,25 @@ import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/comp
 import GitHubLink from "./GitHubLink";
 import Section from "./Section";
 
-/** One panel, the page's only light surface: open to work, and the way
- *  to the code again. Today's world inverts it in globals.css (`.panel-light`),
- *  so the past eras get an ordinary card. */
+/** On a block of H-alpha, the last line on the page: open to work, set
+ *  large and wide, and the way to the code again. */
 export default function Contact({ t }: { t: Dictionary }) {
   const c = t.contact;
   return (
-    <Section id="contact" title={c.title}>
-      <Card className="panel-light gap-8 rounded-md py-8 shadow-none sm:py-12">
-        <CardHeader className="gap-4 px-6 sm:px-10">
-          <CardTitle role="heading" aria-level={3} className="flex items-center gap-3 text-3xl font-medium tracking-tight sm:text-4xl">
-            <span aria-hidden className="size-2.5 shrink-0 rounded-[1px] bg-signal" />
+    <Section id="contact" title={c.title} tone="block">
+      <Card className="contact-card gap-10 rounded-none border-0 bg-transparent py-0 shadow-none md:flex-row md:items-end md:justify-between">
+        <CardHeader className="flex-1 gap-5 px-0">
+          <CardTitle
+            role="heading"
+            aria-level={3}
+            className="contact-heading text-[clamp(2rem,1rem+4vw,4.5rem)] leading-none font-bold tracking-tight text-balance [font-stretch:125%]"
+          >
+            <span aria-hidden className="mr-[0.3em] inline-block size-[0.3em] rounded-[1px] bg-signal align-middle" />
             {c.heading}
           </CardTitle>
           <CardDescription className="text-lg">{c.body}</CardDescription>
         </CardHeader>
-        <CardFooter className="px-6 sm:px-10">
+        <CardFooter className="px-0">
           <GitHubLink />
         </CardFooter>
       </Card>

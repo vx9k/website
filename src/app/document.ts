@@ -1,33 +1,34 @@
 import type { Viewport } from "next";
-import { IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
+import { Anybody, Martian_Mono } from "next/font/google";
 import { worlds } from "./content";
 
 // Shared by the root layout and the global 404, which renders its own
 // <html> and so can't inherit anything from the layout.
 
-// Instrument Sans is variable, so every weight comes from the same file;
-// Plex Mono isn't, so it loads the two weights the labels use. The latin
-// subset already has every accent Spanish and Portuguese use. The era
-// stylesheets swap the faces by redefining these two variables.
-const sans = Instrument_Sans({
+// Both are variable in weight and in width, and the width axis is the
+// point: the headline is set wide, the section titles condensed, and the
+// titles stretch into place as they scroll in. The latin subset already
+// has every accent Spanish and Portuguese use. The era stylesheets swap
+// the faces by redefining these two variables.
+const sans = Anybody({
   variable: "--font-face-sans",
   subsets: ["latin"],
+  axes: ["wdth"],
   display: "swap",
 });
 
-const mono = IBM_Plex_Mono({
+const mono = Martian_Mono({
   variable: "--font-face-mono",
   subsets: ["latin"],
-  weight: ["400", "500"],
+  axes: ["wdth"],
   display: "swap",
 });
 
 export const fontVariables = `${sans.variable} ${mono.variable}`;
 
-// The browser chrome matches the page, which is black: the background
-// token.
+// The browser chrome matches the page: the background token, ink.
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: "#0a0812",
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1,

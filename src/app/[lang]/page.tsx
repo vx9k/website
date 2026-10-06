@@ -4,6 +4,7 @@ import LanguageLinks from "@/components/site/LanguageLinks";
 import PanelButton from "@/components/quantum/PanelButton";
 import Principles from "@/components/site/Principles";
 import Skills from "@/components/site/Skills";
+import { SpectrumMark, SpectrumStrip } from "@/components/site/Spectrum";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { links, sections } from "../content";
@@ -18,9 +19,9 @@ const other = cn(buttonVariants({ variant: "ghost", size: "xs" }), segment, "tex
 // The footer's links: small mono capitals, muted until hovered.
 const footerLink = "h-8 px-0 font-mono text-xs tracking-wider text-muted-foreground uppercase hover:text-foreground";
 
-// One page in one column whose edges are drawn down the page: the
-// introduction centred over the background, then a band per section with
-// its title pinned on the left, then the footer (see globals.css).
+// One page shaped by hydrogen's emission spectrum: the introduction, with
+// the spectrum under it as an index, then a section per line, shifting
+// from violet to red down the page, then the footer (see globals.css).
 export default async function Home({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   // The layout already 404s unknown languages; this narrows the type.
@@ -29,15 +30,12 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
 
   return (
     <>
-      {/* Solid black with a hairline under it: the page scrolls under the
-          header, so it has to be opaque. */}
+      {/* Solid ink: the page scrolls under the header. Its rule takes the
+          colour of the line you've scrolled to (the redshift, globals.css). */}
       <header className="site-header sticky top-0 z-40 border-b bg-background">
         <div className="shell flex h-14 items-center justify-between gap-4">
-          <a
-            href={`/${lang}`}
-            className="inline-flex min-h-10 items-center gap-2.5 text-lg font-semibold tracking-tight"
-          >
-            <span aria-hidden className="size-2.5 rounded-[2px] bg-signal" />
+          <a href={`/${lang}`} className="inline-flex min-h-10 items-center gap-2.5 text-lg font-bold [font-stretch:125%]">
+            <SpectrumMark />
             vx
           </a>
           <div className="flex items-center gap-2 sm:gap-3">
@@ -66,45 +64,29 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         <Contact t={t} />
       </main>
 
-      {/* Two columns of links in mono, and the name as large as the room
-          beside them allows, its foot cut off by the bottom of the page. */}
-      <footer className="band">
-        <div className="shell flex flex-wrap items-end justify-between gap-x-8 gap-y-6 overflow-hidden pt-12">
-          <div className="grid grid-cols-2 gap-8 pb-10 sm:gap-16">
-            <div className="flex flex-col gap-3">
-              <p className="label">{t.nav.label}</p>
-              <ul className="flex flex-col items-start">
-                {sections.map((id) => (
-                  <li key={id}>
-                    <Button asChild variant="link" size="sm" className={footerLink}>
-                      <a href={`#${id}`}>{t.nav[id]}</a>
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="flex flex-col gap-3">
-              <p className="label">{t.footer.site}</p>
-              <ul className="flex flex-col items-start">
-                <li>
-                  <Button asChild variant="link" size="sm" className={footerLink}>
-                    <a href={links.website}>{t.footer.source} ↗</a>
-                  </Button>
-                </li>
-                <li>
-                  <Button asChild variant="link" size="sm" className={footerLink}>
-                    <a href="#top">{t.footer.top} ↑</a>
-                  </Button>
-                </li>
-                <li>
-                  <PanelButton panel="effects" label={t.quantum.effects.open} className={footerLink} />
-                </li>
-              </ul>
-            </div>
-          </div>
-          <p aria-hidden className="wordmark">
+      {/* The spectrum once more, then the name and the links in one row. */}
+      <footer className="site-footer">
+        <SpectrumStrip />
+        <div className="shell flex flex-wrap items-center justify-between gap-x-8 gap-y-4 py-8">
+          <p className="inline-flex items-center gap-2.5 font-bold [font-stretch:125%]">
+            <SpectrumMark />
             vx
           </p>
+          <ul className="flex flex-wrap items-center gap-x-6">
+            <li>
+              <Button asChild variant="link" size="sm" className={footerLink}>
+                <a href={links.website}>{t.footer.source} ↗</a>
+              </Button>
+            </li>
+            <li>
+              <Button asChild variant="link" size="sm" className={footerLink}>
+                <a href="#top">{t.footer.top} ↑</a>
+              </Button>
+            </li>
+            <li>
+              <PanelButton panel="effects" label={t.quantum.effects.open} className={footerLink} />
+            </li>
+          </ul>
         </div>
       </footer>
     </>

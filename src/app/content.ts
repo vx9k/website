@@ -11,9 +11,15 @@ export const links = {
 // order here is the order on the page, and sets each section's number.
 export const sections = ["skills", "principles", "contact"] as const;
 
+// Each place on the page takes one of hydrogen's four visible emission
+// lines, the Balmer series, in order of wavelength down the page (in nm,
+// rounded): the page shifts from violet to red as it scrolls. The
+// colours are tokens in globals.css (--line-410 and so on).
+export const lines = { top: 410, skills: 434, principles: 486, contact: 656 } as const;
+
 // Each skill's icon comes from marks.ts (a brand mark) or SkillIcon.tsx (a
 // drawn glyph), keyed by id. Brand marks use the brand's own colour, with a
-// lighter shade where the original would vanish on carbon; the drawn
+// lighter shade where the original would vanish on ink; the drawn
 // glyphs use signal. Skills without a name here take a
 // translated one from the dictionaries, and some add a translated note.
 // The year is when the skill first appeared, which sets its stop on the
