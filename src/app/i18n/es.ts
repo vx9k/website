@@ -90,6 +90,10 @@ const es: Dictionary = {
           name: "Fondo de interferencia",
           note: "Ondas tenues de tres fuentes, brillantes donde se suman y oscuras donde se anulan. Una sigue al puntero, y cada rama ubica las otras.",
         },
+        foam: {
+          name: "Espuma cuántica",
+          note: "Pares de partículas que aparecen detrás de la página y se aniquilan un instante después, al azar. Se dibuja con WebGPU si tu navegador lo tiene, y cambia en cada visita.",
+        },
         cursor: {
           name: "Cursor de probabilidad",
           note: "En una computadora con mouse, una nube de dónde podría estar el puntero. Un clic la colapsa en un punto.",

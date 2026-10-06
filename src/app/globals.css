@@ -686,11 +686,12 @@ html[data-superposed] .site-header :is(nav a, [data-panel]):is(:focus-visible, [
   --held: 0;
 }
 
-/* Interference (Interference.tsx): a canvas behind everything, fixed to
-   the viewport. It's the one fixed layer besides the dialogs, so Safari
-   on iOS may leave it out under its bars, which costs nothing. The shader
-   keeps it faint; contrast themes and the past eras don't show it. */
-.interference {
+/* The background (Background.tsx): the interference and the foam, on a
+   canvas behind everything, fixed to the viewport. It's the one fixed
+   layer besides the dialogs, so Safari on iOS may leave it out under its
+   bars, which costs nothing. The shader keeps it faint; contrast themes
+   and the past eras don't show it. */
+.quantum-background {
   position: fixed;
   inset: 0;
   z-index: -1;
@@ -700,7 +701,7 @@ html[data-superposed] .site-header :is(nav a, [data-panel]):is(:focus-visible, [
 }
 
 @media (forced-colors: active) {
-  .interference {
+  .quantum-background {
     display: none;
   }
 }

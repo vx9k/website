@@ -90,6 +90,10 @@ const pt: Dictionary = {
           name: "Fundo de interferência",
           note: "Ondas suaves de três fontes, claras onde se somam e escuras onde se anulam. Uma segue o ponteiro, e cada ramificação posiciona as outras.",
         },
+        foam: {
+          name: "Espuma quântica",
+          note: "Pares de partículas que surgem atrás da página e se aniquilam um instante depois, ao acaso. Desenhada com WebGPU quando o navegador tem, e diferente a cada visita.",
+        },
         cursor: {
           name: "Cursor de probabilidade",
           note: "Em um computador com mouse, uma nuvem de onde o ponteiro poderia estar. Um clique a colapsa em um ponto.",

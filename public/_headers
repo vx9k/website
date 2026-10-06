@@ -4,7 +4,9 @@
 #
 # The CSP allows nothing but this origin. Next.js writes a few inline
 # scripts into each page; after every build, scripts/csp.mjs puts their
-# hashes in place of the token in script-src. Styles need 'unsafe-inline':
+# hashes in place of the token in script-src. 'wasm-unsafe-eval' lets the
+# quantum foam compile its WebAssembly module (public/quantum/foam.wasm);
+# it allows WebAssembly only, not eval. Styles need 'unsafe-inline':
 # the stylesheet is inlined, and each skill's colour is a style attribute,
 # which a hash can't allow without 'unsafe-hashes'. Trusted Types are
 # required, and the only policy allowed is the default one that
@@ -15,7 +17,7 @@
 # HSTS covers subdomains too. The zone's other records are iCloud mail,
 # which doesn't use HTTPS, and www redirects to the apex over HTTPS.
 /*
-  Content-Security-Policy: default-src 'none'; script-src 'self' INLINE_SCRIPT_HASHES; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests; require-trusted-types-for 'script'; trusted-types default
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'wasm-unsafe-eval' INLINE_SCRIPT_HASHES; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests; require-trusted-types-for 'script'; trusted-types default
   Strict-Transport-Security: max-age=63072000; includeSubDomains
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY

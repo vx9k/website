@@ -18,7 +18,7 @@ const BranchMap = lazy(() => import("./BranchMap"));
 const Timeline = lazy(() => import("./Timeline"));
 const EffectsPanel = lazy(() => import("./EffectsPanel"));
 const EraStrip = lazy(() => import("./EraStrip"));
-const Interference = lazy(() => import("./Interference"));
+const Background = lazy(() => import("./Background"));
 const ProbabilityCursor = lazy(() => import("./ProbabilityCursor"));
 const Entanglement = lazy(() => import("./Entanglement"));
 const Orbital = lazy(() => import("./Orbital"));
@@ -100,7 +100,9 @@ export default function QuantumRoot({
       <Suspense fallback={null}>
         {on.ghosts && <Ghosts lang={lang} places={places} echoes={echoes} />}
         {/* Today only: the past eras paint their own backgrounds. */}
-        {on.interference && year === null && <Interference still={still} />}
+        {(on.interference || on.foam) && year === null && (
+          <Background waves={on.interference} foam={on.foam} still={still} />
+        )}
         {on.cursor && mouse && !still && <ProbabilityCursor />}
         {on.entanglement && <Entanglement />}
         {on.orbital && <Orbital still={still} />}

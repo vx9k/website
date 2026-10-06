@@ -94,6 +94,10 @@ const en = {
           name: "Interference background",
           note: "Faint waves from three sources, bright where they add up and dark where they cancel. One follows your pointer, and each branch places the others.",
         },
+        foam: {
+          name: "Quantum foam",
+          note: "Pairs of particles that flicker into being behind the page and annihilate a moment later, at random. Drawn with WebGPU where your browser has it, and seeded fresh on every visit.",
+        },
         cursor: {
           name: "Probability cursor",
           note: "On a computer with a mouse, a cloud of where your pointer might be. A click collapses it to one point.",
