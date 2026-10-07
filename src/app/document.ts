@@ -1,19 +1,18 @@
 import type { Viewport } from "next";
-import { Anybody, Martian_Mono } from "next/font/google";
+import { Host_Grotesk, Martian_Mono } from "next/font/google";
 import { worlds } from "./content";
 
 // Shared by the root layout and the global 404, which renders its own
 // <html> and so can't inherit anything from the layout.
 
-// Both are variable in weight and in width, and the width axis is the
-// point: the headline is set wide, the section titles condensed, and the
-// titles stretch into place as they scroll in. The latin subset already
-// has every accent Spanish and Portuguese use. The era stylesheets swap
-// the faces by redefining these two variables.
-const sans = Anybody({
+// Host Grotesk sets everything, the headlines at a regular weight; Martian
+// Mono, square and wide, sets the labels and the "vx" in the headline.
+// Both are variable, and the latin subset already has every accent
+// Spanish and Portuguese use. The era stylesheets swap the faces by
+// redefining these two variables.
+const sans = Host_Grotesk({
   variable: "--font-face-sans",
   subsets: ["latin"],
-  axes: ["wdth"],
   display: "swap",
 });
 
@@ -26,10 +25,10 @@ const mono = Martian_Mono({
 
 export const fontVariables = `${sans.variable} ${mono.variable}`;
 
-// The browser chrome matches the page: the background token, ink.
+// The browser chrome matches the header, the darkest thing on the page.
 export const viewport: Viewport = {
-  themeColor: "#0a0812",
-  colorScheme: "dark",
+  themeColor: "#0b0b0c",
+  colorScheme: "light dark",
   width: "device-width",
   initialScale: 1,
 };

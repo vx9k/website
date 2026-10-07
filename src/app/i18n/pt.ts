@@ -51,6 +51,7 @@ const pt: Dictionary = {
     body: "Meus projetos são públicos no GitHub.",
   },
   footer: {
+    site: "Este site",
     source: "Código deste site",
     top: "Voltar ao topo",
   },

@@ -36,8 +36,11 @@ export default function ProbabilityCursor() {
     let frame = 0;
     let visible = false;
 
-    const colour = () => getComputedStyle(document.documentElement).color;
-    const signal = () => getComputedStyle(document.documentElement).getPropertyValue("--signal").trim() || colour();
+    // The canvas's own colour: CSS draws it white and blends it by
+    // difference, so it shows on the dark first screen and the white page
+    // alike (`.probability-cursor` in globals.css).
+    const node: HTMLCanvasElement = el;
+    const colour = () => getComputedStyle(node).color;
 
     function draw(now: number) {
       frame = 0;
@@ -59,8 +62,8 @@ export default function ProbabilityCursor() {
         if (t >= 1) flash = null;
         else {
           ctx!.globalAlpha = 1 - t;
-          ctx!.strokeStyle = signal();
-          ctx!.fillStyle = signal();
+          ctx!.strokeStyle = colour();
+          ctx!.fillStyle = colour();
           ctx!.lineWidth = 1.5;
           ctx!.beginPath();
           ctx!.arc(c + flash.x, c + flash.y, 2 + t * 14, 0, Math.PI * 2);

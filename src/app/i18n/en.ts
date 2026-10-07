@@ -53,6 +53,8 @@ const en = {
     body: "My projects are public on GitHub.",
   },
   footer: {
+    // The heading over the footer's second column of links.
+    site: "This site",
     source: "Source for this site",
     top: "Back to top",
   },
