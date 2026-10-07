@@ -784,30 +784,7 @@ html[data-superposed] .site-header :is(nav a, [data-panel]):is(:focus-visible, [
 }
 
 /* Entanglement (Entanglement.tsx): the two skills of a pair answer
-   together, spinning opposite ways, joined by a faint arc. */
-.entangle-line {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  pointer-events: none;
-  z-index: 1;
-  & path {
-    fill: none;
-    stroke: color-mix(in oklab, var(--foreground) 35%, transparent);
-    stroke-width: 1.25;
-    stroke-dasharray: 0.012 0.012;
-    animation: entangle-flow 1.6s linear infinite;
-  }
-}
-
-@keyframes entangle-flow {
-  to {
-    stroke-dashoffset: -0.24;
-  }
-}
-
+   together, spinning opposite ways. */
 [data-entangled] .icon-tile {
   box-shadow:
     inset 0 0 0 1px color-mix(in oklab, var(--c) 70%, transparent),
@@ -824,17 +801,8 @@ html[data-superposed] .site-header :is(nav a, [data-panel]):is(:focus-visible, [
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .entangle-line path {
-    animation: none;
-  }
   [data-entangled] .icon-tile svg {
     rotate: none;
-  }
-}
-
-@media (forced-colors: active) {
-  .entangle-line path {
-    stroke: CanvasText;
   }
 }
 
@@ -1165,8 +1133,12 @@ html:not([data-era]) .page :is(.skill:hover, [data-entangled]) .icon-tile {
       padding: 0;
     }
   }
+  /* The earlier layout drew a rule down the left of the quote, padded
+     away from the text; the eras restyle or remove it. */
   & .statement {
     max-width: 42rem;
+    border-left: 2px solid var(--signal);
+    padding-left: 1rem;
     font-size: 1.25rem;
     letter-spacing: 0;
   }
