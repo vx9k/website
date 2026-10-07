@@ -11,16 +11,12 @@ export const links = {
 // order here is the order on the page, and sets each section's number.
 export const sections = ["skills", "principles", "contact"] as const;
 
-// Each place on the page takes one of hydrogen's four visible emission
-// lines, the Balmer series, in order of wavelength down the page (in nm,
-// rounded): the page shifts from violet to red as it scrolls. The
-// colours are tokens in globals.css (--line-410 and so on).
-export const lines = { top: 410, skills: 434, principles: 486, contact: 656 } as const;
 
 // Each skill's icon comes from marks.ts (a brand mark) or SkillIcon.tsx (a
 // drawn glyph), keyed by id. Brand marks use the brand's own colour, with a
-// lighter shade where the original would vanish on ink; the drawn
-// glyphs use signal. Skills without a name here take a
+// darker shade where the original would vanish on white; the drawn glyphs
+// use signal. Today's page shows them in the text colour until a skill is
+// pointed at. Skills without a name here take a
 // translated one from the dictionaries, and some add a translated note.
 // The year is when the skill first appeared, which sets its stop on the
 // timeline; the dictionaries name the event each year stands for.
@@ -30,9 +26,9 @@ export const skills = [
   {
     group: "languages",
     items: [
-      { id: "c", name: "C", color: "#a8b9cc", year: 1972 },
+      { id: "c", name: "C", color: "#5c6f8a", year: 1972 },
       { id: "asm", color: "var(--signal)", year: 1978 },
-      { id: "python", name: "Python", color: "#5a9fd4", year: 1991 },
+      { id: "python", name: "Python", color: "#3776ab", year: 1991 },
       // The JavaScript and TypeScript marks are squares with the letters
       // cut out; ink fills the letters the way the real logos do.
       { id: "javascript", name: "JavaScript", color: "#f7df1e", ink: "#141413", year: 1995 },
@@ -43,7 +39,7 @@ export const skills = [
     group: "web",
     items: [
       { id: "html", name: "HTML", color: "#e34f26", year: 1991 },
-      { id: "css", name: "CSS", color: "#a47fd8", year: 1996 },
+      { id: "css", name: "CSS", color: "#663399", year: 1996 },
       { id: "nextjs", name: "Next.js", color: "var(--foreground)", year: 2016 },
       { id: "nodejs", name: "Node.js", color: "#5fa04e", year: 2009 },
     ],
@@ -55,7 +51,7 @@ export const skills = [
       { id: "l4", name: "L4", color: "var(--signal)", year: 1984 },
       { id: "l67", name: "L6 · L7", color: "var(--signal)", year: 1984 },
       { id: "nftables", name: "nftables", color: "var(--signal)", year: 2014 },
-      { id: "nginx", name: "nginx", color: "#2fb45f", year: 2004 },
+      { id: "nginx", name: "nginx", color: "#009639", year: 2004 },
     ],
   },
   {
