@@ -51,8 +51,103 @@ const pt: Dictionary = {
     body: "Meus projetos são públicos no GitHub.",
   },
   footer: {
+    site: "Este site",
     source: "Código deste site",
     top: "Voltar ao topo",
+  },
+  quantum: {
+    close: "Fechar",
+    branches: {
+      open: "Ramificações",
+      title: "Ramificações",
+      description: "Cada lugar desta página por onde você passou, que se divide sempre que você escolheu outro caminho. Escolha um para voltar a ele.",
+      here: "Você está aqui",
+      top: "Introdução",
+      choice: {
+        start: "Chegada",
+        nav: "Link",
+        lang: "Troca de idioma",
+        map: "Salto pelo mapa",
+        link: "Visita direta",
+        time: "Viagem no tempo",
+      },
+    },
+    effects: {
+      open: "Efeitos",
+      title: "Efeitos",
+      description: "Os efeitos visuais desta página. Sua escolha fica salva neste navegador.",
+      all: "Todos os efeitos",
+      reduced: "Seu sistema pede menos movimento, então os efeitos ficam parados.",
+      items: {
+        ghosts: {
+          name: "Prévias fantasma",
+          note: "Ecos suaves das partes da página que você ainda não abriu.",
+        },
+        superposition: {
+          name: "Navegação em superposição",
+          note: "Cada link do cabeçalho fica em vários lugares suaves ao mesmo tempo e colapsa em um só quando o ponteiro se aproxima. Em uma tela sensível ao toque, o primeiro toque colapsa um link e o segundo o abre.",
+        },
+        interference: {
+          name: "Fundo de interferência",
+          note: "Ondas suaves de três fontes, claras onde se somam e escuras onde se anulam. Uma segue o ponteiro, e cada ramificação posiciona as outras.",
+        },
+        foam: {
+          name: "Espuma quântica",
+          note: "Pares de partículas que surgem atrás da página e se aniquilam um instante depois, ao acaso. Desenhada com WebGPU quando o navegador tem, e diferente a cada visita.",
+        },
+        cursor: {
+          name: "Cursor de probabilidade",
+          note: "Em um computador com mouse, uma nuvem de onde o ponteiro poderia estar. Um clique a colapsa em um ponto.",
+        },
+        entanglement: {
+          name: "Habilidades emaranhadas",
+          note: "As habilidades formam pares, como C e Assembly x86. Aponte ou toque em uma e o par responde, girando ao contrário.",
+        },
+        orbital: {
+          name: "Orbital",
+          note: "Em telas largas, ao lado da introdução, um orbital do hidrogênio desenhado a partir da sua densidade de probabilidade. Cada ramificação mostra o seu: 2p ou um de dois 3d.",
+        },
+        tunneling: {
+          name: "Transições por tunelamento",
+          note: "Passar para outra seção atravessa uma barreira.",
+        },
+        time: {
+          name: "Viagem no tempo",
+          note: "A linha do tempo no cabeçalho, e esta página como poderia ter sido no ano de cada habilidade.",
+        },
+      },
+    },
+    time: {
+      open: "Linha do tempo",
+      title: "Linha do tempo",
+      description: "Cada habilidade no ano em que surgiu. Viaje até uma para ver esta página como ela poderia ter sido naquela época. O conteúdo continua o mesmo.",
+      now: "Voltar ao presente",
+      started: "vx começa a usar tecnologia",
+      events: {
+        1972: "C, no Bell Labs",
+        1978: "O 8086 da Intel",
+        1984: "O modelo OSI, publicado pela ISO",
+        1991: "Python 0.9.0 e a primeira descrição do HTML",
+        1995: "JavaScript, anunciado pela Netscape",
+        1996: "CSS nível 1, recomendação do W3C",
+        2004: "A primeira versão pública do nginx",
+        2009: "A primeira versão do Node.js",
+        2012: "A primeira versão pública do TypeScript",
+        2014: "nftables, incorporado ao Linux 3.13",
+        2016: "A primeira versão do Next.js",
+        2017: "O artigo do Transformer, “Attention Is All You Need”",
+        2022: "O lançamento do ChatGPT",
+      },
+      worlds: {
+        teletype: "Impressão de teletipo",
+        terminal: "Terminal de vídeo",
+        desktop: "Área de trabalho",
+        web1: "Web inicial",
+        web2: "Web 2.0",
+        flat: "Design flat",
+        now: "Hoje",
+      },
+    },
   },
   notFound: {
     title: "Página não encontrada",

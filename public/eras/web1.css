@@ -1,0 +1,422 @@
+/* 1991 to 2003, Python, HTML, JavaScript and CSS: the early web, in three
+   steps (<html data-year>).
+   1991: hypertext as the first browsers drew it. Black serif text on white,
+   blue underlined links, no images and no boxes, so the page shows its
+   bare structure: the skills and the principles as plain lists.
+   1995: a browser on a grey page. Images arrive (the icons), and with
+   forms, grey bevelled buttons; boxes are tables with raised borders.
+   1996: CSS level 1. Verdana and Georgia, colour on the headings, table
+   headers in navy, and a coloured band down the side.
+   Loaded by src/quantum/time.ts; everything here is scoped to
+   <html data-era="web1">, and unlayered, so it wins over the page's
+   Tailwind utilities without !important. */
+
+html[data-era="web1"] {
+  color-scheme: light;
+  --link: #0000ee;
+  --visited: #551a8b;
+  --radius: 0px;
+  --background: #ffffff;
+  --foreground: #000000;
+  --card: transparent;
+  --card-foreground: #000000;
+  --popover: #ffffff;
+  --popover-foreground: #000000;
+  --primary: var(--link);
+  --primary-foreground: #ffffff;
+  --secondary: transparent;
+  --secondary-foreground: #000000;
+  --muted: transparent;
+  --muted-foreground: #000000;
+  --accent: transparent;
+  --accent-foreground: var(--link);
+  --border: #808080;
+  --input: #808080;
+  --ring: #000000;
+  --signal: #000000;
+  --rule: transparent;
+  --font-face-sans: "Times New Roman", Times, serif;
+  --font-face-mono: "Courier New", Courier, monospace;
+  background: var(--background);
+  -webkit-font-smoothing: auto;
+
+  & *,
+  & ::before,
+  & ::after {
+    border-radius: 0;
+    letter-spacing: normal;
+  }
+
+  & ::selection {
+    background: #000080;
+    color: #ffffff;
+  }
+
+  & :focus-visible {
+    outline: 2px dotted #000000;
+    outline-offset: 1px;
+  }
+
+  & body {
+    line-height: 1.35;
+  }
+
+  & .site-header {
+    background: var(--background);
+    backdrop-filter: none;
+    border-bottom: 2px groove #d4d4d4;
+  }
+
+  /* Headings at a browser's default sizes. */
+  & h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: normal;
+  }
+  & h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: normal;
+  }
+  & [data-slot="card-title"] {
+    font-size: 1.17rem;
+    font-weight: 700;
+  }
+  & .label {
+    color: #000000;
+  }
+
+  & [data-slot="card"] {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  & [data-slot="separator"] {
+    height: 0;
+    background: none;
+    border-top: 1px solid #808080;
+    border-bottom: 1px solid #ffffff;
+  }
+
+  & blockquote {
+    border: 0;
+    margin-inline: 2.5rem;
+    padding: 0;
+    font-size: 1.125rem;
+  }
+
+  /* Links are blue and underlined; so is every button that's a link. */
+  & a,
+  & [data-slot="button"][data-variant="link"],
+  & [data-slot="button"][data-variant="ghost"] {
+    color: var(--link);
+    text-decoration: underline;
+    text-underline-offset: auto;
+  }
+  & a:visited {
+    color: var(--visited);
+  }
+  & .site-header a[href^="/"]:not([hreflang]) {
+    color: #000000;
+    text-decoration: none;
+  }
+  & [data-slot="button"] {
+    box-shadow: none;
+    font-weight: 400;
+  }
+  & a[data-slot="button"]:is([data-variant="default"], [data-variant="outline"]) {
+    background: transparent;
+    border: 0;
+    padding-inline: 0;
+    height: auto;
+    color: var(--link);
+    text-decoration: underline;
+    font-size: 1.125rem;
+  }
+  & [data-slot="button"]:hover {
+    background: transparent;
+  }
+
+  /* The current language is plain text; the others are links. */
+  & .site-header nav ul {
+    border: 0;
+  }
+  & .site-header [hreflang] {
+    color: var(--link);
+    text-decoration: underline;
+    background: transparent;
+    font-family: var(--font-face-mono);
+  }
+  & .site-header [hreflang][aria-current="page"] {
+    color: #000000;
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  & [data-slot="badge"] {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  & .icon-tile::after {
+    display: none;
+  }
+
+  & .era-strip {
+    background: var(--background);
+    border-top: 2px groove #d4d4d4;
+  }
+
+  & [data-slot="dialog-content"] {
+    border: 1px solid #000000;
+    box-shadow: none;
+  }
+}
+
+/* 1991: no images, no colour and no forms yet. */
+html[data-era="web1"][data-year="1991"] {
+  & .icon-tile,
+  & [aria-hidden].bg-signal,
+  & a[data-slot="button"] svg {
+    display: none;
+  }
+
+  /* With no layout to speak of, the lists are lists. */
+  & [data-slot="card"] {
+    display: block;
+    padding-block: 0;
+  }
+  & #skills [data-slot="card"] + [data-slot="card"] {
+    margin-top: 1rem;
+  }
+  & [data-slot="card-header"],
+  & [data-slot="card-content"],
+  & [data-slot="card-footer"] {
+    padding-inline: 0;
+  }
+  & #skills ul {
+    display: block;
+    list-style: disc;
+    padding-left: 2.5rem;
+  }
+  & #skills ul li {
+    display: list-item;
+    margin-block: 0.15rem;
+  }
+  & #skills ul li > span:not(.icon-tile),
+  & #skills ul li > span > span {
+    display: inline;
+  }
+  & #skills ul li .text-xs::before {
+    content: " (" / "";
+  }
+  & #skills ul li .text-xs::after {
+    content: ")" / "";
+  }
+  & #skills ul li .text-sm,
+  & #skills ul li .text-xs {
+    font-size: 1rem;
+    font-weight: 400;
+    color: #000000;
+  }
+  & #principles ol {
+    display: block;
+    list-style: decimal;
+    padding-left: 2.5rem;
+  }
+  & #principles ol li {
+    display: list-item;
+    margin-block: 0.75rem;
+  }
+  & #principles ol [data-slot="card"] {
+    display: block;
+  }
+  & [data-slot="card-description"] {
+    font-size: 1rem;
+  }
+
+  /* Buttons that aren't links are drawn as links too. */
+  & button[data-slot="button"] {
+    background: transparent;
+    border: 0;
+    color: var(--link);
+    text-decoration: underline;
+  }
+}
+
+/* 1995: a grey page, images, and forms with bevelled buttons. */
+html[data-era="web1"]:not([data-year="1991"]) {
+  /* A shade darker than the browser's blue, which only just clears 4.5:1
+     on grey. */
+  --link: #0000cc;
+  --background: #c0c0c0;
+  --popover: #c0c0c0;
+  --muted-foreground: #000000;
+
+  & ::selection {
+    background: #000080;
+    color: #ffffff;
+  }
+
+  & .site-header,
+  & .era-strip {
+    border-color: #808080;
+  }
+
+  & [data-slot="separator"] {
+    border-top-color: #808080;
+    border-bottom-color: #ffffff;
+  }
+
+  /* Boxes are tables with border="1". */
+  & [data-slot="card"] {
+    border: 2px solid;
+    border-color: #ffffff #808080 #808080 #ffffff;
+    padding-block: 1rem;
+    gap: 0.75rem;
+  }
+
+  & button[data-slot="button"],
+  & .era-strip button {
+    background: #c0c0c0;
+    color: #000000;
+    text-decoration: none;
+    border: 2px solid;
+    border-color: #ffffff #404040 #404040 #ffffff;
+    box-shadow:
+      inset -1px -1px #808080,
+      inset 1px 1px #dfdfdf;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.8125rem;
+    &:active {
+      border-color: #404040 #ffffff #ffffff #404040;
+      box-shadow:
+        inset 1px 1px #808080,
+        inset -1px -1px #dfdfdf;
+    }
+  }
+  & footer button[data-slot="button"] {
+    height: 2rem;
+  }
+
+  /* The icons as small images, in their own colours. */
+  & .icon-tile {
+    background: transparent;
+    box-shadow: none;
+    color: var(--c);
+  }
+  & .icon-tile:not(:has(.ink)) {
+    filter: drop-shadow(1px 1px 0 rgb(0 0 0 / 55%));
+  }
+  & [data-future] .icon-tile {
+    border: 1px dashed #808080;
+    & svg {
+      visibility: hidden;
+    }
+  }
+  & [data-new] .icon-tile {
+    border: 2px solid;
+    border-color: #ffffff #404040 #404040 #ffffff;
+  }
+
+  & [data-slot="badge"] {
+    color: #800000;
+  }
+  & [aria-hidden].bg-signal {
+    background: #800000;
+  }
+  & blockquote {
+    border-left: 0;
+  }
+}
+
+/* 1996: CSS level 1. */
+html[data-era="web1"][data-year="1996"] {
+  --background: #ffffff;
+  --popover: #ffffff;
+  --navy: #000080;
+  --font-face-sans: Verdana, Geneva, Tahoma, sans-serif;
+  /* The coloured band down the side, from a background image or a
+     table cell with bgcolor. */
+  background: linear-gradient(to right, var(--navy) 0 0.75rem, #ffffff 0.75rem);
+  @media (width >= 64rem) {
+    background: linear-gradient(to right, var(--navy) 0 4rem, #ffffff 4rem);
+  }
+
+  & body {
+    font-size: 0.9375rem;
+  }
+
+  & h1,
+  & h2 {
+    font-family: Georgia, "Times New Roman", serif;
+    color: var(--navy);
+  }
+  & h2 {
+    border-bottom: 1px solid var(--navy);
+    padding-bottom: 0.25rem;
+  }
+
+  & .site-header,
+  & .era-strip {
+    background: #ffffff;
+  }
+
+  & [data-slot="card"] {
+    background: #ffffff;
+    border: 1px solid var(--navy);
+    padding-top: 0;
+    gap: 0.75rem;
+    overflow: hidden;
+  }
+  /* The card's title as a table header cell. */
+  & [data-slot="card-header"] {
+    padding-top: 0;
+  }
+  & [data-slot="card-title"] {
+    margin-inline: -1.5rem;
+    padding: 0.4rem 1.5rem;
+    background: var(--navy);
+    color: #ffffff;
+    font-size: 1rem;
+  }
+  & #skills [data-slot="card"] {
+    padding-top: 1rem;
+    @media (width < 48rem) {
+      padding-top: 0;
+    }
+  }
+  @media (width >= 48rem) {
+    & #skills [data-slot="card-title"] {
+      margin: 0;
+      padding: 0.25rem 0.5rem;
+      display: inline-block;
+    }
+  }
+
+  & [data-slot="card-description"] {
+    color: #333333;
+  }
+
+  & blockquote {
+    font-family: Georgia, "Times New Roman", serif;
+    font-style: italic;
+    color: #333333;
+  }
+
+  & [data-slot="badge"] {
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 0.8125rem;
+  }
+}
+
+@media (forced-colors: active) {
+  html[data-era="web1"] {
+    background: Canvas;
+  }
+}

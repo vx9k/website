@@ -1,0 +1,427 @@
+/* 2012 to 2021, TypeScript, nftables, Next.js and the Transformer paper:
+   flat design, in four steps (<html data-year>).
+   2012: tiles. Flat blocks of colour, thin light type, no shadows and no
+   corners, and the skills as solid squares in their brand colours.
+   2014: material. Paper cards that cast small shadows, an indigo app bar,
+   Roboto, capitals on the buttons, and the skills as round avatars.
+   2016: the same, quieter: a white app bar, more air, a teal accent.
+   2017: colour returns as gradients, cards float on wide soft shadows and
+   the corners round off, the look today's design grew out of.
+   Loaded by src/quantum/time.ts; everything here is scoped to
+   <html data-era="flat">, and unlayered, so it wins over the page's
+   Tailwind utilities without !important. */
+
+html[data-era="flat"] {
+  color-scheme: light;
+  --app: #3f51b5;
+  --app-dark: #303f9f;
+  --app-foreground: #ffffff;
+  --accent-color: #e91e63;
+  --radius: 0.125rem;
+  --background: #fafafa;
+  --foreground: #212121;
+  --card: #ffffff;
+  --card-foreground: #212121;
+  --popover: #ffffff;
+  --popover-foreground: #212121;
+  --primary: var(--app);
+  --primary-foreground: #ffffff;
+  --secondary: #e8eaf6;
+  --secondary-foreground: #283593;
+  --muted: #eeeeee;
+  --muted-foreground: #5f6368;
+  --accent: #eeeeee;
+  --accent-foreground: #212121;
+  --border: rgb(0 0 0 / 12%);
+  --input: rgb(0 0 0 / 24%);
+  --ring: var(--app);
+  --signal: var(--accent-color);
+  --rule: transparent;
+  --font-face-sans: Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-face-mono: "Roboto Mono", Menlo, Consolas, monospace;
+  background: var(--background);
+
+  & *,
+  & ::before,
+  & ::after {
+    letter-spacing: normal;
+  }
+
+  & ::selection {
+    background: #c5cae9;
+    color: #212121;
+  }
+
+  /* The app bar. */
+  & .site-header {
+    background: var(--app);
+    backdrop-filter: none;
+    border: 0;
+    box-shadow:
+      0 2px 4px rgb(0 0 0 / 14%),
+      0 4px 5px rgb(0 0 0 / 10%);
+    color: var(--app-foreground);
+    & [data-slot="button"] {
+      color: var(--app-foreground);
+      text-transform: uppercase;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+    & [data-slot="button"]:hover {
+      background: rgb(255 255 255 / 14%);
+      color: var(--app-foreground);
+    }
+    & nav ul {
+      border-color: rgb(255 255 255 / 40%);
+    }
+    & [hreflang] {
+      color: var(--app-foreground);
+    }
+    & [hreflang][aria-current="page"] {
+      background: rgb(255 255 255 / 12%);
+      color: var(--app-foreground);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    & [aria-hidden].bg-signal {
+      background: var(--app-foreground);
+    }
+  }
+
+  /* The header links' superposed copies (globals.css), fainter on the
+     coloured bar so the links keep their contrast. */
+  & .site-header {
+    --copies: 0.4;
+  }
+
+  & .era-strip {
+    background: var(--app-dark);
+    border-top: 0;
+    color: var(--app-foreground);
+    & [data-slot="button"] {
+      background: transparent;
+      border: 1px solid rgb(255 255 255 / 60%);
+      color: var(--app-foreground);
+      box-shadow: none;
+    }
+  }
+
+  & h1 {
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    color: #212121;
+  }
+  & h2 {
+    font-weight: 400;
+    color: #212121;
+  }
+  & .label {
+    color: var(--app);
+    font-weight: 500;
+    letter-spacing: 0.1em;
+  }
+
+  /* Paper. */
+  & [data-slot="card"] {
+    background: var(--card);
+    border: 0;
+    border-radius: 0.125rem;
+    box-shadow:
+      0 1px 3px rgb(0 0 0 / 12%),
+      0 1px 2px rgb(0 0 0 / 24%);
+  }
+  & [data-slot="card-title"] {
+    font-weight: 500;
+  }
+
+  /* A chip. */
+  & [data-slot="badge"] {
+    background: #e0e0e0;
+    border: 0;
+    border-radius: 1rem;
+    color: #212121;
+    padding-inline: 0.75rem;
+  }
+
+  /* A raised button, and a flat one. */
+  & [data-slot="button"][data-variant="default"] {
+    background: var(--app);
+    color: #ffffff;
+    border: 0;
+    border-radius: 0.125rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    box-shadow:
+      0 2px 2px rgb(0 0 0 / 14%),
+      0 3px 1px -2px rgb(0 0 0 / 20%),
+      0 1px 5px rgb(0 0 0 / 12%);
+    &:hover {
+      background: var(--app-dark);
+    }
+  }
+  & main [data-slot="button"][data-variant="outline"] {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    color: var(--app);
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    padding-inline: 0.5rem;
+    &:hover {
+      background: rgb(63 81 181 / 10%);
+    }
+  }
+  & main [data-slot="button"][data-variant="link"],
+  & footer [data-slot="button"][data-variant="link"] {
+    color: var(--app);
+  }
+
+  /* A button's own focus ring is a shadow, which the styles above
+     replace, so a focused button gets an outline instead. */
+  & [data-slot="button"]:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+
+  & blockquote {
+    border-left: 4px solid var(--accent-color);
+    color: #4d4d4d;
+  }
+
+  /* The skills as round avatars in their own colours. */
+  & .icon-tile {
+    border-radius: 50%;
+    color: #ffffff;
+    background: var(--c);
+    box-shadow: none;
+    &::after {
+      display: none;
+    }
+  }
+  & [data-skill-year="2016"] .icon-tile {
+    background: #000000;
+  }
+  & [data-future] .icon-tile {
+    background: #e0e0e0;
+    & svg {
+      visibility: hidden;
+    }
+  }
+  & [data-new] .icon-tile {
+    box-shadow:
+      0 0 0 3px #ffffff,
+      0 0 0 5px var(--accent-color);
+  }
+
+  & [data-slot="dialog-content"] {
+    border: 0;
+    border-radius: 0.125rem;
+    box-shadow:
+      0 24px 38px rgb(0 0 0 / 14%),
+      0 9px 46px rgb(0 0 0 / 12%),
+      0 11px 15px rgb(0 0 0 / 20%);
+  }
+}
+
+/* 2012: tiles. */
+html[data-era="flat"][data-year="2012"] {
+  --app: #2b5797;
+  --app-dark: #1e3f6f;
+  --accent-color: #b7472a;
+  --radius: 0px;
+  --background: #ffffff;
+  --muted-foreground: #555555;
+  --font-face-sans: "Segoe UI", "Segoe UI Web (West European)", "Helvetica Neue", Arial, sans-serif;
+
+  & .site-header {
+    box-shadow: none;
+    & [data-slot="button"] {
+      text-transform: none;
+      font-size: 0.875rem;
+      letter-spacing: 0;
+    }
+  }
+
+  & h1,
+  & h2 {
+    font-weight: 300;
+    color: #000000;
+  }
+  /* Section titles in small letters, as the tiles were labelled. */
+  & h2 {
+    text-transform: lowercase;
+    font-size: 2.25rem;
+  }
+
+  & [data-slot="card"] {
+    border-radius: 0;
+    box-shadow: none;
+    background: #f2f2f2;
+  }
+  & [data-slot="badge"] {
+    border-radius: 0;
+    background: var(--accent-color);
+    color: #ffffff;
+  }
+  & [data-slot="badge"] [aria-hidden].bg-signal {
+    background: #ffffff;
+  }
+  & [data-slot="button"][data-variant="default"] {
+    border-radius: 0;
+    box-shadow: none;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  & main [data-slot="button"][data-variant="outline"] {
+    border: 2px solid var(--app);
+    text-transform: none;
+    letter-spacing: 0;
+    padding-inline: 1rem;
+  }
+  & blockquote {
+    border-left-color: var(--app);
+  }
+
+  & .icon-tile {
+    border-radius: 0;
+  }
+  & [data-new] .icon-tile {
+    box-shadow: 0 0 0 3px #000000;
+  }
+}
+
+/* 2016: quieter. */
+html[data-era="flat"][data-year="2016"] {
+  --app: #00796b;
+  --app-dark: #004d40;
+  --app-foreground: #212121;
+  --accent-color: #00897b;
+  --radius: 0.25rem;
+
+  & .site-header {
+    background: #ffffff;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 14%);
+    & [data-slot="button"]:hover {
+      background: rgb(0 0 0 / 6%);
+    }
+    & nav ul {
+      border-color: rgb(0 0 0 / 15%);
+    }
+    & [hreflang][aria-current="page"] {
+      background: rgb(0 0 0 / 8%);
+    }
+    & [aria-hidden].bg-signal {
+      background: var(--accent-color);
+    }
+  }
+  & .era-strip {
+    background: #f5f5f5;
+    color: #212121;
+    border-top: 1px solid rgb(0 0 0 / 8%);
+    & [data-slot="button"] {
+      border-color: rgb(0 0 0 / 25%);
+      color: #212121;
+    }
+  }
+  & [data-slot="card"] {
+    border-radius: 0.25rem;
+  }
+  & [data-slot="button"][data-variant="default"] {
+    border-radius: 0.25rem;
+  }
+}
+
+/* 2017: gradients and floating cards. */
+html[data-era="flat"][data-year="2017"] {
+  --app: #5469d4;
+  --app-dark: #3f4fb0;
+  --accent-color: #7c4dff;
+  --radius: 0.5rem;
+  --background: #f6f9fc;
+  --foreground: #32325d;
+  --card-foreground: #32325d;
+  --muted-foreground: #525f7f;
+  --font-face-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+
+  & .site-header {
+    background: linear-gradient(120deg, #4f46e5, #7c3aed 55%, #a21caf);
+    background-color: #5b21b6;
+    box-shadow: none;
+    & [data-slot="button"] {
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: 0.875rem;
+    }
+  }
+  & .era-strip {
+    background: #3730a3;
+  }
+
+  & h1,
+  & h2 {
+    font-weight: 600;
+    color: #32325d;
+    letter-spacing: -0.02em;
+  }
+  & .label {
+    color: #5469d4;
+  }
+
+  & [data-slot="card"] {
+    border-radius: 0.5rem;
+    box-shadow:
+      0 15px 35px rgb(50 50 93 / 10%),
+      0 5px 15px rgb(0 0 0 / 7%);
+  }
+  & [data-slot="badge"] {
+    background: #e6ebf1;
+    color: #32325d;
+  }
+  & [data-slot="button"][data-variant="default"] {
+    background: linear-gradient(120deg, #4f46e5, #6d28d9);
+    border-radius: 0.375rem;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 600;
+    box-shadow:
+      0 4px 6px rgb(50 50 93 / 11%),
+      0 1px 3px rgb(0 0 0 / 8%);
+    &:hover {
+      background: linear-gradient(120deg, #4338ca, #5b21b6);
+    }
+  }
+  & main [data-slot="button"][data-variant="outline"] {
+    background: #ffffff;
+    color: #4f46e5;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 600;
+    padding-inline: 1rem;
+    border-radius: 0.375rem;
+    box-shadow:
+      0 4px 6px rgb(50 50 93 / 11%),
+      0 1px 3px rgb(0 0 0 / 8%);
+  }
+  & blockquote {
+    border-left-color: #7c3aed;
+  }
+  & .icon-tile {
+    border-radius: 0.6rem;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--c) 75%, #ffffff), var(--c));
+  }
+  & [data-skill-year="2016"] .icon-tile {
+    background: linear-gradient(135deg, #444444, #000000);
+  }
+  & [data-future] .icon-tile {
+    background: #e6ebf1;
+  }
+}
+
+@media (forced-colors: active) {
+  html[data-era="flat"] {
+    background: Canvas;
+  }
+}
