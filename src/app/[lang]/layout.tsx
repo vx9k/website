@@ -56,7 +56,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   return (
     // The early script sets data-era and data-year on <html> before React
     // hydrates it, so React is told not to mind.
-    <html lang={locales[lang].tag} dir="ltr" className={cn("dark", fontVariables)} suppressHydrationWarning>
+    <html lang={locales[lang].tag} dir="ltr" className={fontVariables} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: trustedTypesPolicy }} />
         <script dangerouslySetInnerHTML={{ __html: eraScript }} />

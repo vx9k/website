@@ -1,26 +1,38 @@
+import { Fragment, type CSSProperties } from "react";
 import type { Dictionary } from "@/app/i18n";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Section from "./Section";
 
-/** On a block of H-beta: the line that sums the principles up, large,
- *  then the three principles side by side, each under a tall condensed
- *  numeral. */
+/** The line that sums the principles up, large, its words darkening one
+ *  by one as it scrolls into view (`.fill` in globals.css), then a tall
+ *  tile for each principle, its number at the top and its words at the
+ *  foot. */
 export default function Principles({ t }: { t: Dictionary }) {
   const p = t.principles;
+  const words = p.quote.split(" ");
   return (
-    <Section id="principles" title={p.title} tone="block">
-      <blockquote className="max-w-[28ch] border-l-4 border-signal pl-5 text-[clamp(1.6rem,0.9rem+2.6vw,3.4rem)] leading-[1.05] font-semibold tracking-tight text-balance [font-stretch:108%] sm:pl-8">
-        <p>{p.quote}</p>
+    <Section id="principles" title={p.title}>
+      <blockquote className="statement max-w-[24ch] text-statement text-pretty">
+        <p>
+          {words.map((word, i) => (
+            <Fragment key={i}>
+              {i > 0 && " "}
+              <span className="fill" style={{ "--p": (i / (words.length - 1)).toFixed(3) } as CSSProperties}>
+                {word}
+              </span>
+            </Fragment>
+          ))}
+        </p>
       </blockquote>
-      <ol className="mt-16 grid gap-10 sm:mt-24 md:grid-cols-3 md:gap-8">
+      <ol className="mt-16 grid gap-3 sm:mt-24 md:grid-cols-3">
         {p.items.map((item, i) => (
           <li key={item.title} className="flex">
-            <Card className="principle flex-1 gap-4 rounded-none border-0 border-t bg-transparent pt-4 pb-0 shadow-none">
-              <span aria-hidden className="numeral text-[7rem] leading-[0.8] font-black [font-stretch:50%]">
-                {i + 1}
+            <Card className="principle tile flex-1 justify-between gap-16 rounded-none border-0 bg-card px-6 py-6 shadow-none sm:min-h-[22rem]">
+              <span aria-hidden className="label">
+                {String(i + 1).padStart(2, "0")}
               </span>
-              <CardHeader className="gap-2 px-0">
-                <CardTitle role="heading" aria-level={3} className="text-xl leading-snug font-semibold text-balance">
+              <CardHeader className="gap-3 px-0">
+                <CardTitle role="heading" aria-level={3} className="text-2xl leading-tight font-normal tracking-[-0.03em] text-balance">
                   {item.title}
                 </CardTitle>
                 <CardDescription className="text-base text-pretty">{item.body}</CardDescription>
