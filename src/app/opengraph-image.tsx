@@ -18,11 +18,17 @@ export default function Image() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 80,
-          background: "#0e0e0f",
-          color: "#ececea",
+          background: "#000",
+          color: "#f2f2f2",
         }}
       >
-        <div style={{ fontSize: 32, color: "#9e9e99" }}>kthread.dev</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 24, fontSize: 32, color: "#a3a3a3" }}>
+          <svg viewBox="0 0 32 32" width={56} height={56}>
+            <rect x="2.5" y="2.5" width="27" height="27" fill="#000" stroke="#fff" strokeWidth="2.5" />
+            <path d="M4 28 C17 28 27.5 22 28 4 V28 Z" fill="#fff" />
+          </svg>
+          kthread.dev
+        </div>
         <div style={{ fontSize: 76, lineHeight: 1.05, letterSpacing: "-0.04em", maxWidth: 960 }}>{intro.line}</div>
       </div>
     ),

@@ -1,32 +1,19 @@
 @import "tailwindcss" source("..");
 
 /* ---------------------------------------------------------------- palette
-   Monochrome, warm-neutral, one theme for the whole page that follows the
-   system's light or dark setting. No accent colour: the only colour on the
-   page is in the product screenshots. Contrast is measured against
-   --background: --foreground is over 15:1 in both themes, --muted over
-   6:1. */
+   Carbon: black and white, one dark theme whatever the system asks for.
+   The only colour is in the product screenshots and the flag in the
+   footer's mark. Contrast against --background: --foreground 18:1,
+   --muted 8.3:1 (7.9:1 on --surface). */
 
 :root {
-  color-scheme: light dark;
-  --background: #fbfbfa;
-  --foreground: #18181a;
-  /* 6.4:1 on the background, 5.9:1 on --surface. */
-  --muted: #5d5d59;
-  --rule: rgb(24 24 26 / 13%);
-  --surface: #f2f2f0;
+  color-scheme: dark;
+  --background: #000;
+  --foreground: #f2f2f2;
+  --muted: #a3a3a3;
+  --rule: rgb(255 255 255 / 22%);
+  --surface: #0a0a0a;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0e0e0f;
-    --foreground: #ececea;
-    /* 7.2:1 on the background. */
-    --muted: #9e9e99;
-    --rule: rgb(236 236 234 / 14%);
-    --surface: #171718;
-  }
 }
 
 @theme inline {
@@ -98,27 +85,29 @@
 }
 
 /* The page's four sizes: the headline, titles, body (set on <body>), and
-   this mono label for metadata. */
+   the mono label for metadata. */
 @utility text-display {
   font-size: clamp(2.25rem, 1.2rem + 4.2vw, 4.75rem);
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.02;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.055em;
 }
 
 @utility text-title {
   font-size: clamp(1.625rem, 1.2rem + 1.6vw, 2.5rem);
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.1;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.04em;
 }
 
+/* Labels: small mono capitals, widely tracked, in the text colour. */
 @utility label {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   line-height: 1.25rem;
-  letter-spacing: 0.02em;
-  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--foreground);
 }
 
 /* Text links: underlined, the underline thickening on hover. Every link
@@ -154,6 +143,96 @@
   from {
     opacity: 0.4;
     transform: translateY(1.5rem);
+  }
+}
+
+/* ------------------------------------------------------------- numogram
+   Drawn like the CCRU's original: zones as rings, syzygies and currents
+   as stippled bands, gates as thin lines through small numbered rings.
+   A solid pulse runs along each current in its direction of flow; under
+   reduced motion it's hidden and the stippled tracks carry the flow.
+   Sizes are in the drawing's own units (it's 1080 wide). */
+
+.numogram {
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  overflow: visible;
+
+  & .numogram-regions text {
+    fill: var(--muted);
+    font-size: 36px;
+    letter-spacing: 0.04em;
+    text-anchor: end;
+  }
+  & .numogram-syzygies line {
+    stroke: url(#numogram-stipple);
+    stroke-width: 70;
+  }
+  & .numogram-gates path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3;
+  }
+  & .numogram-track {
+    fill: none;
+    stroke: url(#numogram-stipple);
+    stroke-width: 34;
+  }
+  & .numogram-flow {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 34;
+    stroke-dasharray: 9 91;
+    stroke-dashoffset: 100;
+    opacity: 0;
+  }
+  & .numogram-zones circle,
+  & .numogram-gate-labels circle {
+    fill: var(--background);
+    stroke: currentColor;
+    stroke-width: 5;
+  }
+  & .numogram-gate-labels circle {
+    stroke-width: 3;
+  }
+  & .numogram-zones text,
+  & .numogram-gate-labels text {
+    fill: currentColor;
+    text-anchor: middle;
+  }
+  & .numogram-zones text {
+    font-size: 56px;
+  }
+  & .numogram-gate-labels text {
+    font-size: 28px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .numogram .numogram-flow {
+    opacity: 1;
+    animation: numogram-flow 3s linear infinite;
+  }
+}
+
+@keyframes numogram-flow {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (forced-colors: active) {
+  .numogram {
+    color: CanvasText;
+    & .numogram-regions text,
+    & .numogram-zones text,
+    & .numogram-gate-labels text {
+      fill: CanvasText;
+    }
+    & .numogram-zones circle,
+    & .numogram-gate-labels circle {
+      fill: Canvas;
+    }
   }
 }
 

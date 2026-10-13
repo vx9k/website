@@ -1,4 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" fill="#0b0b0c"/>
-  <rect x="11" y="11" width="10" height="10" fill="#ededed"/>
+  <!-- The e/acc mark with Uruguay's flag in it; drawn by src/components/site/Mark.tsx too. -->
+  <rect width="32" height="32" fill="#000"/>
+  <rect x="2.5" y="2.5" width="27" height="27" fill="#000" stroke="#fff" stroke-width="2.5"/>
+  <clipPath id="c"><path d="M4 28 C17 28 27.5 22 28 4 V28 Z"/></clipPath>
+  <path d="M4 28 C17 28 27.5 22 28 4 V28 Z" fill="#fff"/>
+  <g clip-path="url(#c)" fill="#0038a8"><rect x="4" y="6.667" width="24" height="2.667"/><rect x="4" y="12.000" width="24" height="2.667"/><rect x="4" y="17.333" width="24" height="2.667"/><rect x="4" y="22.667" width="24" height="2.667"/></g>
+  <g fill="#fcd116" stroke="#fcd116" stroke-width="0.9" stroke-linecap="round"><circle cx="9.5" cy="9.5" r="2.4" stroke="none"/><line x1="12.80" y1="9.50" x2="14.20" y2="9.50"/><line x1="11.83" y1="11.83" x2="12.82" y2="12.82"/><line x1="9.50" y1="12.80" x2="9.50" y2="14.20"/><line x1="7.17" y1="11.83" x2="6.18" y2="12.82"/><line x1="6.20" y1="9.50" x2="4.80" y2="9.50"/><line x1="7.17" y1="7.17" x2="6.18" y2="6.18"/><line x1="9.50" y1="6.20" x2="9.50" y2="4.80"/><line x1="11.83" y1="7.17" x2="12.82" y2="6.18"/></g>
 </svg>

@@ -35,13 +35,10 @@ export const metadata: Metadata = {
   formatDetection: { telephone: false, email: false, address: false },
 };
 
-// The browser chrome matches the page in either theme.
+// One dark theme; the browser chrome matches it.
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fbfbfa" },
-    { media: "(prefers-color-scheme: dark)", color: "#0e0e0f" },
-  ],
-  colorScheme: "light dark",
+  themeColor: "#000000",
+  colorScheme: "dark",
 };
 
 // The CSP requires Trusted Types for scripts (public/_headers), and Next.js

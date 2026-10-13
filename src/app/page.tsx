@@ -1,3 +1,5 @@
+import Mark from "@/components/site/Mark";
+import Numogram from "@/components/site/Numogram";
 import Product from "@/components/site/Product";
 import Section from "@/components/site/Section";
 import { contact, intro, products, sections, site, skills } from "./content";
@@ -13,6 +15,7 @@ const jsonLd = JSON.stringify({
     name: site.name,
     jobTitle: "Software engineer",
     url: site.url,
+    email: `mailto:${contact.email}`,
     sameAs: [site.github],
     address: { "@type": "PostalAddress", addressCountry: "UY" },
   },
@@ -32,7 +35,8 @@ export default function Home() {
   return (
     <>
       <header className="shell flex min-h-16 items-center justify-between gap-6 pt-2">
-        <a href="/" className="inline-flex min-h-10 items-center font-mono text-sm">
+        <a href="/" className="inline-flex min-h-10 items-center gap-2.5 font-mono text-sm">
+          <Mark size={22} id="mark-header" />
           vx
         </a>
         <nav aria-label="Sections">
@@ -49,13 +53,15 @@ export default function Home() {
       </header>
 
       <main id="main" tabIndex={-1} className="focus:outline-none">
-        <div className="shell pt-20 pb-12 sm:pt-32 sm:pb-16">
-          <p className="label flex items-center gap-2">
-            <span aria-hidden className="size-1.5 rounded-full bg-foreground forced-colors:bg-[CanvasText]" />
-            {intro.status}
-          </p>
-          <h1 className="mt-6 max-w-[18ch] text-display text-balance">{intro.line}</h1>
-          <p className="mt-8 max-w-[52ch] text-lg text-muted text-pretty sm:text-xl">{intro.lede}</p>
+        <div className="shell grid items-center gap-16 pt-20 pb-12 sm:pt-28 sm:pb-16 lg:grid-cols-12 lg:gap-12">
+          <div className="lg:col-span-8">
+            <p className="label flex items-center gap-2">
+                {intro.status}
+            </p>
+            <h1 className="mt-6 max-w-[18ch] text-display text-balance">{intro.line}</h1>
+            <p className="mt-8 max-w-[52ch] text-lg text-muted text-pretty sm:text-xl">{intro.lede}</p>
+          </div>
+          <Numogram className="mx-auto w-full max-w-56 sm:max-w-64 lg:col-span-4 lg:max-w-80" />
         </div>
 
         <Section id="work" title="Work">
@@ -82,16 +88,26 @@ export default function Home() {
         <Section id="contact" title="Contact">
           <p className="text-title text-balance">{contact.heading}</p>
           <p className="mt-4 max-w-[52ch] text-muted text-pretty">{contact.body}</p>
-          <p className="mt-8">
-            <a href={site.github} className="link inline-flex min-h-6 items-center text-xl">
-              github.com/vx9k<span aria-hidden>&nbsp;↗</span>
-            </a>
-          </p>
+          <ul className="mt-8 flex flex-col gap-3 text-xl">
+            <li>
+              <a href={`mailto:${contact.email}`} className="link inline-flex min-h-6 items-center">
+                {contact.email}
+              </a>
+            </li>
+            <li>
+              <a href={site.github} className="link inline-flex min-h-6 items-center">
+                github.com/vx9k<span aria-hidden>&nbsp;↗</span>
+              </a>
+            </li>
+          </ul>
         </Section>
       </main>
 
       <footer className="shell flex flex-wrap items-center justify-between gap-4 border-t py-8 text-sm text-muted">
-        <p className="font-mono">vx</p>
+        <p className="inline-flex items-center gap-3 font-mono text-foreground">
+          <Mark size={28} flag id="mark-footer" />
+          vx
+        </p>
         <a href={site.source} className="link inline-flex min-h-6 items-center">
           Source for this site<span aria-hidden>&nbsp;↗</span>
         </a>

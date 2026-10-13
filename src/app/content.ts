@@ -116,7 +116,9 @@ export const skills = [
 
 export const contact = {
   heading: "I’m open to work.",
-  body: "The fastest way to reach me is GitHub, where all of this work is public.",
+  body: "Write to me by email. All of this work is public on GitHub.",
+  // vx's own address, published at vx's request.
+  email: "dev@kthread.dev",
 };
 
 // The page's sections, in order. Ids double as URL fragments.

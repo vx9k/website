@@ -31,7 +31,7 @@ src/
 │   ├── page.tsx          the page
 │   ├── not-found.tsx     the 404 page
 │   ├── content.ts        everything the page says: intro, products, skills, contact
-│   ├── globals.css       design tokens (light and dark) and styles
+│   ├── globals.css       design tokens and styles
 │   └── opengraph-image.tsx, sitemap.ts, robots.ts, manifest.ts, icons
 └── components/site/      the shared section frame and the product block
 public/
@@ -60,7 +60,7 @@ claude-mem's cloud variant needs `CMEM_API_KEY` and `CMEM_USER_ID` from cmem.ai,
 
 ## Editing content
 
-Everything the page says lives in `src/app/content.ts`. Keep it factual: everything on the page should be checkable against vx's public repos. Product screenshots go in `public/work/` as `<id>-640` and `<id>-1280`, each in AVIF and WebP. Every change has to work at phone and desktop widths, in light and dark.
+Everything the page says lives in `src/app/content.ts`. Keep it factual: everything on the page should be checkable against vx's public repos. Product screenshots go in `public/work/` as `<id>-640` and `<id>-1280`, each in AVIF and WebP. Every change has to work at phone and desktop widths.
 
 ## Deploying
 
