@@ -4,7 +4,7 @@
    Carbon: black and white, one dark theme whatever the system asks for.
    The only colour is in the product screenshots and the flag in the
    footer's mark. Contrast against --background: --foreground 18:1,
-   --muted 8.6:1 (8.1:1 on --surface). */
+   --muted 8.3:1 (7.9:1 on --surface). */
 
 :root {
   color-scheme: dark;
