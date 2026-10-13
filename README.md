@@ -1,10 +1,10 @@
 # website
 
-Source for [kthread.dev](https://kthread.dev), the personal site of [vx](https://github.com/vx9k).
+Source for [kthread.dev](https://kthread.dev), the personal site of [vx](https://github.com/vx9k): a portfolio of vx's work, in English, Spanish and Portuguese.
 
-It's a single static page built with Next.js, Tailwind CSS and [shadcn/ui](https://ui.shadcn.com), exported to plain HTML and served from Cloudflare Workers at [kthread.dev](https://kthread.dev). The design is monochrome and restrained: a dark header and first screen, then a white page in near-black, with large regular-weight headlines in Host Grotesk and small mono labels in Martian Mono, which also sets the "vx" in the headline. Sections open with their title over a rule; skills sit in rows between rules, the principles in tall square tiles with one corner cut, and the page ends on two large tiles. The headline's words resolve in a different random order on every load, and the principles' statement darkens word by word as you scroll to it. The skills carry small animated icons, drawn in the text colour until you point at one, when it takes its brand's colour. It reads in English, Spanish and Portuguese.
+It's a static site built with Next.js, Tailwind CSS and [shadcn/ui](https://ui.shadcn.com), exported to plain HTML and served from Cloudflare Workers.
 
-Over the page sits a quantum layer, all of it optional. Moving around the page branches it like many worlds, and a map in the header lets you jump back to any branch. Faint waves from three sources interfere behind the page, one of them following your pointer, and quantum foam fizzes through them: pairs of particles that appear at random and annihilate, simulated in WebAssembly and drawn with WebGPU where your browser has it. A mouse pointer carries a cloud of where it might be, and a click collapses it. Paired skills answer each other, and a hydrogen orbital turns behind the headline. Each visit draws its own random salt, so the same branch lays out differently next time. The links in the header sit in several faint places at once and collapse into one as your pointer comes near. The parts you haven't visited flicker faintly behind the one you're in, and moving between sections tunnels through a barrier. A timeline in the header lists each skill in the year it first appeared, and travelling to one shows the page as it might have looked then, from a 1972 teletype printout and a 1978 terminal on a CRT through the early web and Web 2.0 to flat design; the content stays the same. Each effect can be switched off from the footer, and they all keep still when your system asks for less motion.
+The site is in the middle of an overhaul toward a minimal portfolio centred on the products vx has built. The brief and the rules for it are in [`AGENTS.md`](AGENTS.md).
 
 ## Running it
 
@@ -12,7 +12,7 @@ You need [Node.js](https://nodejs.org) and [pnpm](https://pnpm.io). `corepack en
 
 ```sh
 pnpm install
-pnpm dev          # dev server at http://localhost:3000
+pnpm dev            # dev server at http://localhost:3000
 ```
 
 To build the static site the way it's deployed:
@@ -26,40 +26,44 @@ pnpm wrangler dev   # serves out/ through the Workers runtime at http://localhos
 
 ```
 src/
-├── worker.ts                 runs for "/" only: sends visitors to /en, /es or /pt
+├── worker.ts             runs for "/" only: sends visitors to /en, /es or /pt
 ├── app/
-│   ├── [lang]/layout.tsx     metadata, hreflang, the skip link and the Trusted Types policy
-│   ├── [lang]/page.tsx       the page: header, sections and footer
+│   ├── [lang]/           the page and its layout, one static copy per language
 │   ├── global-not-found.tsx  the 404 page, in all three languages
-│   ├── content.ts            language-neutral facts: links, sections, skills
-│   ├── marks.ts              brand marks, from Simple Icons (CC0)
-│   ├── i18n/                 the copy in English, Spanish and Portuguese
-│   └── globals.css           the tokens, the tiles and the page's motion
+│   ├── content.ts        language-neutral facts: links, sections, skills
+│   ├── i18n/             the copy in English, Spanish and Portuguese
+│   └── globals.css       design tokens and styles
 ├── components/
-│   ├── ui/                   shadcn/ui: button, card, badge, separator, dialog, switch, field
-│   ├── site/                 the intro, the sections, the skill icons and the language links
-│   └── quantum/              the branch map, the timeline, the effects panel and the ghost previews
-├── quantum/                  the branch tree, navigation and history, time travel, the effect flags
-└── lib/utils.ts              shadcn/ui's cn()
-public/eras/                  one stylesheet per past era of time travel, and its fonts
+│   ├── ui/               shadcn/ui components
+│   ├── site/             the page's sections
+│   └── quantum/          an optional layer of visual effects
+└── quantum/              the effects layer's state
+public/                   static files, response headers, and the effects' assets
 ```
-
-Other files at the root:
 
 | Path | What it is |
 | --- | --- |
-| `AGENTS.md` | Guide for anyone (or any coding agent) changing the site: design rules, accessibility checks, content rules. `CLAUDE.md` points to it. |
+| `AGENTS.md` | The guide for anyone, or any coding agent, changing the site: the brief, content rules, accessibility, security. `CLAUDE.md` points to it. |
 | `components.json` | shadcn/ui's config, so `pnpm dlx shadcn@latest add <component>` drops new components into `src/components/ui/`. |
-| `wrangler.jsonc` | Cloudflare Workers config: serves `out/` as static assets on kthread.dev, with `404.html` for unknown paths. |
-| `public/_headers` | Response headers: the security headers (CSP, HSTS and the rest) and long-term caching for hashed assets. |
-| `scripts/csp.mjs` | Runs after `next build`: hashes every inline script in `out/` into the CSP in `out/_headers`. |
-| `next.config.ts` | Static export and the React Compiler. |
+| `wrangler.jsonc` | Cloudflare Workers config: serves `out/` as static assets on kthread.dev. |
+| `public/_headers` | Response headers: the security headers (CSP, HSTS and the rest) and caching for hashed assets. |
+| `scripts/csp.mjs` | Runs after `next build`: hashes every inline script in `out/` into the CSP. |
+
+## Agent tooling
+
+Set up for Claude Code (and anything else that reads `.claude/skills/`):
+
+| Where | What |
+| --- | --- |
+| `.claude/skills/`, `skills-lock.json` | Agent skills: [Cloudflare's](https://github.com/cloudflare/skills), the [Next.js workflow skills](https://nextjs.org/docs/app/guides/ai-agents), and [taste-skill](https://www.tasteskill.dev/docs)'s design skills. `npx skills experimental_install` restores them; `npx skills update` refreshes them. |
+| `.mcp.json` | MCP servers: Cloudflare's, and `next-devtools-mcp` for a running dev server. |
+| `.claude/settings.json` | Enables the MCP servers and declares the plugins: [ponytail](https://github.com/DietrichGebert/ponytail), [avoid-ai-writing](https://github.com/conorbronsdon/avoid-ai-writing) and [claude-mem](https://github.com/thedotmack/claude-mem)'s cloud variant. |
+
+claude-mem's cloud variant needs `CMEM_API_KEY` and `CMEM_USER_ID` from cmem.ai, set as environment secrets; without them it does nothing. On your own machine, `npx claude-mem install` sets up the full version.
 
 ## Editing content
 
-Facts that read the same in every language live in `src/app/content.ts`; the copy lives in `src/app/i18n/`, one file per language. Keep it factual: the skills are vx's own list, and everything else on the page should be checkable against the public repos. Projects aren't listed here; they're on [GitHub](https://github.com/vx9k).
-
-For anything visual, read the design and accessibility sections of [`AGENTS.md`](AGENTS.md) first. Every change has to work at phone and desktop widths, in all three languages.
+Facts that read the same in every language live in `src/app/content.ts`; the copy lives in `src/app/i18n/`, one file per language. Keep it factual: everything on the page should be checkable against vx's public repos. Every change has to work at phone and desktop widths, in all three languages.
 
 ## Deploying
 
