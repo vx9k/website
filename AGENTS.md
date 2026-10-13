@@ -28,8 +28,8 @@ There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler 
 
 - **Next.js 16, App Router, `output: "export"`.** Fully static and served as Cloudflare Workers static assets (`wrangler.jsonc`), so there are no Next.js server features: no route handlers, no server actions, no `next/image` optimisation, no middleware. The one exception is `src/worker.ts`, a plain Worker that handles `/`.
 - **React 19 with the React Compiler.** Don't hand-write `useMemo`/`useCallback` for performance.
-- **Tailwind CSS v4.** Configured in CSS (`@theme` and `@utility` in `globals.css`). There's no `tailwind.config.*`. `source("..")` on the import limits class scanning to `src/`, so the agent skill docs at the root don't leak utilities into the inlined stylesheet.
-- **shadcn/ui**, new-york style on Radix (`components.json`), with lucide icons. Its components live in `src/components/ui/` as source you own; its skill is in `.claude/skills/shadcn` (installed with `pnpm dlx skills add shadcn-ui/ui --skill shadcn`, pinned in `skills-lock.json`). Add components with `pnpm dlx shadcn@latest add <name>`; the CLI needs `ui.shadcn.com`, so a session whose network blocks it has to copy the component from `apps/v4/registry/new-york-v4/ui/` in github.com/shadcn-ui/ui instead, rewriting `from "cn"` to `from "@/lib/utils"`.
+- **Tailwind CSS v4.** Configured in CSS (`@theme` and `@utility` in `globals.css`). There's no `tailwind.config.*`. `source("..")` on the import limits class scanning to `src/`, so files elsewhere in the repo don't leak utilities into the inlined stylesheet.
+- **shadcn/ui**, new-york style on Radix (`components.json`), with lucide icons. Its components live in `src/components/ui/` as source you own. Add components with `pnpm dlx shadcn@latest add <name>`; the CLI needs `ui.shadcn.com`, so a session whose network blocks it has to copy the component from `apps/v4/registry/new-york-v4/ui/` in github.com/shadcn-ui/ui instead, rewriting `from "cn"` to `from "@/lib/utils"`.
 - **TypeScript 7**, strict. `@/*` maps to `src/*`.
 - Deployed by Cloudflare Workers Builds, connected to this repo: every push to `main` runs `pnpm run build` then `pnpm wrangler deploy`, and every other branch gets a preview URL posted on its PR. Work on a branch, open a PR, and check the preview.
 - The Worker is named `website`; the `name` in `wrangler.jsonc` must match it or builds fail. `kthread.dev` is attached as a Custom Domain in `wrangler.jsonc`; `www.kthread.dev` redirects to it through a Cloudflare Redirect Rule on the zone. DNS for the zone also carries iCloud mail records — leave those alone. Build and deploy commands live in the Cloudflare dashboard, not in the repo; they use `pnpm wrangler …` so the pinned wrangler runs, never `pnpm dlx`/`npx` without a local install. pnpm's version comes from `packageManager` in `package.json`.
@@ -212,8 +212,6 @@ Inside a past era, the design rules above don't apply: light pages, other fonts,
 - A world uses system fonts or a self-hosted open font in `public/eras/fonts/`, its licence beside it, loaded only in that world: OFL for Courier Prime and Pixelify Sans, CC BY-SA 4.0 for VileR's IBM VGA 8×16 (redistributed unmodified, credited in `ATTRIBUTION-ibm-vga-8x16.txt`). No images: patterns are CSS.
 - A light era's ghosts are mixed most of the way into the page (`globals.css`), since dark on light stands out more than light on dark.
 
-Design-oriented agent skills live in `.claude/skills/`, shadcn's among them. Use them for visual work, but this section wins where they disagree.
-
 ## Themes and accessibility
 
 Target WCAG 2.2 AA. There's one design, a white page with dark zones; `viewport.themeColor` in `document.ts` matches the browser chrome to the dark header.
@@ -246,6 +244,6 @@ Anything from another origin (analytics, a font service, an embed, an image) nee
 
 - Match the surrounding code: small components, Tailwind classes inline, and comments that explain *why* in plain sentences.
 - Server components by default. Add `"use client"` only for event handlers or browser APIs.
-- Follow the shadcn skill's rules: `gap-*` not `space-*`, `size-*` for squares, `cn()` for conditional classes, semantic tokens, `data-icon` on icons in buttons.
+- Follow shadcn/ui's conventions: `gap-*` not `space-*`, `size-*` for squares, `cn()` for conditional classes, semantic tokens, `data-icon` on icons in buttons.
 - Use semantic HTML over `div`s, and remove unused code and CSS when deleting a feature.
 - Commit messages: a short imperative summary line, then a body that explains the change.

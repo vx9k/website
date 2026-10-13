@@ -49,7 +49,6 @@ Other files at the root:
 | Path | What it is |
 | --- | --- |
 | `AGENTS.md` | Guide for anyone (or any coding agent) changing the site: design rules, accessibility checks, content rules. `CLAUDE.md` points to it. |
-| `.agents/skills/`, `.claude/skills/` | Skills for coding agents (design, and shadcn/ui's), pinned in `skills-lock.json`. |
 | `components.json` | shadcn/ui's config, so `pnpm dlx shadcn@latest add <component>` drops new components into `src/components/ui/`. |
 | `wrangler.jsonc` | Cloudflare Workers config: serves `out/` as static assets on kthread.dev, with `404.html` for unknown paths. |
 | `public/_headers` | Response headers: the security headers (CSP, HSTS and the rest) and long-term caching for hashed assets. |
