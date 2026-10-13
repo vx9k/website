@@ -1,12 +1,13 @@
 // Cloudflare Workers config. The site is a static export served from
-// out/ as static assets alone: there is no Worker script, so every
-// request is answered from Cloudflare's cache without running code, and
-// static asset requests are free and unmetered on every plan.
-// public/_headers sets the response headers, public/_redirects the
-// redirects.
+// out/ as static assets. Those requests are answered without running code,
+// and are free and unmetered on every plan. The one exception is "/",
+// which runs src/worker.ts first so an agent asking for Markdown gets
+// it (Accept: text/markdown). public/_headers sets the response headers,
+// public/_redirects the redirects.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "website",
+  "main": "src/worker.ts",
   "compatibility_date": "2026-10-08",
   // kthread.dev is attached as a Custom Domain (Cloudflare manages its DNS
   // record and certificate). www.kthread.dev 301s here via a zone
@@ -16,8 +17,16 @@
     "directory": "./out",
     // Unknown paths get out/404.html with a real 404 status.
     "not_found_handling": "404-page",
-    "html_handling": "auto-trailing-slash"
+    "html_handling": "auto-trailing-slash",
+    // The Worker reads the page and its Markdown through this binding.
+    "binding": "ASSETS",
+    // Only the root goes through the Worker; everything else stays static.
+    "run_worker_first": ["/"]
   },
+  // Logs and traces for the Worker's requests, in the dashboard under
+  // Workers & Pages > website > Observability. Static asset requests show
+  // up in the zone's HTTP traffic analytics and in Web Analytics instead.
+  "observability": { "enabled": true },
   // Every non-production branch gets its own Preview URL (posted on its
   // PR). Empty because previews use the same settings as production.
   "preview_urls": true,

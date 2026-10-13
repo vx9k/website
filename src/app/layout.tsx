@@ -60,6 +60,15 @@ const trustedTypesPolicy = `(function () {
   });
 })();`;
 
+// Cloudflare Web Analytics: page views and Core Web Vitals, with no cookies
+// and nothing stored on the visitor's device. The site's token is public
+// (it ends up in the page) but lives in the dashboard, so the build reads
+// it from the CF_WEB_ANALYTICS_TOKEN build variable; without it, the page
+// carries no beacon. public/_headers allows the beacon's script and the
+// address it reports to; it sends CORP headers, so cross-origin isolation
+// lets it load.
+const analyticsToken = process.env.CF_WEB_ANALYTICS_TOKEN;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en-US" dir="ltr" className={`${sans.variable} ${mono.variable}`}>
@@ -75,6 +84,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           Skip to content
         </a>
         {children}
+        {analyticsToken && (
+          <script
+            defer
+            src="https://static.cloudflareinsights.com/beacon.min.js"
+            data-cf-beacon={JSON.stringify({ token: analyticsToken })}
+          />
+        )}
       </body>
     </html>
   );

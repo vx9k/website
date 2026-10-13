@@ -2,7 +2,7 @@
 
 Source for [kthread.dev](https://kthread.dev), the personal site of [vx](https://github.com/vx9k): a one-page portfolio of vx's work.
 
-It's a static site built with Next.js and Tailwind CSS, exported to plain HTML and served as static assets from Cloudflare Workers, with no Worker code.
+It's a static site built with Next.js and Tailwind CSS, exported to plain HTML and served as static assets from Cloudflare Workers. A small Worker on `/` hands agents that ask for Markdown (`Accept: text/markdown`) the page as Markdown instead of HTML.
 
 The brief and the rules for changing the site are in [`AGENTS.md`](AGENTS.md).
 
@@ -26,13 +26,16 @@ pnpm wrangler dev   # serves out/ through the Workers runtime at http://localhos
 
 ```
 src/
+├── worker.ts             runs for "/" only: Markdown or HTML, by the Accept header
 ├── app/
 │   ├── layout.tsx        <html>, fonts, metadata
 │   ├── page.tsx          the page
 │   ├── not-found.tsx     the 404 page
 │   ├── content.ts        everything the page says: intro, products, skills, contact
 │   ├── globals.css       design tokens and styles
-│   └── opengraph-image.tsx, sitemap.ts, robots.ts, manifest.ts, icons
+│   ├── index.md/         the page as Markdown, for agents
+│   ├── robots.txt/       robots.txt, with a Content Signal
+│   └── opengraph-image.tsx, sitemap.ts, manifest.ts, icons
 └── components/site/      the shared section frame and the product block
 public/
 ├── work/                 product screenshots (AVIF and WebP)
@@ -43,7 +46,7 @@ public/
 | Path | What it is |
 | --- | --- |
 | `AGENTS.md` | The guide for anyone, or any coding agent, changing the site: the brief, content rules, accessibility, security. `CLAUDE.md` points to it. |
-| `wrangler.jsonc` | Cloudflare Workers config: serves `out/` as static assets on kthread.dev. |
+| `wrangler.jsonc` | Cloudflare Workers config: serves `out/` as static assets on kthread.dev, runs `src/worker.ts` for `/` only, and turns on the Worker's logs. |
 | `scripts/csp.mjs` | Runs after `next build`: hashes every inline script in `out/` into the CSP. |
 
 ## Agent tooling
@@ -65,6 +68,8 @@ Everything the page says lives in `src/app/content.ts`. Keep it factual: everyth
 ## Deploying
 
 Cloudflare Workers Builds is connected to this repo. Every push to `main` builds the site and deploys it with `wrangler deploy`. Pull requests get their own preview URL, posted as a comment on the PR.
+
+Analytics come from Cloudflare Web Analytics. To turn them on, add kthread.dev under Web Analytics in the Cloudflare dashboard, copy the site's token, and set it as the `CF_WEB_ANALYTICS_TOKEN` build variable in the Worker's Workers Builds settings; the next build adds the beacon. Without it, the page carries none.
 
 ## License
 
