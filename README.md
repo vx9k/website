@@ -1,10 +1,10 @@
 # website
 
-Source for [kthread.dev](https://kthread.dev), the personal site of [vx](https://github.com/vx9k): a portfolio of vx's work, in English, Spanish and Portuguese.
+Source for [kthread.dev](https://kthread.dev), the personal site of [vx](https://github.com/vx9k): a one-page portfolio of vx's work.
 
-It's a static site built with Next.js, Tailwind CSS and [shadcn/ui](https://ui.shadcn.com), exported to plain HTML and served from Cloudflare Workers.
+It's a static site built with Next.js and Tailwind CSS, exported to plain HTML and served as static assets from Cloudflare Workers, with no Worker code.
 
-The site is in the middle of an overhaul toward a minimal portfolio centred on the products vx has built. The brief and the rules for it are in [`AGENTS.md`](AGENTS.md).
+The brief and the rules for changing the site are in [`AGENTS.md`](AGENTS.md).
 
 ## Running it
 
@@ -26,27 +26,24 @@ pnpm wrangler dev   # serves out/ through the Workers runtime at http://localhos
 
 ```
 src/
-├── worker.ts             runs for "/" only: sends visitors to /en, /es or /pt
 ├── app/
-│   ├── [lang]/           the page and its layout, one static copy per language
-│   ├── global-not-found.tsx  the 404 page, in all three languages
-│   ├── content.ts        language-neutral facts: links, sections, skills
-│   ├── i18n/             the copy in English, Spanish and Portuguese
-│   └── globals.css       design tokens and styles
-├── components/
-│   ├── ui/               shadcn/ui components
-│   ├── site/             the page's sections
-│   └── quantum/          an optional layer of visual effects
-└── quantum/              the effects layer's state
-public/                   static files, response headers, and the effects' assets
+│   ├── layout.tsx        <html>, fonts, metadata
+│   ├── page.tsx          the page
+│   ├── not-found.tsx     the 404 page
+│   ├── content.ts        everything the page says: intro, products, skills, contact
+│   ├── globals.css       design tokens (light and dark) and styles
+│   └── opengraph-image.tsx, sitemap.ts, robots.ts, manifest.ts, icons
+└── components/site/      the shared section frame and the product block
+public/
+├── work/                 product screenshots (AVIF and WebP)
+├── _headers              security headers and caching
+└── _redirects            old /en, /es and /pt links go to /
 ```
 
 | Path | What it is |
 | --- | --- |
 | `AGENTS.md` | The guide for anyone, or any coding agent, changing the site: the brief, content rules, accessibility, security. `CLAUDE.md` points to it. |
-| `components.json` | shadcn/ui's config, so `pnpm dlx shadcn@latest add <component>` drops new components into `src/components/ui/`. |
 | `wrangler.jsonc` | Cloudflare Workers config: serves `out/` as static assets on kthread.dev. |
-| `public/_headers` | Response headers: the security headers (CSP, HSTS and the rest) and caching for hashed assets. |
 | `scripts/csp.mjs` | Runs after `next build`: hashes every inline script in `out/` into the CSP. |
 
 ## Agent tooling
@@ -63,7 +60,7 @@ claude-mem's cloud variant needs `CMEM_API_KEY` and `CMEM_USER_ID` from cmem.ai,
 
 ## Editing content
 
-Facts that read the same in every language live in `src/app/content.ts`; the copy lives in `src/app/i18n/`, one file per language. Keep it factual: everything on the page should be checkable against vx's public repos. Every change has to work at phone and desktop widths, in all three languages.
+Everything the page says lives in `src/app/content.ts`. Keep it factual: everything on the page should be checkable against vx's public repos. Product screenshots go in `public/work/` as `<id>-640` and `<id>-1280`, each in AVIF and WebP. Every change has to work at phone and desktop widths, in light and dark.
 
 ## Deploying
 

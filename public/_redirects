@@ -1,0 +1,8 @@
+# The site used to have a copy per language at /en, /es and /pt. It's in
+# English only now, at the root; old links land there.
+/en    /  301
+/es    /  301
+/pt    /  301
+/en/*  /  301
+/es/*  /  301
+/pt/*  /  301
