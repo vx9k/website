@@ -158,10 +158,11 @@
 }
 
 /* ------------------------------------------------------------- numogram
-   Zones and syzygies in the text colour, gates dashed and faint. Each
-   current has a still track with its arrowhead and, over it, a short
-   bright segment that runs along it in the direction of flow. Under
-   reduced motion the segment is hidden and the tracks carry the flow. */
+   Drawn like the CCRU's original: zones as rings, syzygies and currents
+   as stippled bands, gates as thin lines through small numbered rings.
+   A solid pulse runs along each current in its direction of flow; under
+   reduced motion it's hidden and the stippled tracks carry the flow.
+   Sizes are in the drawing's own units (it's 1080 wide). */
 
 .numogram {
   color: var(--foreground);
@@ -170,51 +171,58 @@
 
   & .numogram-regions text {
     fill: var(--muted);
-    font-size: 12px;
+    font-size: 36px;
     letter-spacing: 0.04em;
     text-anchor: end;
   }
   & .numogram-syzygies line {
-    stroke: currentColor;
-    stroke-width: 1.5;
+    stroke: url(#numogram-stipple);
+    stroke-width: 70;
   }
   & .numogram-gates path {
     fill: none;
-    stroke: var(--muted);
-    stroke-width: 1;
-    stroke-dasharray: 2 5;
+    stroke: currentColor;
+    stroke-width: 3;
   }
   & .numogram-track {
     fill: none;
-    stroke: var(--muted);
-    stroke-width: 1.25;
-    color: var(--muted);
+    stroke: url(#numogram-stipple);
+    stroke-width: 34;
   }
   & .numogram-flow {
     fill: none;
     stroke: currentColor;
-    stroke-width: 3;
-    stroke-linecap: round;
-    stroke-dasharray: 18 82;
+    stroke-width: 34;
+    stroke-dasharray: 9 91;
     stroke-dashoffset: 100;
     opacity: 0;
   }
-  & .numogram-zones circle {
+  & .numogram-zones circle,
+  & .numogram-gate-labels circle {
     fill: var(--background);
     stroke: currentColor;
-    stroke-width: 1.5;
+    stroke-width: 5;
+  }
+  & .numogram-gate-labels circle {
+    stroke-width: 3;
+  }
+  & .numogram-zones text,
+  & .numogram-gate-labels text {
+    fill: currentColor;
+    text-anchor: middle;
   }
   & .numogram-zones text {
-    fill: currentColor;
-    font-size: 15px;
-    text-anchor: middle;
+    font-size: 56px;
+  }
+  & .numogram-gate-labels text {
+    font-size: 28px;
   }
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .numogram .numogram-flow {
     opacity: 1;
-    animation: numogram-flow 2.8s linear infinite;
+    animation: numogram-flow 3s linear infinite;
   }
 }
 
@@ -228,14 +236,12 @@
   .numogram {
     color: CanvasText;
     & .numogram-regions text,
-    & .numogram-zones text {
+    & .numogram-zones text,
+    & .numogram-gate-labels text {
       fill: CanvasText;
     }
-    & .numogram-gates path,
-    & .numogram-track {
-      stroke: CanvasText;
-    }
-    & .numogram-zones circle {
+    & .numogram-zones circle,
+    & .numogram-gate-labels circle {
       fill: Canvas;
     }
   }

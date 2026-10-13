@@ -60,7 +60,7 @@ export default function Home() {
             <h1 className="mt-6 max-w-[18ch] text-display text-balance">{intro.line}</h1>
             <p className="mt-8 max-w-[52ch] text-lg text-muted text-pretty sm:text-xl">{intro.lede}</p>
           </div>
-          <Numogram className="mx-auto w-full max-w-60 sm:max-w-72 lg:col-span-4 lg:max-w-96" />
+          <Numogram className="mx-auto w-full max-w-56 sm:max-w-64 lg:col-span-4 lg:max-w-80" />
         </div>
 
         <Section id="work" title="Work">
