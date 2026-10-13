@@ -67,7 +67,7 @@ export default function Home() {
         </Section>
 
         <Section id="skills" title="Skills">
-          <dl className="grid gap-8 sm:grid-cols-2">
+          <dl className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {skills.map((g) => (
               <div key={g.group} className="flex flex-col gap-2">
                 <dt className="label">{g.group}</dt>
