@@ -58,7 +58,7 @@ export default function Product({ product: p, index }: { product: ProductData; i
       {p.image && (
         // next/image can't optimise a static export, so each screenshot
         // is pre-sized in AVIF with a WebP fallback (public/work/).
-        <picture className="shot block overflow-hidden border bg-surface lg:col-span-12">
+        <picture className="shot block overflow-hidden border border-foreground bg-surface lg:col-span-12">
           <source
             type="image/avif"
             srcSet={`${p.image.src}-640.avif 640w, ${p.image.src}-1280.avif 1280w`}

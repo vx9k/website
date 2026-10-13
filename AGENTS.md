@@ -19,7 +19,7 @@ The personal site of vx ([github.com/vx9k](https://github.com/vx9k)), live at [k
 - **Products, showcased.** Each product gets real space: its name, one sentence on what it does, a few specifics, what it's built with, its status, its license, and a link to its repository (and to a live version or release, if one exists). A screenshot when the repository or vx provides one. Products are ordered by how much they say about vx's work, not by date.
 - **The numogram.** The CCRU's numogram sits beside the headline (`Numogram.tsx`), vx's choice. It follows the layout of the CCRU's own drawing (Warp on top, Time-Circuit, Plex below) and its rules: syzygies summing to 9, currents to the zone their difference names, gates Gt-1 to Gt-45. Keep it accurate to both.
 - **Left-aligned, full width.** Section titles sit above their content, never in a side column; on wide screens each product puts its name and links beside its facts, with the screenshot across the full width under them.
-- **Quiet craft.** Monochrome, warm-neutral, one theme that follows the system's light or dark setting. Precise typography, alignment and hairlines do the work. Motion is CSS only and stops under reduced motion: screenshots ease in as they scroll into view, and the currents flow in the numogram.
+- **Carbon.** Black and white, one dark theme whatever the system asks for, vx's choice (the effective accelerationist look). The e/acc mark sits by the name in the header; the footer's and the favicon's carry a touch of Uruguay's flag (`Mark.tsx`, `src/app/icon.svg`). The only other colour is in the product screenshots. Precise typography, alignment and hairlines do the work. Motion is CSS only and stops under reduced motion: screenshots ease in as they scroll into view, and the currents flow in the numogram.
 - **Fast and accessible.** Static, small, readable without JavaScript, WCAG 2.2 AA.
 
 Talk to the owner before changing the visual direction.
@@ -34,7 +34,7 @@ pnpm wrangler dev  # serve out/ through the Workers runtime, as in production
 pnpm lint        # currently broken: typescript-eslint doesn't support TypeScript 7 yet
 ```
 
-There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler dev`; restart it after a rebuild) and looking at it in a browser at desktop and phone widths, in light and dark.
+There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler dev`; restart it after a rebuild) and looking at it in a browser at desktop and phone widths.
 
 ## Stack
 
@@ -70,9 +70,9 @@ src/app/
   page.tsx            the page: header, intro, Work, Skills, Contact, footer, and its JSON-LD
   not-found.tsx       exported as 404.html
   content.ts          everything the page says: the intro, the products, skills, contact, links
-  globals.css         tokens (light and dark), utilities, the one animation
+  globals.css         tokens (one dark theme), utilities, the animations
   opengraph-image.tsx, sitemap.ts, robots.ts, manifest.ts, icon.svg, apple-icon.png
-src/components/site/  Section (the shared frame), Product (one product) and Numogram (the intro's SVG)
+src/components/site/  Section (the shared frame), Product (one product), Numogram (the intro's SVG) and Mark (the e/acc mark)
 public/work/          product screenshots, AVIF and WebP at 640 and 1280 pixels wide
 public/_headers, public/_redirects
 scripts/csp.mjs       after next build: hashes the inline scripts into the CSP
@@ -91,7 +91,7 @@ The page is server components rendering static markup, with no client components
 
 ## Accessibility
 
-Target WCAG 2.2 AA, checked at phone and desktop widths, in light and dark:
+Target WCAG 2.2 AA, checked at phone and desktop widths:
 
 - Semantic landmarks, one `h1`, a heading outline without gaps (`h1`, an `h2` per section, an `h3` per product), `aria-labelledby` on sections and products, the skip link, visible focus on everything, and `aria-hidden` on purely decorative marks.
 - Text at 4.5:1 (3:1 for large text), measured over whatever is actually rendered behind it. The tokens' ratios are noted in `globals.css`.

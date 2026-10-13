@@ -1,32 +1,19 @@
 @import "tailwindcss" source("..");
 
 /* ---------------------------------------------------------------- palette
-   Monochrome, warm-neutral, one theme for the whole page that follows the
-   system's light or dark setting. No accent colour: the only colour on the
-   page is in the product screenshots. Contrast is measured against
-   --background: --foreground is over 15:1 in both themes, --muted over
-   6:1. */
+   Carbon: black and white, one dark theme whatever the system asks for.
+   The only colour is in the product screenshots and the flag in the
+   footer's mark. Contrast against --background: --foreground 18:1,
+   --muted 8.6:1 (8.1:1 on --surface). */
 
 :root {
-  color-scheme: light dark;
-  --background: #fbfbfa;
-  --foreground: #18181a;
-  /* 6.4:1 on the background, 5.9:1 on --surface. */
-  --muted: #5d5d59;
-  --rule: rgb(24 24 26 / 13%);
-  --surface: #f2f2f0;
+  color-scheme: dark;
+  --background: #000;
+  --foreground: #f2f2f2;
+  --muted: #a3a3a3;
+  --rule: rgb(255 255 255 / 22%);
+  --surface: #0a0a0a;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0e0e0f;
-    --foreground: #ececea;
-    /* 7.2:1 on the background. */
-    --muted: #9e9e99;
-    --rule: rgb(236 236 234 / 14%);
-    --surface: #171718;
-  }
 }
 
 @theme inline {
@@ -98,27 +85,29 @@
 }
 
 /* The page's four sizes: the headline, titles, body (set on <body>), and
-   this mono label for metadata. */
+   the mono label for metadata. */
 @utility text-display {
   font-size: clamp(2.25rem, 1.2rem + 4.2vw, 4.75rem);
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.02;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.055em;
 }
 
 @utility text-title {
   font-size: clamp(1.625rem, 1.2rem + 1.6vw, 2.5rem);
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.1;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.04em;
 }
 
+/* Labels: small mono capitals, widely tracked, in the text colour. */
 @utility label {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   line-height: 1.25rem;
-  letter-spacing: 0.02em;
-  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--foreground);
 }
 
 /* Text links: underlined, the underline thickening on hover. Every link
