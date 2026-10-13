@@ -57,6 +57,7 @@ There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler 
 - **Plugins** are declared in `.claude/settings.json` with their marketplaces, so Claude Code offers to install them when it opens the project:
   - [ponytail](https://github.com/DietrichGebert/ponytail): keeps solutions small (YAGNI, stdlib first). `/ponytail lite|full|ultra|off` sets its level; its hooks need `node` on the PATH.
   - [claude-mem](https://github.com/thedotmack/claude-mem)'s `claude-mem-cowork`, the variant for cloud sessions (web and the mobile apps): it needs a cmem.ai key in the environment (`CMEM_API_KEY`, and `CMEM_USER_ID`), and does nothing without one. On your own machine, install the full claude-mem with `npx claude-mem install`.
+  - [avoid-ai-writing](https://github.com/conorbronsdon/avoid-ai-writing): audits and rewrites copy for AI-writing patterns. Run it on new copy in all three languages before it lands (`/avoid-ai-writing`, or ask for an AI-isms check); the content rules here still win where they differ.
 - **Next.js** guidance comes first from the bundled docs (the managed block at the top); the skills only cover multi-step workflows.
 - Where a design skill disagrees with this file, this file wins.
 - Review a skill before installing it: skills run with the agent's full permissions.

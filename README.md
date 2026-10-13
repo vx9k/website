@@ -57,7 +57,7 @@ Set up for Claude Code (and anything else that reads `.claude/skills/`):
 | --- | --- |
 | `.claude/skills/`, `skills-lock.json` | Agent skills: [Cloudflare's](https://github.com/cloudflare/skills), the [Next.js workflow skills](https://nextjs.org/docs/app/guides/ai-agents), and [taste-skill](https://www.tasteskill.dev/docs)'s design skills. `npx skills experimental_install` restores them; `npx skills update` refreshes them. |
 | `.mcp.json` | MCP servers: Cloudflare's, and `next-devtools-mcp` for a running dev server. |
-| `.claude/settings.json` | Enables the MCP servers and declares the plugins: [ponytail](https://github.com/DietrichGebert/ponytail) and [claude-mem](https://github.com/thedotmack/claude-mem)'s cloud variant. |
+| `.claude/settings.json` | Enables the MCP servers and declares the plugins: [ponytail](https://github.com/DietrichGebert/ponytail), [avoid-ai-writing](https://github.com/conorbronsdon/avoid-ai-writing) and [claude-mem](https://github.com/thedotmack/claude-mem)'s cloud variant. |
 
 claude-mem's cloud variant needs `CMEM_API_KEY` and `CMEM_USER_ID` from cmem.ai, set as environment secrets; without them it does nothing. On your own machine, `npx claude-mem install` sets up the full version.
 
