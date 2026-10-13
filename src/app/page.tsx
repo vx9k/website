@@ -13,6 +13,7 @@ const jsonLd = JSON.stringify({
     name: site.name,
     jobTitle: "Software engineer",
     url: site.url,
+    email: `mailto:${contact.email}`,
     sameAs: [site.github],
     address: { "@type": "PostalAddress", addressCountry: "UY" },
   },
@@ -82,11 +83,18 @@ export default function Home() {
         <Section id="contact" title="Contact">
           <p className="text-title text-balance">{contact.heading}</p>
           <p className="mt-4 max-w-[52ch] text-muted text-pretty">{contact.body}</p>
-          <p className="mt-8">
-            <a href={site.github} className="link inline-flex min-h-6 items-center text-xl">
-              github.com/vx9k<span aria-hidden>&nbsp;↗</span>
-            </a>
-          </p>
+          <ul className="mt-8 flex flex-col gap-3 text-xl">
+            <li>
+              <a href={`mailto:${contact.email}`} className="link inline-flex min-h-6 items-center">
+                {contact.email}
+              </a>
+            </li>
+            <li>
+              <a href={site.github} className="link inline-flex min-h-6 items-center">
+                github.com/vx9k<span aria-hidden>&nbsp;↗</span>
+              </a>
+            </li>
+          </ul>
         </Section>
       </main>
 
