@@ -1,8 +1,9 @@
 # Security headers for every static response, the 404 included. The
 # redirects in _redirects are answered before these apply.
 #
-# The CSP allows nothing but this origin. Next.js writes a few inline
-# scripts into each page; after every build, scripts/csp.mjs puts their
+# The CSP allows nothing but this origin, Cloudflare Web Analytics' beacon
+# (src/app/layout.tsx) and the address it reports to. Next.js writes a few
+# inline scripts into each page; after every build, scripts/csp.mjs puts their
 # hashes in place of the token in script-src. Styles need 'unsafe-inline'
 # because the stylesheet is inlined (experimental.inlineCss) and Next.js
 # writes the fonts' variables into a style tag. Trusted Types are
@@ -11,10 +12,14 @@
 # chunks from /_next/static/ and blocks every other script URL, and every
 # HTML and script sink.
 #
+# Content-Signal (contentsignals.org) says how the content may be used:
+# indexed for search and read by AI tools to answer a question, but not
+# used to train models. robots.txt says the same.
+#
 # HSTS covers subdomains too. The zone's other records are iCloud mail,
 # which doesn't use HTTPS, and www redirects to the apex over HTTPS.
 /*
-  Content-Security-Policy: default-src 'none'; script-src 'self' INLINE_SCRIPT_HASHES; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests; require-trusted-types-for 'script'; trusted-types default
+  Content-Security-Policy: default-src 'none'; script-src 'self' https://static.cloudflareinsights.com INLINE_SCRIPT_HASHES; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests; require-trusted-types-for 'script'; trusted-types default
   Strict-Transport-Security: max-age=63072000; includeSubDomains
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
@@ -25,6 +30,7 @@
   Cross-Origin-Resource-Policy: same-origin
   Origin-Agent-Cluster: ?1
   X-Permitted-Cross-Domain-Policies: none
+  Content-Signal: search=yes, ai-input=yes, ai-train=no
 
 # Next.js puts a content hash in every filename under /_next/static/, so
 # those files never change and can be cached for a year.

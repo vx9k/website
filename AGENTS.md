@@ -38,13 +38,15 @@ There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler 
 
 ## Stack
 
-- **Next.js 16, App Router, `output: "export"`.** Fully static, so there are no Next.js server features: no request-time route handlers, no server actions, no `next/image` optimisation, no middleware, no `redirects`/`headers` in `next.config`. What a static export does support, the site uses: server components rendered at build time, the Metadata API (title, description, Open Graph, canonical), `opengraph-image.tsx` (the share image, drawn with `next/og` at build time), `sitemap.ts`, `robots.ts`, `manifest.ts`, file-based icons, `not-found.tsx` (exported as `404.html`), `next/font`, inlined CSS and the React Compiler. Read the version-matched docs in `node_modules/next/dist/docs/` before relying on any API.
+- **Next.js 16, App Router, `output: "export"`.** Fully static, so there are no Next.js server features: no request-time route handlers, no server actions, no `next/image` optimisation, no middleware, no `redirects`/`headers` in `next.config`. What a static export does support, the site uses: server components rendered at build time, the Metadata API (title, description, Open Graph, canonical), `opengraph-image.tsx` (the share image, drawn with `next/og` at build time), `sitemap.ts`, `manifest.ts`, static `GET` route handlers (`robots.txt`, `index.md`), file-based icons, `not-found.tsx` (exported as `404.html`), `next/font`, inlined CSS and the React Compiler. Read the version-matched docs in `node_modules/next/dist/docs/` before relying on any API.
 - **React 19 with the React Compiler.** Don't hand-write `useMemo`/`useCallback` for performance.
 - **Tailwind CSS v4.** Configured in CSS (`@theme` and `@utility` in `src/app/globals.css`); there's no `tailwind.config.*`. `source("..")` on the import limits class scanning to `src/`.
 - **TypeScript 7**, strict. `@/*` maps to `src/*`.
-- **Cloudflare Workers static assets, with no Worker script** (`wrangler.jsonc`). Every request is answered from `out/` without running code, so it's free and unmetered on the free plan. `public/_headers` sets response headers and `public/_redirects` the redirects (the old `/en`, `/es` and `/pt` go to `/`); both are copied into `out/`. Unknown paths get `404.html` with a 404 status.
+- **Cloudflare Workers static assets** (`wrangler.jsonc`). Every request but one is answered from `out/` without running code, so it's free and unmetered on the free plan. The exception is `/`, which runs `src/worker.ts` first (`assets.run_worker_first`): it reads `Accept`, and a request that prefers `text/markdown` gets `out/index.md` (with `Content-Type: text/markdown`, `Vary: Accept` and an estimated `x-markdown-tokens`); everything else, browsers included, gets the HTML. `_headers` still applies to what the Worker serves through the `ASSETS` binding. Keep the Worker that small, and keep `run_worker_first` to `/`, so the rest stays free. `public/_headers` sets response headers and `public/_redirects` the redirects (the old `/en`, `/es` and `/pt` go to `/`); both are copied into `out/`. Unknown paths get `404.html` with a 404 status.
 - **Deploys.** Cloudflare Workers Builds is connected to this repo: every push to `main` runs `pnpm run build` then `pnpm wrangler deploy`, and every other branch gets a preview URL posted on its PR. Work on a branch, open a PR, and check the preview.
 - The Worker is named `website`; the `name` in `wrangler.jsonc` must match it. `kthread.dev` is a Custom Domain in `wrangler.jsonc`; `www.kthread.dev` redirects to it through a Redirect Rule on the zone. The zone's DNS also carries iCloud mail records: leave them alone. Build commands live in the Cloudflare dashboard and use `pnpm wrangler …`, never `pnpm dlx`/`npx` without a local install.
+- **Agents.** `src/app/index.md/route.ts` writes the page as Markdown from `content.ts` at build time, so the two can't drift; it's also served at `/index.md`. `robots.txt` (a route, since Next's robots type has no field for it) and `_headers` both send a [Content Signal](https://contentsignals.org/): `search=yes, ai-input=yes, ai-train=no`, vx's choice. Change it in both places together.
+- **Analytics.** Cloudflare Web Analytics, vx's choice: no cookies, nothing stored on the visitor's device. `layout.tsx` adds the beacon only when the build has the `CF_WEB_ANALYTICS_TOKEN` variable (set in the Workers Builds settings), and the CSP allows its script and the address it reports to. The Worker's logs and traces are on (`observability` in `wrangler.jsonc`); the zone's HTTP traffic analytics cover the rest. Nothing else that tracks, without the owner's say-so.
 - The `compatibility_date` can't be newer than the `workerd` that `wrangler dev` ships, or local serving fails.
 
 ## Agent tooling
@@ -65,13 +67,16 @@ There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler 
 ## Layout of the code
 
 ```
+src/worker.ts         runs for "/" only: Markdown for Accept: text/markdown, else the HTML
 src/app/
-  layout.tsx          <html>, fonts, metadata, viewport, the Trusted Types policy, the skip link
+  layout.tsx          <html>, fonts, metadata, viewport, the Trusted Types policy, the skip link, the analytics beacon
   page.tsx            the page: header, intro, Work, Skills, Contact, footer, and its JSON-LD
   not-found.tsx       exported as 404.html
   content.ts          everything the page says: the intro, the products, skills, contact, links
   globals.css         tokens (one dark theme), utilities, the animations
-  opengraph-image.tsx, sitemap.ts, robots.ts, manifest.ts, icon.svg, apple-icon.png
+  index.md/route.ts   the page as Markdown, for agents
+  robots.txt/route.ts robots.txt, with the Content Signal
+  opengraph-image.tsx, sitemap.ts, manifest.ts, icon.svg, apple-icon.png
 src/components/site/  Section (the shared frame), Product (one product), Numogram (the intro's SVG) and Mark (the e/acc mark)
 public/work/          product screenshots, AVIF and WebP at 640 and 1280 pixels wide
 public/_headers, public/_redirects
@@ -100,21 +105,21 @@ Target WCAG 2.2 AA, checked at phone and desktop widths:
 
 ## Performance
 
-The site is static and small; keep it that way. Runtime dependencies are Next and React, nothing else. Fonts are self-hosted by `next/font`. Product images go in `public/work/` as AVIF with a WebP fallback, at 640 and 1280 pixels wide, in a `<picture>` with `srcset`, `sizes`, `width` and `height` set and `loading="lazy"`; `next/image` optimisation isn't available in a static export. Name them `<id>-<width>.<ext>`, and convert from the repository's own screenshots. No analytics, trackers or third-party embeds without the owner's say-so (see the CSP below). Prefer CSS to JavaScript for motion; no animation libraries.
+The site is static and small; keep it that way. Runtime dependencies are Next and React, nothing else. Fonts are self-hosted by `next/font`. Product images go in `public/work/` as AVIF with a WebP fallback, at 640 and 1280 pixels wide, in a `<picture>` with `srcset`, `sizes`, `width` and `height` set and `loading="lazy"`; `next/image` optimisation isn't available in a static export. Name them `<id>-<width>.<ext>`, and convert from the repository's own screenshots. No analytics beyond Cloudflare Web Analytics, and no trackers or third-party embeds, without the owner's say-so (see the CSP below). Prefer CSS to JavaScript for motion; no animation libraries.
 
 ## Security headers
 
 Every static response, the 404 included, carries:
 
-- **Content-Security-Policy.** `default-src 'none'`, then only what the page uses, all from `'self'`: scripts, styles, images, fonts, the manifest and `connect-src`. `base-uri`, `form-action` and `frame-ancestors` are `'none'`, requests are upgraded to HTTPS, and Trusted Types are required, with one policy allowed: `default`.
-  - Scripts: `'self'` and a hash of each inline script. Next.js writes its bootstrap and each page's data inline, so `scripts/csp.mjs` hashes every inline `<script>` in `out/` after `next build` and puts the hashes in place of `INLINE_SCRIPT_HASHES` in `out/_headers`. The hashes change with every build, so never write them by hand, and never add `'unsafe-inline'` to `script-src`. The script fails the build if the token is missing or a line passes Cloudflare's 2,000-character limit.
+- **Content-Security-Policy.** `default-src 'none'`, then only what the page uses, all from `'self'`: scripts, styles, images, fonts, the manifest and `connect-src`. The one other origin is Cloudflare Web Analytics: its beacon in `script-src` (`static.cloudflareinsights.com`, which sends CORP, so cross-origin isolation lets it load) and the address it reports to in `connect-src` (`cloudflareinsights.com`). `base-uri`, `form-action` and `frame-ancestors` are `'none'`, requests are upgraded to HTTPS, and Trusted Types are required, with one policy allowed: `default`.
+  - Scripts: `'self'`, the analytics beacon and a hash of each inline script. Next.js writes its bootstrap and each page's data inline, so `scripts/csp.mjs` hashes every inline `<script>` in `out/` after `next build` and puts the hashes in place of `INLINE_SCRIPT_HASHES` in `out/_headers`. The hashes change with every build, so never write them by hand, and never add `'unsafe-inline'` to `script-src`. The script fails the build if the token is missing or a line passes Cloudflare's 2,000-character limit.
   - Styles: `'self' 'unsafe-inline'`, because the stylesheet is inlined (`experimental.inlineCss`) and Next.js writes the fonts' variables into a `<style>` tag.
   - Trusted Types: Next.js loads its lazy chunks by setting `script.src` to a string, which Trusted Types blocks, so the first thing in each page's `<head>` is an inline script (`trustedTypesPolicy` in `layout.tsx`) that creates the `default` policy. It lets through script URLs under this origin's `/_next/static/` and throws for anything else, and it has no HTML or script conversions, so every other sink stays blocked. It returns the URL exactly as given: Turbopack recognises a loaded chunk by its `src` attribute, and a rewritten URL leaves the `import()` waiting forever with no error. Nothing on the page writes HTML or script into the DOM (`dangerouslySetInnerHTML` is only rendered on the server); don't add code that sets `innerHTML`, `script.text` or similar in the browser.
 - **Strict-Transport-Security** for two years, subdomains included (the zone's other records are iCloud mail). It isn't marked `preload`: that list is hard to leave, so it's the owner's call.
 - **X-Content-Type-Options** `nosniff`, **X-Frame-Options** `DENY`, **Referrer-Policy** `strict-origin-when-cross-origin`, and a **Permissions-Policy** that turns off every powerful feature.
-- **Cross-Origin-Opener-Policy** `same-origin` and **Cross-Origin-Embedder-Policy** `require-corp`, so the page is cross-origin isolated, and **Cross-Origin-Resource-Policy** `same-origin`. Also **Origin-Agent-Cluster** and **X-Permitted-Cross-Domain-Policies** `none`.
+- **Cross-Origin-Opener-Policy** `same-origin` and **Cross-Origin-Embedder-Policy** `require-corp`, so the page is cross-origin isolated, and **Cross-Origin-Resource-Policy** `same-origin`. Also **Origin-Agent-Cluster** and **X-Permitted-Cross-Domain-Policies** `none`, and the **Content-Signal** above.
 
-Anything from another origin (analytics, a font service, an embed, an image) needs that origin in the matching directive, and under `require-corp` it has to send CORP or CORS headers. Cloudflare Web Analytics, for one, would need `static.cloudflareinsights.com` in `script-src` and `cloudflareinsights.com` in `connect-src`. After any change, open `/` and a 404 with the browser console open and check for CSP errors.
+Anything from another origin (analytics, a font service, an embed, an image) needs that origin in the matching directive, and under `require-corp` it has to send CORP or CORS headers. After any change, open `/` and a 404 with the browser console open and check for CSP errors.
 
 ## Code style
 

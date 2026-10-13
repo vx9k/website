@@ -96,7 +96,7 @@ export const products: Product[] = [
   {
     id: "website",
     name: "kthread.dev",
-    summary: "This site: a static Next.js export served by Cloudflare, with a strict content security policy and no tracking.",
+    summary: "This site: a static Next.js export served by Cloudflare, with a strict content security policy and no cookies.",
     notes: [],
     stack: ["Next.js", "TypeScript", "Tailwind CSS", "Cloudflare Workers"],
     status: "Live",
