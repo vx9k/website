@@ -17,8 +17,9 @@ The personal site of vx ([github.com/vx9k](https://github.com/vx9k)), live at [k
 - **Minimal.** One idea per screen, generous space, four type sizes, one typeface family plus a mono for labels. No decoration that doesn't carry information. If an element can be removed without losing meaning, remove it.
 - **Portfolio first.** The page answers three questions in order: who is this, what have they built, how do I reach them. The introduction is short; the work is the bulk of the page.
 - **Products, showcased.** Each product gets real space: its name, one sentence on what it does, a few specifics, what it's built with, its status, its license, and a link to its repository (and to a live version or release, if one exists). A screenshot when the repository or vx provides one. Products are ordered by how much they say about vx's work, not by date.
+- **The numogram.** The CCRU's numogram sits beside the headline (`Numogram.tsx`), vx's choice. It's drawn from the numogram's rules (zones, syzygies summing to 9, currents, gates), so keep it accurate: change the rules' data, not the picture.
 - **Left-aligned, full width.** Section titles sit above their content, never in a side column; on wide screens each product puts its name and links beside its facts, with the screenshot across the full width under them.
-- **Quiet craft.** Monochrome, warm-neutral, one theme that follows the system's light or dark setting. Precise typography, alignment and hairlines do the work. The one piece of motion is screenshots easing in as they scroll into view, in CSS, off under reduced motion.
+- **Quiet craft.** Monochrome, warm-neutral, one theme that follows the system's light or dark setting. Precise typography, alignment and hairlines do the work. Motion is CSS only and stops under reduced motion: screenshots ease in as they scroll into view, and the currents flow in the numogram.
 - **Fast and accessible.** Static, small, readable without JavaScript, WCAG 2.2 AA.
 
 Talk to the owner before changing the visual direction.
@@ -71,7 +72,7 @@ src/app/
   content.ts          everything the page says: the intro, the products, skills, contact, links
   globals.css         tokens (light and dark), utilities, the one animation
   opengraph-image.tsx, sitemap.ts, robots.ts, manifest.ts, icon.svg, apple-icon.png
-src/components/site/  Section (the shared frame) and Product (one product)
+src/components/site/  Section (the shared frame), Product (one product) and Numogram (the intro's SVG)
 public/work/          product screenshots, AVIF and WebP at 640 and 1280 pixels wide
 public/_headers, public/_redirects
 scripts/csp.mjs       after next build: hashes the inline scripts into the CSP

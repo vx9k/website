@@ -1,3 +1,4 @@
+import Numogram from "@/components/site/Numogram";
 import Product from "@/components/site/Product";
 import Section from "@/components/site/Section";
 import { contact, intro, products, sections, site, skills } from "./content";
@@ -50,13 +51,16 @@ export default function Home() {
       </header>
 
       <main id="main" tabIndex={-1} className="focus:outline-none">
-        <div className="shell pt-20 pb-12 sm:pt-32 sm:pb-16">
-          <p className="label flex items-center gap-2">
-            <span aria-hidden className="size-1.5 rounded-full bg-foreground forced-colors:bg-[CanvasText]" />
-            {intro.status}
-          </p>
-          <h1 className="mt-6 max-w-[18ch] text-display text-balance">{intro.line}</h1>
-          <p className="mt-8 max-w-[52ch] text-lg text-muted text-pretty sm:text-xl">{intro.lede}</p>
+        <div className="shell grid items-center gap-16 pt-20 pb-12 sm:pt-28 sm:pb-16 lg:grid-cols-12 lg:gap-12">
+          <div className="lg:col-span-8">
+            <p className="label flex items-center gap-2">
+              <span aria-hidden className="size-1.5 rounded-full bg-foreground forced-colors:bg-[CanvasText]" />
+              {intro.status}
+            </p>
+            <h1 className="mt-6 max-w-[18ch] text-display text-balance">{intro.line}</h1>
+            <p className="mt-8 max-w-[52ch] text-lg text-muted text-pretty sm:text-xl">{intro.lede}</p>
+          </div>
+          <Numogram className="mx-auto w-full max-w-60 sm:max-w-72 lg:col-span-4 lg:max-w-96" />
         </div>
 
         <Section id="work" title="Work">

@@ -157,6 +157,90 @@
   }
 }
 
+/* ------------------------------------------------------------- numogram
+   Zones and syzygies in the text colour, gates dashed and faint. Each
+   current has a still track with its arrowhead and, over it, a short
+   bright segment that runs along it in the direction of flow. Under
+   reduced motion the segment is hidden and the tracks carry the flow. */
+
+.numogram {
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  overflow: visible;
+
+  & .numogram-regions text {
+    fill: var(--muted);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-anchor: end;
+  }
+  & .numogram-syzygies line {
+    stroke: currentColor;
+    stroke-width: 1.5;
+  }
+  & .numogram-gates path {
+    fill: none;
+    stroke: var(--muted);
+    stroke-width: 1;
+    stroke-dasharray: 2 5;
+  }
+  & .numogram-track {
+    fill: none;
+    stroke: var(--muted);
+    stroke-width: 1.25;
+    color: var(--muted);
+  }
+  & .numogram-flow {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 18 82;
+    stroke-dashoffset: 100;
+    opacity: 0;
+  }
+  & .numogram-zones circle {
+    fill: var(--background);
+    stroke: currentColor;
+    stroke-width: 1.5;
+  }
+  & .numogram-zones text {
+    fill: currentColor;
+    font-size: 15px;
+    text-anchor: middle;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .numogram .numogram-flow {
+    opacity: 1;
+    animation: numogram-flow 2.8s linear infinite;
+  }
+}
+
+@keyframes numogram-flow {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (forced-colors: active) {
+  .numogram {
+    color: CanvasText;
+    & .numogram-regions text,
+    & .numogram-zones text {
+      fill: CanvasText;
+    }
+    & .numogram-gates path,
+    & .numogram-track {
+      stroke: CanvasText;
+    }
+    & .numogram-zones circle {
+      fill: Canvas;
+    }
+  }
+}
+
 /* Windows contrast themes: hairlines become solid system lines, so the
    structure survives. */
 @media (forced-colors: active) {
