@@ -51,43 +51,15 @@ public/                   static files, response headers, and the effects' asset
 
 ## Agent tooling
 
-Run these from the repository root. Each one adds files or settings to the repo, so review what it adds, then commit it:
+Set up for Claude Code (and anything else that reads `.claude/skills/`):
 
-```sh
-# Cloudflare's skills (https://github.com/cloudflare/skills)
-npx skills add https://github.com/cloudflare/skills --agent claude-code
+| Where | What |
+| --- | --- |
+| `.claude/skills/`, `skills-lock.json` | Agent skills: [Cloudflare's](https://github.com/cloudflare/skills), the [Next.js workflow skills](https://nextjs.org/docs/app/guides/ai-agents), and [taste-skill](https://www.tasteskill.dev/docs)'s design skills. `npx skills experimental_install` restores them; `npx skills update` refreshes them. |
+| `.mcp.json` | MCP servers: Cloudflare's, and `next-devtools-mcp` for a running dev server. |
+| `.claude/settings.json` | Enables the MCP servers and declares the plugins: [ponytail](https://github.com/DietrichGebert/ponytail) and [claude-mem](https://github.com/thedotmack/claude-mem)'s cloud variant. |
 
-# Next.js workflow skills (https://nextjs.org/docs/app/guides/ai-agents)
-npx skills add vercel/next.js --agent claude-code --skill next-dev-loop next-bundle-optimizer \
-  next-cache-components-adoption next-cache-components-optimizer \
-  next-partial-prefetching-adoption next-partial-prefetching-optimizer
-
-# Design skills from taste-skill (https://www.tasteskill.dev/docs)
-npx skills add https://github.com/Leonxlnx/taste-skill --agent claude-code \
-  --skill design-taste-frontend minimalist-ui redesign-existing-projects
-```
-
-MCP servers go in `.mcp.json` at the root:
-
-```json
-{
-  "mcpServers": {
-    "cloudflare": { "type": "http", "url": "https://mcp.cloudflare.com/mcp" },
-    "next-devtools": { "command": "npx", "args": ["-y", "next-devtools-mcp@latest"] }
-  }
-}
-```
-
-Plugins with hooks install through Claude Code itself:
-
-```
-/plugin marketplace add DietrichGebert/ponytail
-/plugin install ponytail@ponytail
-
-/plugin marketplace add thedotmack/claude-mem
-/plugin install claude-mem          # on your own machine
-/plugin install claude-mem-cowork   # for cloud sessions (needs a cmem.ai key)
-```
+claude-mem's cloud variant needs `CMEM_API_KEY` and `CMEM_USER_ID` from cmem.ai, set as environment secrets; without them it does nothing. On your own machine, `npx claude-mem install` sets up the full version.
 
 ## Editing content
 

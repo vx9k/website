@@ -1,7 +1,16 @@
 {
+  "extraKnownMarketplaces": {
+    "ponytail": {
+      "source": { "source": "github", "repo": "DietrichGebert/ponytail" }
+    },
+    "thedotmack": {
+      "source": { "source": "github", "repo": "thedotmack/claude-mem" }
+    }
+  },
   "enabledPlugins": {
-    "cloudflare@cloudflare": true,
-    "avoid-ai-writing@conorbronsdon-skills": true,
-    "claude-mem-cowork@thedotmack": true
-  }
+    "ponytail@ponytail": true,
+    "claude-mem-cowork@thedotmack": true,
+    "avoid-ai-writing@conorbronsdon-skills": true
+  },
+  "enableAllProjectMcpServers": true
 }
