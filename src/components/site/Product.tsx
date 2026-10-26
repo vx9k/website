@@ -1,9 +1,9 @@
 import type { Product as ProductData } from "@/app/content";
 
 /** One product. On wide screens, two columns: its name, what it is and
- *  its links on the left; a few specifics and the facts (stack, status,
- *  licence) on the right. Under them, across the full width, a screenshot
- *  when the repository has one. */
+ *  its links on the left; a few specifics and the facts (group, stack,
+ *  status, licence) on the right. Under them, across the full width, a
+ *  screenshot when the repository has one. */
 export default function Product({ product: p, index }: { product: ProductData; index: number }) {
   const titleId = `${p.id}-title`;
   return (
@@ -46,6 +46,18 @@ export default function Product({ product: p, index }: { product: ProductData; i
         )}
 
         <dl className="grid gap-x-8 gap-y-3 border-t pt-5 sm:grid-cols-[8rem_1fr]">
+          {p.group && (
+            <>
+              <dt className="label">Made at</dt>
+              <dd>
+                <a href={p.group.href} className="link inline-flex min-h-6 items-center">
+                  {p.group.name}
+                  <span aria-hidden>&nbsp;↗</span>
+                </a>
+                , {p.group.role}
+              </dd>
+            </>
+          )}
           <dt className="label">Built with</dt>
           <dd>{p.stack.join(", ")}</dd>
           <dt className="label">Status</dt>
