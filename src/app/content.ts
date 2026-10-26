@@ -1,14 +1,15 @@
 // Everything the page says, in one place. Every claim is checkable against
-// vx's GitHub profile and the public repos on github.com/vx9k, or came
-// from vx; the products' descriptions, stacks and statuses are taken from
-// each repository's README, manifests and docs.
+// vx's GitHub profile, the public repos on github.com/vx9k and
+// github.com/poopware-laboratories, or came from vx; the products'
+// descriptions, stacks and statuses are taken from each repository's
+// README, manifests and docs.
 
 export const site = {
   url: "https://kthread.dev",
   name: "vx",
   title: "vx, software engineer",
   description:
-    "vx is a software engineer in Uruguay who writes C for Linux and TypeScript for the web. Work: a voxel sandbox in C and Vulkan, a Discord presence daemon in Rust, a minimal init.",
+    "vx is a software engineer in Uruguay who writes C for Linux and TypeScript for the web. Work: a terminal emulator in Rust, a voxel sandbox in C and Vulkan, a Discord presence daemon in Rust.",
   github: "https://github.com/vx9k",
   source: "https://github.com/vx9k/website",
 };
@@ -33,6 +34,9 @@ export type Product = {
   license: string;
   repo: string;
   live?: { href: string; label: string };
+  // Set for work made with a group, with vx's part in it (from the
+  // repository's contributors).
+  group?: { name: string; href: string; role: string };
   // Screenshots from the repository itself, converted to AVIF and WebP at
   // 640 and 1280 pixels wide in public/work/ (see README).
   image?: { src: string; width: number; height: number; alt: string };
@@ -40,6 +44,28 @@ export type Product = {
 
 // Ordered by how much each says about vx's work, not by date.
 export const products: Product[] = [
+  {
+    id: "poopterm",
+    name: "poopterm",
+    summary:
+      "A fast, software-rendered terminal emulator in Rust for Linux, macOS and FreeBSD, with its own escape-sequence parser, font engine and image decoders.",
+    notes: [
+      "Handles real-world output at 63 to 248 MB/\u2060s end to end on a low-power laptop CPU, with a SIMD tokenizer and redraws paced to the display.",
+      "Shows images over Sixel and the kitty graphics protocol, and speaks the kitty keyboard protocol and shell integration for zsh, fish and bash.",
+      "On Linux, each tab’s shell runs in its own cgroup with a memory cap, so a runaway program can’t starve the other tabs.",
+    ],
+    stack: ["Rust", "winit", "softbuffer", "mimalloc"],
+    status: "Released, with packages for Homebrew, Debian, Fedora and Arch; not yet a complete xterm implementation",
+    license: "AGPL-3.0-or-later",
+    repo: "https://github.com/poopware-laboratories/poopterm",
+    group: { name: "Poopware Laboratories", href: "https://github.com/poopware-laboratories", role: "main contributor" },
+    image: {
+      src: "/work/poopterm",
+      width: 1280,
+      height: 768,
+      alt: "poopterm in its brown Poop theme: a cargo build, a benchmark table, text in Greek, Cyrillic, Chinese and Korean, emoji, styled text, a link and a row of colour swatches ending in a gradient.",
+    },
+  },
   {
     id: "blockclonia",
     name: "blockclonia",
@@ -81,6 +107,22 @@ export const products: Product[] = [
       height: 490,
       alt: "claude-presence’s terminal dashboard: the daemon running and connected to Discord, the card reading “Working in claude-presence”, and today’s tokens, prompts, active time and streak.",
     },
+  },
+  {
+    id: "neocaca",
+    name: "neocaca",
+    summary:
+      "A modal terminal code editor in Zig, with Kakoune-style keys, multiple selections, regex search and undo.",
+    notes: [
+      "Ships with bounds and overflow checks on; its SIMD text scanning still runs at about 14 to 24 GiB/\u2060s.",
+      "Treats file contents as untrusted: escape sequences and control bytes are shown, never written to the terminal raw.",
+      "Saves atomically, so a crash never truncates a file.",
+    ],
+    stack: ["Zig", "mimalloc"],
+    status: "Early days: edits one file at a time, with no syntax highlighting yet",
+    license: "AGPL-3.0",
+    repo: "https://github.com/poopware-laboratories/neocaca",
+    group: { name: "Poopware Laboratories", href: "https://github.com/poopware-laboratories", role: "contributor" },
   },
   {
     id: "4suite",

@@ -4,7 +4,8 @@ import Product from "@/components/site/Product";
 import Section from "@/components/site/Section";
 import { contact, intro, products, sections, site, skills } from "./content";
 
-// Structured data for search engines: vx, and the products as vx's work.
+// Structured data for search engines: vx, and the products as vx's work
+// (or, for group work, the group's, with vx as a contributor).
 // It's a data block, not a script, so the CSP doesn't apply to it; "<" is
 // escaped so nothing in it can close the tag.
 const jsonLd = JSON.stringify({
@@ -26,7 +27,12 @@ const jsonLd = JSON.stringify({
     codeRepository: p.repo,
     programmingLanguage: p.stack[0],
     license: `https://spdx.org/licenses/${p.license}`,
-    author: { "@type": "Person", name: site.name },
+    ...(p.group
+      ? {
+          author: { "@type": "Organization", name: p.group.name, url: p.group.href },
+          contributor: { "@type": "Person", name: site.name },
+        }
+      : { author: { "@type": "Person", name: site.name } }),
   })),
 }).replace(/</g, "\\u003c");
 

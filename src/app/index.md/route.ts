@@ -16,6 +16,7 @@ function markdown() {
     // The facts as one paragraph with hard line breaks, so they don't run
     // into the notes' list above them.
     const facts = [
+      ...(p.group ? [`Made at: [${p.group.name}](${p.group.href}), ${p.group.role}`] : []),
       `Built with: ${p.stack.join(", ")}`,
       `Status: ${p.status}`,
       `License: ${p.license}`,
