@@ -5,6 +5,13 @@
 // nonces, so the policy allows exactly these scripts by hash. The hashes
 // change with every build, which is why this runs after `next build`
 // instead of the hashes living in public/_headers.
+//
+// Next.js streams the page's data as a run of small inline scripts, and
+// how many depends on how the build machine's streams happen to flush:
+// the same commit has given 5 on Workers Builds and over 30 locally,
+// which is past what fits in one _headers line. So each run of adjacent
+// plain inline scripts is first joined into one script, in the same
+// order, which runs the same statements and needs one hash.
 
 import { createHash } from "node:crypto";
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -21,17 +28,26 @@ function* htmlFiles(dir) {
   }
 }
 
+// Tags in any case, and end tags with anything before the ">"
+// ("</script >", "</SCRIPT foo>"), as browsers read them: a script this
+// missed would get no hash, and the policy would block it.
+const script = /<script\b([^>]*)>([\s\S]*?)<\/script\b[^>]*>/gi;
+// A run of two or more attribute-free inline scripts with nothing between
+// them (a body never contains "</script", so a run can't swallow a tag
+// between two scripts). The bodies are statements, so ";" joins them.
+const run = /(?:<script>(?:(?!<\/script)[\s\S])*<\/script>){2,}/g;
+
 const hashes = new Set();
 let pages = 0;
 for (const file of htmlFiles(out)) {
   pages++;
-  const html = readFileSync(file, "utf8");
-  // Tags in any case, and end tags with anything before the ">"
-  // ("</script >", "</SCRIPT foo>"), as browsers read them: a script this
-  // missed would get no hash, and the policy would block it.
-  for (const [, attrs, body] of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\b[^>]*>/gi)) {
-    // Scripts with a src load from this origin and are covered by 'self'.
-    if (/\bsrc\s*=/i.test(attrs)) continue;
+  let html = readFileSync(file, "utf8");
+  const joined = html.replace(run, (scripts) => `<script>${[...scripts.matchAll(script)].map((m) => m[2]).join(";")}</script>`);
+  if (joined !== html) writeFileSync(file, (html = joined));
+  for (const [, attrs, body] of html.matchAll(script)) {
+    // Scripts with a src load from this origin and are covered by 'self';
+    // JSON-LD is data, never run, so the policy doesn't apply to it.
+    if (/\bsrc\s*=/i.test(attrs) || /\btype\s*=\s*"application\/ld\+json"/i.test(attrs)) continue;
     hashes.add(`'sha256-${createHash("sha256").update(body, "utf8").digest("base64")}'`);
   }
 }
