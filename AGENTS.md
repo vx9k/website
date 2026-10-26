@@ -51,18 +51,10 @@ There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler 
 
 ## Agent tooling
 
-- **Skills** live in `.claude/skills/`, installed with the [`skills`](https://skills.sh) CLI and pinned in `skills-lock.json` (`npx skills experimental_install` restores them, `npx skills update` refreshes them):
-  - Cloudflare's, from [cloudflare/skills](https://github.com/cloudflare/skills): `wrangler`, `workers-best-practices`, `web-perf`, `cf-cli` and the rest. Use them for Workers, deploys and performance.
-  - Next.js workflow skills from `vercel/next.js`: `next-dev-loop` (verify each change against a running dev server), `next-bundle-optimizer`, and the Cache Components and Partial Prefetching adoption and optimizer skills.
-  - Design skills from [taste-skill](https://www.tasteskill.dev/docs): `design-taste-frontend`, `minimalist-ui` and `redesign-existing-projects`, for the overhaul.
+- **One agent, one skill.** Work in a single session; don't spawn subagents for this site. `.claude/skills/website/SKILL.md` holds the procedures (adding a product, verifying a change, updating dependencies, shipping); this file holds the rules and wins where the two differ.
 - **MCP servers** are in `.mcp.json`, enabled for the project in `.claude/settings.json`: Cloudflare's (`https://mcp.cloudflare.com/mcp`, which asks you to sign in to Cloudflare the first time) and `next-devtools-mcp`, which connects to a running `pnpm dev`.
-- **Plugins** are declared in `.claude/settings.json` with their marketplaces, so Claude Code offers to install them when it opens the project:
-  - [ponytail](https://github.com/DietrichGebert/ponytail): keeps solutions small (YAGNI, stdlib first). `/ponytail lite|full|ultra|off` sets its level; its hooks need `node` on the PATH.
-  - [claude-mem](https://github.com/thedotmack/claude-mem)'s `claude-mem-cowork`, the variant for cloud sessions (web and the mobile apps): it needs a cmem.ai key in the environment (`CMEM_API_KEY`, and `CMEM_USER_ID`), and does nothing without one. On your own machine, install the full claude-mem with `npx claude-mem install`.
-  - [avoid-ai-writing](https://github.com/conorbronsdon/avoid-ai-writing): audits and rewrites copy for AI-writing patterns. Run it on new copy before it lands (`/avoid-ai-writing`, or ask for an AI-isms check); the content rules here still win where they differ.
-- **Next.js** guidance comes first from the bundled docs (the managed block at the top); the skills only cover multi-step workflows.
-- Where a design skill disagrees with this file, this file wins.
-- Review a skill before installing it: skills run with the agent's full permissions.
+- **Next.js** guidance comes from the bundled docs (the managed block at the top).
+- No other skills or plugins are installed for the project. Review a skill before adding one: skills run with the agent's full permissions.
 
 ## Layout of the code
 
