@@ -41,8 +41,12 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-face-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-face-mono), ui-monospace, monospace;
+  /* Atkinson Hyperlegible Next first (next/font's variable, layout.tsx),
+     then the usual system stack: each platform's own UI face, the common
+     sans-serifs, and the emoji fonts last. */
+  --font-sans:
+    var(--font-face-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
   --color-background: var(--background);
   --color-surface: var(--surface);
@@ -89,7 +93,7 @@
 
 /* ------------------------------------------------------------- utilities */
 
-/* The four sizes: the headline, titles, body (set on <body>), and the mono
+/* The four sizes: the headline, titles, body (set on <body>), and the
    label for metadata. The headline shrinks on short screens, so the
    panel fits. */
 @utility text-display {
@@ -109,11 +113,14 @@
   letter-spacing: -0.015em;
 }
 
-/* Labels: small mono in sentence case, in the muted colour. */
+/* Labels for metadata: the same face, smaller and a little heavier, in
+   sentence case and the muted colour, with figures of one width so the
+   work's numbers line up. */
 @utility label {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
   line-height: 1.25rem;
+  font-variant-numeric: tabular-nums;
   color: var(--muted);
 }
 
