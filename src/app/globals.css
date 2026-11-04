@@ -41,7 +41,12 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-face-sans), ui-sans-serif, system-ui, sans-serif;
+  /* Atkinson Hyperlegible Next first (next/font's variable, layout.tsx),
+     then the usual system stack: each platform's own UI face, the common
+     sans-serifs, and the emoji fonts last. */
+  --font-sans:
+    var(--font-face-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
   --color-background: var(--background);
   --color-surface: var(--surface);

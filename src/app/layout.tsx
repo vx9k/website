@@ -6,7 +6,8 @@ import { site } from "./content";
 // Atkinson Hyperlegible Next sets everything, labels included: one
 // variable font, self-hosted by next/font, subset to latin and preloaded.
 // next/font has no metrics for it to size a fallback by, so it doesn't
-// try (adjustFontFallback); the system's sans stands in until it loads.
+// try (adjustFontFallback); the system stack in globals.css (--font-sans)
+// stands in until it loads.
 const sans = Atkinson_Hyperlegible_Next({
   variable: "--font-face-sans",
   subsets: ["latin"],
