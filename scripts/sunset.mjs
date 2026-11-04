@@ -1,32 +1,46 @@
-// Draws the pixel-art horizon under the intro: the sun going down over the
-// Río de la Plata, seen from Montevideo's rambla, with the Cerro on the
-// horizon to the left. Every pixel is placed here, in one 25-colour
-// palette, and written as an indexed PNG at its real size (480 by 90); the
-// page scales it by whole numbers only, so every pixel stays square and the
-// same size. Run it after changing anything below:
+// Draws the pixel-art scene behind the page: the sun going down over the
+// Río de la Plata, seen from Montevideo's rambla, with the Cerro and its
+// lighthouse on the horizon. Every pixel is placed here, in one palette, and
+// written as indexed PNGs at their real size; the page scales them by whole
+// numbers only, so every pixel stays square and the same size.
 //
-//   node scripts/sunset.mjs
+// The scene is 480 by 300 pixels, in layers so the page can move them in
+// CSS (.scene in globals.css):
 //
-// It writes public/sunset/horizon.png (the page) and src/assets/sunset-og.png
-// (a 400 by 90 crop at three times the size, for the share image).
+//   sky.png          the sky, opaque, static
+//   sun.png          the sun and its halo; settles onto the horizon on load
+//   clouds-far.png   high clouds lit pink; drift slowly, and wrap
+//   clouds-near.png  low clouds, dark with gold rims; drift faster
+//   land.png         the Cerro, the fortress and the lighthouse
+//   water.png        four frames of the river, stacked; the page steps
+//                    through them so the light glints
+//   birds.png        two frames of a gull's wingbeat
+//   boat.png         a sailboat far out
+//
+// It also writes src/components/site/scene.json, the layers' positions for
+// Horizon.tsx, and src/assets/sunset-og.png, a crop of the still scene at
+// three times its size for the share image. Run it after changing anything:
+//
+//   node scripts/sunset.mjs   (--preview=<file.png> also writes a still frame)
 
-import { writeFileSync, mkdirSync } from "node:fs";
-import { deflateSync } from "node:zlib";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { deflateSync } from "node:zlib";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const W = 480;
-const H = 90;
-const HORIZON = 60; // first row of water
+const H = 300;
+const HORIZON = 200; // first row of water
 const SUN = { x: 262, y: HORIZON + 3, r: 13 };
+const CERRO = { x: 192, half: 30, h: 7 };
 
 // ------------------------------------------------------------- palette
-// The page's background is the first colour, so the scene's top and bottom
-// dither into the page with no edge. Then the sky from dusk blue down to
-// the gold at the horizon, the sun, the clouds, the land and the water.
+// Index 0 is transparent, for the layers. The page's background comes
+// next, so the scene's top and bottom dither into the page with no edge.
 const palette = {
+  clear: "#000000",
   page: "#14110f",
   sky1: "#1a1923",
   sky2: "#232536",
@@ -41,9 +55,9 @@ const palette = {
   halo: "#fbdc96",
   cloudDark: "#3a2534",
   cloudWarm: "#7c4048",
-  cloudShade: "#61394f",
-  cloudPink: "#98505a",
-  cloudLit: "#d46c4e",
+  cloudShade: "#6a3d52",
+  cloudPink: "#a5555b",
+  cloudSalmon: "#cf6c58",
   cloudRim: "#ee9e52",
   cloudHot: "#f9d18a",
   land: "#2b1d26",
@@ -56,11 +70,21 @@ const palette = {
 const names = Object.keys(palette);
 const ix = Object.fromEntries(names.map((n, i) => [n, i]));
 
-const px = new Uint8Array(W * H);
-const set = (x, y, name) => {
-  if (x >= 0 && x < W && y >= 0 && y < H) px[y * W + x] = ix[name];
-};
-const get = (x, y) => names[px[y * W + x]];
+/** A layer: a grid of palette indices, transparent until drawn on. */
+function layer(w, h) {
+  const px = new Uint8Array(w * h);
+  return {
+    w,
+    h,
+    px,
+    set(x, y, name) {
+      if (x >= 0 && x < w && y >= 0 && y < h) px[y * w + x] = ix[name];
+    },
+    get(x, y) {
+      return names[px[y * w + x]];
+    },
+  };
+}
 
 // 4x4 ordered dither: thresholds 1/32 to 31/32.
 const bayer = [
@@ -81,221 +105,286 @@ function band(list, level, x, y, seam = 0.34) {
   return t > threshold(x, y) ? list[i + 1] : list[i];
 }
 
+// A small seeded generator, so every run draws the same picture.
+function random(seed) {
+  let s = seed;
+  return () => {
+    s ^= s << 13;
+    s ^= s >>> 17;
+    s ^= s << 5;
+    return ((s >>> 0) % 10000) / 10000;
+  };
+}
+
 // ------------------------------------------------------------------ sky
-const sky = ["page", "sky1", "sky2", "sky3", "sky4", "sky5", "sky6", "sky7", "sky8", "sky9"];
+// Night at the top, then the warm bands packed into the last rows above
+// the horizon, below the page's text. The bands arc over the sun, where
+// the sky is lighter.
+const sky = layer(W, HORIZON);
+const skyBands = ["page", "sky1", "sky2", "sky3", "sky4", "sky5", "sky6", "sky7", "sky8", "sky9"];
 for (let y = 0; y < HORIZON; y++) {
   for (let x = 0; x < W; x++) {
     const t = y / (HORIZON - 1);
-    // The sky is lighter around the sun, more so near the horizon, so the
-    // bands arc over it.
-    const dx = (x - SUN.x) / 120;
-    const glow = 0.3 * Math.exp(-dx * dx) * t * t;
-    const level = Math.pow(Math.min(1, t + glow), 1.55) * (sky.length - 1);
+    const dx = (x - SUN.x) / 130;
+    const glow = 0.12 * Math.exp(-dx * dx) * t ** 4;
+    const level = Math.min(1, t + glow) ** 3 * (skyBands.length - 1);
     // The first band dithers across its whole height, so the sky comes out
     // of the page gradually instead of starting on a line.
-    set(x, y, band(sky, level, x, y, level < 1 ? 1 : 0.34));
+    sky.set(x, y, band(skyBands, level, x, y, level < 1 ? 1 : 0.34));
   }
 }
 
-// A halo two pixels wide around the sun's disc, where the sky is brightest.
-for (let y = SUN.y - SUN.r - 3; y < HORIZON; y++) {
-  for (let x = SUN.x - SUN.r - 3; x <= SUN.x + SUN.r + 3; x++) {
-    const d = Math.hypot(x - SUN.x, y - SUN.y);
-    if (d <= SUN.r + 0.5) set(x, y, "sun");
-    else if (d <= SUN.r + 2.2 && threshold(x, y) < 0.75) set(x, y, "halo");
+// The evening's first stars, in the dark sky only, below the band the
+// header can cover. The page draws them, dim enough that text over one
+// keeps its contrast (.star in globals.css), so they can twinkle.
+const rs = random(0x57a2);
+const stars = [];
+while (stars.length < 14) {
+  const x = 8 + Math.floor(rs() * (W - 16));
+  const y = 38 + Math.floor(rs() * 70);
+  if (stars.some((s) => Math.abs(s.x - x) < 24 && Math.abs(s.y - y) < 12)) continue;
+  stars.push({ x, y, bright: stars.length < 3 });
+}
+
+// ------------------------------------------------------------------ sun
+// The whole disc and a dithered halo two pixels wide, on their own layer
+// so the sun can set onto the horizon; the page cuts it off at the
+// horizon (scene.json's sun.clip, in rows from its top).
+const SUN_BOX = { x: SUN.x - SUN.r - 3, y: SUN.y - SUN.r - 3, w: SUN.r * 2 + 7, h: SUN.r * 2 + 7 };
+const sun = layer(SUN_BOX.w, SUN_BOX.h);
+for (let y = 0; y < sun.h; y++) {
+  for (let x = 0; x < sun.w; x++) {
+    const gx = SUN_BOX.x + x;
+    const gy = SUN_BOX.y + y;
+    const d = Math.hypot(gx - SUN.x, gy - SUN.y);
+    if (d <= SUN.r + 0.5) sun.set(x, y, "sun");
+    else if (d <= SUN.r + 2.2 && threshold(gx, gy) < 0.75) sun.set(x, y, "halo");
   }
 }
 
 // --------------------------------------------------------------- clouds
-// Long, thin stratus, lit from below by a sun that's already low. Each
-// cloud is a stack of rows, top to bottom, each a list of [from, to]
-// spans. The lowest pixel of each column takes the light; higher ones the
-// body colour, warmer the closer the cloud is to the sun.
-const clouds = [
-  // Low, across the top of the sun: dark against the glow, gold beneath.
-  {
-    y: 39,
-    rows: [
-      [[247, 255]],
-      [[241, 261], [279, 285]],
-      [[226, 268], [275, 290]],
-      [[214, 297]],
-      [[203, 251], [256, 310]],
-      [[219, 241], [264, 294]],
-    ],
-  },
-  // Low and small, far right.
-  {
-    y: 46,
-    rows: [
-      [[390, 397]],
-      [[379, 403], [410, 414]],
-      [[368, 420]],
-      [[359, 396], [403, 427]],
-    ],
-  },
-  // Low and small, over the Cerro.
-  {
-    y: 37,
-    rows: [
-      [[134, 141]],
-      [[124, 149], [158, 162]],
-      [[114, 166]],
-      [[106, 137], [144, 170]],
-    ],
-  },
-  // High on the left: a long streak, catching pink light.
-  {
-    y: 20,
-    rows: [
-      [[94, 103], [133, 138]],
-      [[84, 112], [125, 146]],
-      [[66, 158]],
-      [[52, 172], [179, 186]],
-      [[44, 98], [105, 195]],
-      [[62, 85], [120, 168]],
-    ],
-  },
-  // High on the right, thinner.
-  {
-    y: 13,
-    rows: [
-      [[341, 356]],
-      [[326, 368], [377, 386]],
-      [[312, 398], [403, 409]],
-      [[301, 424], [431, 442]],
-      [[325, 352], [362, 411]],
-    ],
-  },
-];
-
-for (const c of clouds) {
-  const near = (x) => Math.exp(-(((x - SUN.x) / 100) ** 2));
-  const low = c.y > 32; // low clouds sit in the warm sky
-  const cover = new Map(); // x -> the rows covered in that column
-  c.rows.forEach((spans, r) => {
-    for (const [a, b] of spans) {
-      for (let x = a; x <= b; x++) {
-        if (!cover.has(x)) cover.set(x, []);
-        cover.get(x).push(r);
+// Long, thin stratus. Each cloud is a stack of rows, top to bottom, each a
+// list of [from, to] spans; spans wrap around the layer's edges, so a
+// layer can be tiled and drifted forever. The lowest pixel of each column
+// takes the light.
+function clouds(top, height, list, paint) {
+  const out = layer(W, height);
+  for (const c of list) {
+    const cover = new Map();
+    c.rows.forEach((spans, r) => {
+      for (const [a, b] of spans) {
+        for (let x = a; x <= b; x++) {
+          const wx = ((x % W) + W) % W;
+          if (!cover.has(wx)) cover.set(wx, []);
+          cover.get(wx).push(r);
+        }
       }
-    }
-  });
-  for (const [x, rows] of cover) {
-    const n = near(x);
-    const bottom = Math.max(...rows);
-    const top = Math.min(...rows);
-    for (const r of rows) {
-      let name;
-      if (low) {
-        // Seen against the light: a dark body with a lit underside.
-        if (r === bottom) name = n > 0.6 ? "cloudHot" : "cloudRim";
-        else if (r === bottom - 1) name = n > 0.6 ? "cloudRim" : "cloudWarm";
-        else if (r === bottom - 2) name = "cloudWarm";
-        else name = "cloudDark";
-      } else {
-        // High enough to still catch the sun: pink, shaded on top.
-        if (r === bottom) name = n > 0.5 ? "cloudRim" : "cloudLit";
-        else if (r === top && bottom - top > 2) name = "cloudShade";
-        else name = "cloudPink";
-      }
-      set(x, c.y + r, name);
+    });
+    for (const [x, rows] of cover) {
+      const bottom = Math.max(...rows);
+      const first = Math.min(...rows);
+      for (const r of rows) out.set(x, c.y - top + r, paint(r, first, bottom));
     }
   }
+  return out;
 }
+
+// High clouds, still in the sun: pink, shaded on top, gold beneath.
+const FAR = { y: 136, h: 22 };
+const far = clouds(
+  FAR.y,
+  FAR.h,
+  [
+    {
+      y: 138,
+      rows: [
+        [[94, 103], [133, 138]],
+        [[84, 112], [125, 146]],
+        [[66, 158]],
+        [[52, 172], [179, 186]],
+        [[44, 98], [105, 195]],
+        [[62, 85], [120, 168]],
+      ],
+    },
+    {
+      y: 141,
+      rows: [
+        [[341, 356]],
+        [[326, 368], [377, 386]],
+        [[312, 398], [403, 409]],
+        [[301, 424], [431, 442]],
+        [[325, 352], [362, 411]],
+      ],
+    },
+    {
+      y: 149,
+      rows: [
+        [[462, 471]],
+        [[446, 497], [504, 509]],
+        [[438, 512]],
+        [[452, 470], [480, 505]],
+      ],
+    },
+    {
+      y: 150,
+      rows: [
+        [[232, 247]],
+        [[221, 266]],
+        [[214, 251], [258, 279]],
+      ],
+    },
+  ],
+  (r, first, bottom) =>
+    r === bottom ? "cloudRim" : r === first && bottom - first > 2 ? "cloudShade" : r === first + 1 ? "cloudPink" : "cloudSalmon",
+);
+
+// Low clouds, against the light: dark bodies with lit undersides.
+const NEAR = { y: 172, h: 22 };
+const near = clouds(
+  NEAR.y,
+  NEAR.h,
+  [
+    {
+      y: 179,
+      rows: [
+        [[247, 255]],
+        [[241, 261], [279, 285]],
+        [[226, 268], [275, 290]],
+        [[214, 297]],
+        [[203, 251], [256, 310]],
+        [[219, 241], [264, 294]],
+      ],
+    },
+    {
+      y: 186,
+      rows: [
+        [[390, 397]],
+        [[379, 403], [410, 414]],
+        [[368, 420]],
+        [[359, 396], [403, 427]],
+      ],
+    },
+    {
+      y: 176,
+      rows: [
+        [[94, 101]],
+        [[84, 109], [118, 122]],
+        [[74, 126]],
+        [[66, 97], [104, 130]],
+      ],
+    },
+  ],
+  (r, first, bottom) => (r === bottom ? "cloudHot" : r === bottom - 1 ? "cloudRim" : r === bottom - 2 ? "cloudWarm" : "cloudDark"),
+);
 
 // ----------------------------------------------------------------- land
 // The Cerro across the bay: a low hill with the fortress and its
 // lighthouse on top, and the coast running off to the left.
-const cerro = { x: 176, half: 34, h: 7 };
-for (let x = cerro.x - cerro.half; x <= cerro.x + cerro.half; x++) {
-  const u = (x - cerro.x) / cerro.half;
+const LAND = { x: 120, y: HORIZON - CERRO.h - 6, w: 110 };
+LAND.h = HORIZON - LAND.y;
+const land = layer(LAND.w, LAND.h);
+const put = (x, y, name) => land.set(x - LAND.x, y - LAND.y, name);
+for (let x = CERRO.x - CERRO.half; x <= CERRO.x + CERRO.half; x++) {
+  const u = (x - CERRO.x) / CERRO.half;
   // A little steeper on the bay side.
-  const k = u < 0 ? 1 - u * u : 1 - Math.pow(Math.abs(u), 1.6);
-  const h = Math.round(cerro.h * Math.max(0, k));
-  for (let y = HORIZON - h; y < HORIZON; y++) set(x, y, "land");
+  const k = u < 0 ? 1 - u * u : 1 - Math.abs(u) ** 1.6;
+  const h = Math.round(CERRO.h * Math.max(0, k));
+  for (let y = HORIZON - h; y < HORIZON; y++) put(x, y, "land");
 }
-for (let x = 104; x < cerro.x - cerro.half + 4; x++) set(x, HORIZON - 1, "land");
-for (let x = 126; x < cerro.x - cerro.half + 2; x++) set(x, HORIZON - 2, "land");
-// The fortress and the lighthouse.
-for (let x = cerro.x - 3; x <= cerro.x + 3; x++) set(x, HORIZON - cerro.h - 1, "land");
-for (let x = cerro.x - 2; x <= cerro.x + 2; x++) set(x, HORIZON - cerro.h - 2, "land");
-set(cerro.x, HORIZON - cerro.h - 3, "land");
-set(cerro.x, HORIZON - cerro.h - 4, "land");
-set(cerro.x, HORIZON - cerro.h - 5, "cloudHot"); // the light
+for (let x = LAND.x; x < CERRO.x - CERRO.half + 4; x++) put(x, HORIZON - 1, "land");
+for (let x = LAND.x + 22; x < CERRO.x - CERRO.half + 2; x++) put(x, HORIZON - 2, "land");
+// The fortress and the lighthouse; the page flashes its light.
+for (let x = CERRO.x - 3; x <= CERRO.x + 3; x++) put(x, HORIZON - CERRO.h - 1, "land");
+for (let x = CERRO.x - 2; x <= CERRO.x + 2; x++) put(x, HORIZON - CERRO.h - 2, "land");
+put(CERRO.x, HORIZON - CERRO.h - 3, "land");
+put(CERRO.x, HORIZON - CERRO.h - 4, "land");
+const LIGHT = { x: CERRO.x, y: HORIZON - CERRO.h - 5 };
+put(LIGHT.x, LIGHT.y, "cloudHot");
 
 // ---------------------------------------------------------------- water
 // The river is silty and brown, so it's warm and dark, lighter at the
-// horizon and darker towards the shore, where it meets the page.
-const water = ["water0", "water1", "water2", "water3", "water4", "page"];
-for (let y = HORIZON; y < H; y++) {
-  const r = y - HORIZON;
+// horizon and darker towards the shore, where it meets the page. The
+// glints are dashes that each have a phase; in each of the four frames a
+// dash is longer, shorter or gone, so stepping through the frames makes
+// the light play on the water.
+const WATER = { y: HORIZON, h: H - HORIZON, frames: 4 };
+const waterBands = ["water0", "water1", "water2", "water3", "water4", "page"];
+const base = layer(W, WATER.h);
+for (let y = 0; y < WATER.h; y++) {
   for (let x = 0; x < W; x++) {
-    const level = Math.pow(r / (H - HORIZON - 1), 0.8) * (water.length - 1);
-    set(x, y, band(water, level, x, y, 0.3));
+    const level = (y / (WATER.h - 1)) ** 0.7 * (waterBands.length - 1);
+    base.set(x, y, band(waterBands, level, x, y, 0.3));
   }
 }
 
-// A small seeded generator, so the ripples are the same on every run.
-let seed = 0x5eed;
-const rand = () => {
-  seed ^= seed << 13;
-  seed ^= seed >>> 17;
-  seed ^= seed << 5;
-  return ((seed >>> 0) % 10000) / 10000;
-};
+// A ripple is the sky's light caught on the back of a wave: one or two
+// steps lighter than the water it's on.
+const lift = { water0: "sky6", water1: "cloudWarm", water2: "water0", water3: "water1", water4: "water2", page: "water3" };
+const rw = random(0x5eed);
+const glints = [];
+const rowStep = (y) => (y < 30 ? 2 : 3); // rows sit further apart nearer the shore
 
-// A light step for a ripple on each water colour: a ripple is the sky's
-// light caught on the back of a wave, one or two steps lighter.
-const lift = {
-  water0: "sky6",
-  water1: "cloudWarm",
-  water2: "water0",
-  water3: "water1",
-  water4: "water2",
-  page: "water3",
-};
-
-// Where the sun meets the water: a bright line under the disc.
-for (let x = SUN.x - SUN.r + 1; x <= SUN.x + SUN.r - 1; x++) set(x, HORIZON, "sun");
-for (let x = SUN.x - SUN.r - 4; x <= SUN.x + SUN.r + 4; x++) {
-  if (Math.abs(x - SUN.x) > SUN.r - 1) set(x, HORIZON, "halo");
-}
-
-// The sun's path: a narrow column of broken dashes on every other row,
-// white-gold near the horizon and in the middle, orange at its edges,
-// opening up a little towards the shore.
-for (let y = HORIZON + 2; y < H - 2; y += 2) {
-  const r = (y - HORIZON) / (H - HORIZON);
-  const half = Math.round(SUN.r * 0.8 + r * 12);
-  let x = SUN.x - half + Math.floor(rand() * 3);
+// The sun's path: a column of broken dashes, white-gold near the horizon
+// and in the middle, orange at its edges, opening towards the shore.
+for (let y = 2; y < WATER.h - 4; y += rowStep(y)) {
+  const r = y / WATER.h;
+  const half = Math.round(SUN.r * 0.8 + r * 26);
+  let x = SUN.x - half + Math.floor(rw() * 3);
   while (x < SUN.x + half) {
-    const len = 2 + Math.floor(rand() * (4 + r * 5));
-    const gap = 1 + Math.floor(rand() * (2 + r * 4));
-    for (let i = 0; i < len && x + i <= SUN.x + half; i++) {
-      const d = Math.abs(x + i - SUN.x) / half;
-      const name = d < 0.3 && r < 0.4 ? "sun" : d < 0.55 && r < 0.7 ? "sky9" : d < 0.8 ? "sky8" : "sky7";
-      set(x + i, y, name);
-    }
+    const len = 2 + Math.floor(rw() * (3 + r * 8));
+    const gap = 1 + Math.floor(rw() * (2 + r * 6));
+    const d = Math.abs(x + len / 2 - SUN.x) / half;
+    const name = d < 0.3 && r < 0.3 ? "sun" : d < 0.55 && r < 0.55 ? "sky9" : d < 0.8 ? "sky8" : "sky7";
+    glints.push({ x, y, len: Math.min(len, SUN.x + half - x), name, phase: rw() * Math.PI * 2 });
     x += len + gap;
   }
 }
-
-// Ripples across the rest of the water, sparser away from the sun.
-for (let y = HORIZON + 1; y < H - 2; y += 2) {
-  const r = (y - HORIZON) / (H - HORIZON);
+// Ripples across the rest of the river, sparser away from the sun.
+for (let y = 1; y < WATER.h - 3; y += rowStep(y)) {
+  const r = y / WATER.h;
   for (let x = 0; x < W; ) {
     const dist = Math.abs(x - SUN.x) / W;
-    const len = 2 + Math.floor(rand() * (2 + r * 8));
-    if (rand() < 0.16 - dist * 0.12 && Math.abs(x - SUN.x) > 12) {
-      for (let i = 0; i < len; i++) {
-        const here = get(Math.min(W - 1, x + i), y);
-        if (lift[here]) set(x + i, y, lift[here]);
-      }
+    const len = 2 + Math.floor(rw() * (2 + r * 10));
+    if (rw() < 0.17 - dist * 0.12 && Math.abs(x - SUN.x) > 16 + r * 26) {
+      glints.push({ x, y, len, name: null, phase: rw() * Math.PI * 2 });
     }
-    x += len + 2 + Math.floor(rand() * 10);
+    x += len + 2 + Math.floor(rw() * 12);
   }
 }
+
+const water = layer(W, WATER.h * WATER.frames);
+for (let f = 0; f < WATER.frames; f++) {
+  const top = f * WATER.h;
+  for (let y = 0; y < WATER.h; y++) for (let x = 0; x < W; x++) water.set(x, top + y, base.get(x, y));
+  // Where the sun meets the water: a bright line under the disc.
+  for (let x = SUN.x - SUN.r - 4; x <= SUN.x + SUN.r + 4; x++) {
+    water.set(x, top, Math.abs(x - SUN.x) <= SUN.r - 1 ? "sun" : "halo");
+  }
+  for (const g of glints) {
+    const c = Math.cos(g.phase + (f * Math.PI) / 2);
+    if (c < -0.45) continue; // this dash is between waves in this frame
+    const len = Math.max(1, Math.round(g.len * (0.55 + 0.45 * c)));
+    const shift = Math.round((g.len - len) / 2);
+    for (let i = 0; i < len; i++) {
+      const x = g.x + shift + i;
+      if (x < 0 || x >= W) continue;
+      const name = g.name ?? lift[base.get(x, g.y)];
+      if (name) water.set(x, top + g.y, name);
+    }
+  }
+}
+
+// --------------------------------------------------------------- sprites
+// A gull, two frames side by side: wings up, then level.
+const gull = ["X.....X..........", ".XX.XX....XXX.XXX", "...X..........X.."];
+const birds = layer(17, 3);
+gull.forEach((row, y) => [...row].forEach((c, x) => c === "X" && birds.set(x, y, "land")));
+
+// A sailboat far out, its sail lit on the sun's side.
+const sail = ["...l...", "...Xl..", "...XXl.", "...XXXl", "...X...", "XXXXXXX", ".XXXXX."];
+const boat = layer(7, 7);
+sail.forEach((row, y) => [...row].forEach((c, x) => c !== "." && boat.set(x, y, c === "l" ? "sky7" : "land")));
+const BOAT = { y: HORIZON - 2, w: 7, h: 7 };
 
 // ------------------------------------------------------------------ png
 function crc32(buf) {
@@ -316,7 +405,8 @@ function chunk(type, data) {
   return out;
 }
 
-// An indexed PNG: one palette entry per colour, one byte per pixel.
+// An indexed PNG: one palette entry per colour, one byte per pixel, and
+// index 0 transparent.
 function png(width, height, pixel) {
   const ihdr = Buffer.alloc(13);
   ihdr.writeUInt32BE(width, 0);
@@ -333,6 +423,7 @@ function png(width, height, pixel) {
     Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
     chunk("IHDR", ihdr),
     chunk("PLTE", plte),
+    chunk("tRNS", Buffer.from([0])),
     chunk("IDAT", deflateSync(raw, { level: 9 })),
     chunk("IEND", Buffer.alloc(0)),
   ]);
@@ -344,11 +435,57 @@ function write(path, data) {
   console.log(`${path.slice(root.length + 1)}: ${data.length} bytes`);
 }
 
-write(join(root, "public/sunset/horizon.png"), png(W, H, (x, y) => px[y * W + x]));
+const out = (name, l) => write(join(root, "public/sunset", name), png(l.w, l.h, (x, y) => l.px[y * l.w + x]));
+out("sky.png", sky);
+out("sun.png", sun);
+out("clouds-far.png", far);
+out("clouds-near.png", near);
+out("land.png", land);
+out("water.png", water);
+out("birds.png", birds);
+out("boat.png", boat);
 
-// The share image is 1200 wide: the middle 400 pixels at three times.
-const OG = { scale: 3, from: SUN.x - 230, width: 400 };
+// The positions Horizon.tsx needs, in scene pixels.
+const scene = {
+  width: W,
+  height: H,
+  horizon: HORIZON,
+  sun: { ...SUN_BOX, clip: HORIZON - SUN_BOX.y },
+  far: FAR,
+  near: NEAR,
+  land: LAND,
+  light: LIGHT,
+  water: WATER,
+  stars,
+  birds: { y: 160, w: 8, h: 3 },
+  boat: BOAT,
+};
+write(join(root, "src/components/site/scene.json"), Buffer.from(JSON.stringify(scene) + "\n"));
+
+// The still scene, every layer at rest.
+const still = layer(W, H);
+const paste = (l, ox, oy, rows = l.h) => {
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < l.w; x++) {
+      const v = l.px[y * l.w + x];
+      if (v) still.px[(oy + y) * W + ((ox + x) % W)] = v;
+    }
+  }
+};
+paste(sky, 0, 0);
+paste(sun, SUN_BOX.x, SUN_BOX.y, HORIZON - SUN_BOX.y);
+paste(far, 0, FAR.y);
+paste(near, 0, NEAR.y);
+paste(land, LAND.x, LAND.y);
+paste(water, 0, HORIZON, WATER.h);
+paste(boat, 330, BOAT.y);
+
+// For the share image: 400 by 90 pixels around the sun, at three times.
+const OG = { scale: 3, x: SUN.x - 230, y: HORIZON - 54, w: 400, h: 90 };
 write(
   join(root, "src/assets/sunset-og.png"),
-  png(OG.width * OG.scale, H * OG.scale, (x, y) => px[Math.floor(y / OG.scale) * W + OG.from + Math.floor(x / OG.scale)]),
+  png(OG.w * OG.scale, OG.h * OG.scale, (x, y) => still.px[(OG.y + Math.floor(y / OG.scale)) * W + OG.x + Math.floor(x / OG.scale)]),
 );
+// A full still frame, for checking the drawing by eye; not shipped.
+const preview = process.argv.find((a) => a.startsWith("--preview="))?.slice(10);
+if (preview) writeFileSync(preview, png(W, H, (x, y) => still.px[y * W + x]));

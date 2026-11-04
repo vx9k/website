@@ -9,7 +9,7 @@ export const site = {
   name: "vx",
   title: "vx, software engineer",
   description:
-    "vx is a software engineer in Uruguay who writes C for Linux and TypeScript for the web. Work: a terminal emulator in Rust, a voxel sandbox in C and Vulkan, a Discord presence daemon in Rust.",
+    "vx is a software engineer in Uruguay who writes C for Linux and TypeScript for the web. Work: a terminal emulator in Rust, a voxel sandbox in C and Vulkan, a Discord presence daemon in Rust, a Linux distribution.",
   github: "https://github.com/vx9k",
   source: "https://github.com/vx9k/website",
 };
@@ -25,6 +25,8 @@ export const intro = {
 export type Product = {
   id: string;
   name: string;
+  // What it is in two or three words, for its button on the page.
+  kind: string;
   // One sentence on what it is and does.
   summary: string;
   // A few specifics from the README, one sentence each.
@@ -37,9 +39,11 @@ export type Product = {
   // Set for work made with a group, with vx's part in it (from the
   // repository's contributors).
   group?: { name: string; href: string; role: string };
-  // Screenshots from the repository itself, converted to AVIF and WebP at
-  // 640 and 1280 pixels wide in public/work/ (see README).
-  image?: { src: string; width: number; height: number; alt: string };
+  // Screenshots from the repository itself, the first the main one,
+  // converted to AVIF and WebP in public/work/ at each of `widths` (640 and
+  // the source's own width, up to 1280; never enlarged). width and height
+  // are the largest file's.
+  images?: { src: string; widths: number[]; width: number; height: number; alt: string }[];
 };
 
 // Ordered by how much each says about vx's work, not by date.
@@ -47,28 +51,48 @@ export const products: Product[] = [
   {
     id: "poopterm",
     name: "poopterm",
+    kind: "Terminal emulator",
     summary:
-      "A fast, software-rendered terminal emulator in Rust for Linux, macOS and FreeBSD, with its own escape-sequence parser, font engine and image decoders.",
+      "A fast terminal emulator in Rust for Linux, macOS and FreeBSD, with its own Vulkan renderer, escape-sequence parser, font engine and image decoders.",
     notes: [
-      "Handles real-world output at 63 to 248 MB/\u2060s end to end on a low-power laptop CPU, with a SIMD tokenizer and redraws paced to the display.",
+      "Handles real-world output at 75 to 375 MB/\u2060s end to end on a low-power laptop CPU, 137 MB/\u2060s overall with images included.",
+      "On Linux and FreeBSD it draws whole frames on the GPU through its own Vulkan bindings, with its software renderer as the fallback; macOS draws in software for now.",
       "Shows images over Sixel and the kitty graphics protocol, and speaks the kitty keyboard protocol and shell integration for zsh, fish and bash.",
       "On Linux, each tab’s shell runs in its own cgroup with a memory cap, so a runaway program can’t starve the other tabs.",
     ],
-    stack: ["Rust", "winit", "softbuffer", "mimalloc"],
+    stack: ["Rust", "Vulkan", "winit", "softbuffer", "mimalloc"],
     status: "Released, with packages for Homebrew, Debian, Fedora and Arch; not yet a complete xterm implementation",
     license: "AGPL-3.0-or-later",
     repo: "https://github.com/poopware-laboratories/poopterm",
     group: { name: "Poopware Laboratories", href: "https://github.com/poopware-laboratories", role: "main contributor" },
-    image: {
-      src: "/work/poopterm",
-      width: 1280,
-      height: 768,
-      alt: "poopterm in its brown Poop theme: a cargo build, a benchmark table, text in Greek, Cyrillic, Chinese and Korean, emoji, styled text, a link and a row of colour swatches ending in a gradient.",
-    },
+    images: [
+      {
+        src: "/work/poopterm",
+        widths: [640, 1000],
+        width: 1000,
+        height: 600,
+        alt: "poopterm in its brown Poop theme: a cargo build, its benchmark of log, CJK and emoji output, text in Greek, Cyrillic, Chinese and Korean, emoji, styled text, a link and a row of colour swatches ending in a gradient.",
+      },
+      {
+        src: "/work/poopterm-settings",
+        widths: [640, 820],
+        width: 820,
+        height: 600,
+        alt: "poopterm’s Settings window, drawn on the GPU, open at its keyboard shortcuts: new tab, command palette, cycle theme, search, close tab, prompt jumps and zoom, each with its key chord.",
+      },
+      {
+        src: "/work/poopterm-diagnostics",
+        widths: [640, 760],
+        width: 760,
+        height: 640,
+        alt: "poopterm’s diagnostics page on a dark theme, listing the grid, window chrome, overlays, images and wallpaper as hardware accelerated through Vulkan, on Intel graphics.",
+      },
+    ],
   },
   {
     id: "blockclonia",
     name: "blockclonia",
+    kind: "Voxel sandbox",
     summary:
       "A Minecraft-style voxel sandbox written from scratch in C11 and Vulkan, with physics in real units and a simulated human body instead of a health bar.",
     notes: [
@@ -80,16 +104,20 @@ export const products: Product[] = [
     status: "Builds on Linux and Raspberry Pi OS; macOS is experimental",
     license: "AGPL-3.0",
     repo: "https://github.com/vx9k/blockclonia",
-    image: {
-      src: "/work/blockclonia",
-      width: 1280,
-      height: 720,
-      alt: "blockclonia’s title screen: the name in pixel letters and a menu with Play, Settings, Controls and Quit, over blocky hills, trees and a beach.",
-    },
+    images: [
+      {
+        src: "/work/blockclonia",
+        widths: [640, 1280],
+        width: 1280,
+        height: 720,
+        alt: "blockclonia’s title screen: the name in pixel letters and a menu with Play, Settings, Controls and Quit, over blocky hills, trees and a beach.",
+      },
+    ],
   },
   {
     id: "claude-presence",
     name: "claude-presence",
+    kind: "Discord presence daemon",
     summary:
       "Discord Rich Presence for Claude Code, in Rust: a small daemon, driven by Claude Code’s hooks, that shows what a session is doing on your Discord profile.",
     notes: [
@@ -101,16 +129,20 @@ export const products: Product[] = [
     status: "Version 0.2.0, installed with cargo",
     license: "Apache-2.0",
     repo: "https://github.com/vx9k/claude-presence",
-    image: {
-      src: "/work/claude-presence",
-      width: 1280,
-      height: 490,
-      alt: "claude-presence’s terminal dashboard: the daemon running and connected to Discord, the card reading “Working in claude-presence”, and today’s tokens, prompts, active time and streak.",
-    },
+    images: [
+      {
+        src: "/work/claude-presence",
+        widths: [640, 1280],
+        width: 1280,
+        height: 490,
+        alt: "claude-presence’s terminal dashboard: the daemon running and connected to Discord, the card reading “Working in claude-presence”, and today’s tokens, prompts, active time and streak.",
+      },
+    ],
   },
   {
     id: "neocaca",
     name: "neocaca",
+    kind: "Terminal code editor",
     summary:
       "A modal terminal code editor in Zig, with Kakoune-style keys, multiple selections, regex search and undo.",
     notes: [
@@ -125,11 +157,32 @@ export const products: Product[] = [
     group: { name: "Poopware Laboratories", href: "https://github.com/poopware-laboratories", role: "contributor" },
   },
   {
+    id: "pooplinux",
+    name: "Poop Linux",
+    kind: "Linux distribution",
+    summary:
+      "A Linux distribution built from source by its own recipes, on Poopware Laboratories’ own kernel fork, musl fork, init and package manager.",
+    notes: [
+      "Its first edition boots to a text console only, on x86_64 with UEFI.",
+      "Its init and service supervisor is 4suite, as poopsuite; its package manager, poop, is designed to check signatures and install in atomic transactions.",
+      "Each performance target in its design, such as a login prompt in QEMU within 20 seconds of boot, gets measured in CI before it’s claimed.",
+    ],
+    stack: ["Linux", "musl", "archiso", "Shell"],
+    status: "Pre-alpha: the design and contributor docs so far, with nothing to install yet",
+    license: "BSD-3-Clause",
+    repo: "https://github.com/poopware-laboratories/pooplinux",
+    group: { name: "Poopware Laboratories", href: "https://github.com/poopware-laboratories", role: "main contributor" },
+  },
+  {
     id: "4suite",
     name: "4suite",
+    kind: "Boot stack",
     summary:
       "A self-contained boot stack for Linux in C: 4init, an init that runs as PID 1 and only manages processes, and 4rc, a service manager.",
-    notes: ["4init is 81 lines of C, linked statically against musl."],
+    notes: [
+      "4init is 81 lines of C, linked statically against musl.",
+      "Poop Linux uses it as its init, as poopsuite, the same repository at Poopware Laboratories.",
+    ],
     stack: ["C", "musl", "Ninja"],
     status: "Experimental",
     license: "MIT",
@@ -138,8 +191,12 @@ export const products: Product[] = [
   {
     id: "website",
     name: "kthread.dev",
+    kind: "This site",
     summary: "This site: a static Next.js export served by Cloudflare, with a strict content security policy and no cookies.",
-    notes: [],
+    notes: [
+      "The sunset behind it is pixel art drawn by a script, pixel by pixel, and only ever shown at whole-number scales.",
+      "Everything moves in CSS, with a switch to turn the motion off.",
+    ],
     stack: ["Next.js", "TypeScript", "Tailwind CSS", "Cloudflare Workers"],
     status: "Live",
     license: "BSD-3-Clause",

@@ -1,9 +1,10 @@
+import type { CSSProperties } from "react";
 import Horizon from "@/components/site/Horizon";
 import Mark from "@/components/site/Mark";
-import Numogram from "@/components/site/Numogram";
-import Product from "@/components/site/Product";
-import Section from "@/components/site/Section";
-import { contact, intro, products, sections, site, skills } from "./content";
+import { MotionScript, MotionToggle } from "@/components/site/Motion";
+import ProjectDialog from "@/components/site/ProjectDialog";
+import Sheet, { opens } from "@/components/site/Sheet";
+import { contact, intro, products, site, skills } from "./content";
 
 // Structured data for search engines: vx, and the products as vx's work
 // (or, for group work, the group's, with vx as a contributor).
@@ -37,95 +38,119 @@ const jsonLd = JSON.stringify({
   })),
 }).replace(/</g, "\\u003c");
 
-// One page: who vx is, the work, then how to get in touch.
+// The order things rise in on load (.rise in globals.css).
+const order = (i: number) => ({ "--i": i }) as CSSProperties;
+
+// One screen, no scrolling: who vx is over the dark sky, the work along
+// the bottom over the water, and everything else in dialogs. The scene
+// sits behind it all.
 export default function Home() {
   return (
     <>
-      <header className="shell flex min-h-16 items-center justify-between gap-6 pt-2">
-        <a href="/" className="inline-flex min-h-10 items-center gap-2.5 font-mono text-sm">
-          <Mark size={22} id="mark-header" />
-          vx
-        </a>
-        <nav aria-label="Sections">
-          <ul className="flex gap-5 sm:gap-7">
-            {sections.map((s) => (
-              <li key={s.id}>
-                <a href={`#${s.id}`} className="inline-flex min-h-10 items-center text-sm text-muted hover:text-foreground">
-                  {s.title}
-                </a>
+      <div className="relative z-[1] flex min-h-dvh flex-col">
+        <header className="rise shell flex min-h-16 items-center justify-between gap-4 pt-2" style={order(0)}>
+          <a href="/" className="inline-flex min-h-10 items-center gap-2.5 font-mono text-sm">
+            <Mark size={22} flag id="mark-header" />
+            vx
+          </a>
+          <nav aria-label="More">
+            <ul className="flex items-center gap-4 sm:gap-7">
+              <li>
+                <button type="button" {...opens("skills")} aria-haspopup="dialog" className="nav">
+                  Skills
+                </button>
               </li>
-            ))}
-          </ul>
-        </nav>
-      </header>
+              <li>
+                <button type="button" {...opens("contact")} aria-haspopup="dialog" className="nav">
+                  Contact
+                </button>
+              </li>
+              <li>
+                <MotionToggle />
+              </li>
+            </ul>
+          </nav>
+        </header>
+        <MotionScript />
 
-      <main id="main" tabIndex={-1} className="focus:outline-none">
-        {/* The first screen: the intro, then the horizon along the bottom
-            of the viewport (below the header's 4.5rem) when they fit. */}
-        <div className="flex min-h-[calc(100dvh-4.5rem)] flex-col">
-          <div className="shell grid flex-1 content-center items-center gap-16 pt-16 pb-12 sm:pt-20 lg:grid-cols-12 lg:gap-12 lg:pt-12 lg:pb-8">
-            <div className="lg:col-span-8">
-              <p className="label flex items-center gap-2.5 text-foreground">
-                {/* One pixel of the sun: the accent's only mark on the page. */}
-                <span aria-hidden className="size-2 bg-accent" />
-                {intro.status}
-              </p>
-              <h1 className="mt-6 max-w-[18ch] text-display text-balance">{intro.line}</h1>
-              <p className="mt-8 max-w-[52ch] text-lg text-muted text-pretty sm:text-xl">{intro.lede}</p>
+        <main id="main" tabIndex={-1} className="shell flex flex-1 flex-col justify-between gap-8 pt-3 pb-4 focus:outline-none sm:pt-8 sm:pb-8 [@media(height<=800px)]:sm:pt-4">
+          <div>
+            <p className="rise label flex items-center gap-2.5 text-foreground" style={order(1)}>
+              {/* One pixel of the sun: the accent's only mark on the page. */}
+              <span aria-hidden className="size-2 bg-accent" />
+              {intro.status}
+            </p>
+            <h1 className="rise mt-3 max-w-[26ch] text-display text-balance sm:mt-4" style={order(2)}>
+              {intro.line}
+            </h1>
+            <p className="rise mt-4 max-w-[50ch] text-pretty sm:mt-5 sm:text-lg" style={order(3)}>
+              {intro.lede}
+            </p>
+          </div>
+
+          <section aria-labelledby="work-title">
+            {/* A tab on the buttons' surface, so it reads over any sky. */}
+            <h2 id="work-title" className="rise label inline-block border border-b-0 bg-surface px-3 py-1 text-foreground" style={order(4)}>
+              Work
+            </h2>
+            <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-7">
+              {products.map((p, i) => (
+                <li key={p.id} className="rise flex" style={order(5 + i)}>
+                  <button type="button" {...opens(`p-${p.id}`)} aria-haspopup="dialog" className="card">
+                    <span aria-hidden className="label hidden sm:block">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="font-medium">{p.name}</span>
+                    {/* Phones show the names alone, so the buttons leave the
+                        sun in view; the dialog names the kind. */}
+                    <span className="label hidden sm:block">{p.kind}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </main>
+      </div>
+
+      <Horizon />
+
+      {products.map((p, i) => (
+        <ProjectDialog key={p.id} product={p} index={i} />
+      ))}
+
+      <Sheet id="skills" eyebrow="What I work with" title="Skills">
+        <dl className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {skills.map((g) => (
+            <div key={g.group} className="flex flex-col gap-2">
+              <dt className="label">{g.group}</dt>
+              {g.items.map((item) => (
+                <dd key={item}>{item}</dd>
+              ))}
             </div>
-            <Numogram className="mx-auto w-full max-w-56 sm:max-w-64 lg:col-span-4 lg:max-w-72" />
-          </div>
-          <Horizon />
-        </div>
+          ))}
+        </dl>
+      </Sheet>
 
-        <Section id="work" title="Work">
-          <div className="flex flex-col gap-24 sm:gap-32">
-            {products.map((p, i) => (
-              <Product key={p.id} product={p} index={i} />
-            ))}
-          </div>
-        </Section>
-
-        <Section id="skills" title="Skills">
-          <dl className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {skills.map((g) => (
-              <div key={g.group} className="flex flex-col gap-2">
-                <dt className="label">{g.group}</dt>
-                {g.items.map((item) => (
-                  <dd key={item}>{item}</dd>
-                ))}
-              </div>
-            ))}
-          </dl>
-        </Section>
-
-        <Section id="contact" title="Contact">
-          <p className="text-title text-balance">{contact.heading}</p>
-          <p className="mt-4 max-w-[52ch] text-muted text-pretty">{contact.body}</p>
-          <ul className="mt-8 flex flex-col gap-3 text-xl">
-            <li>
-              <a href={`mailto:${contact.email}`} className="link inline-flex min-h-6 items-center">
-                {contact.email}
-              </a>
-            </li>
-            <li>
-              <a href={site.github} className="link inline-flex min-h-6 items-center">
-                github.com/vx9k<span aria-hidden>&nbsp;↗</span>
-              </a>
-            </li>
-          </ul>
-        </Section>
-      </main>
-
-      <footer className="shell flex flex-wrap items-center justify-between gap-4 border-t py-8 text-sm text-muted">
-        <p className="inline-flex items-center gap-3 font-mono text-foreground">
-          <Mark size={28} flag id="mark-footer" />
-          vx
-        </p>
-        <a href={site.source} className="link inline-flex min-h-6 items-center">
-          Source for this site<span aria-hidden>&nbsp;↗</span>
-        </a>
-      </footer>
+      <Sheet id="contact" eyebrow="Get in touch" title={contact.heading}>
+        <p className="max-w-[52ch] text-muted text-pretty">{contact.body}</p>
+        <ul className="mt-6 flex flex-col gap-3 text-lg">
+          <li>
+            <a href={`mailto:${contact.email}`} className="link inline-flex min-h-6 items-center">
+              {contact.email}
+            </a>
+          </li>
+          <li>
+            <a href={site.github} className="link inline-flex min-h-6 items-center">
+              github.com/vx9k<span aria-hidden>&nbsp;↗</span>
+            </a>
+          </li>
+          <li className="text-base text-muted">
+            <a href={site.source} className="link inline-flex min-h-6 items-center">
+              Source for this site<span aria-hidden>&nbsp;↗</span>
+            </a>
+          </li>
+        </ul>
+      </Sheet>
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
     </>

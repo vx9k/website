@@ -2,13 +2,13 @@
 
 /* ---------------------------------------------------------------- palette
    Dusk: one dark theme whatever the system asks for, its neutrals tinted
-   warm towards the sunset in the horizon under the intro (Horizon.tsx).
-   The colour lives in that one picture and the product screenshots; the
-   accent, the sun's amber, marks only the status by the headline and the
-   text selection. --background is the scene's first colour, so the picture
-   dithers into the page with no edge. Contrast against --background:
-   --foreground 15.5:1, --muted 7.2:1 (6.8:1 on --surface), --accent
-   8.6:1. */
+   warm towards the pixel-art sunset behind the page (Horizon.tsx). The
+   colour lives in that scene and the product screenshots; the accent, the
+   sun's amber, marks only the status by the headline and the text
+   selection. --background is the scene's first colour, so the sky comes out
+   of the page with no edge. Contrast against --background: --foreground
+   15.5:1, --muted 7.2:1 (6.8:1 on --surface), --accent 8.6:1. Text over the
+   scene sits on its dark sky, where --foreground stays above 10:1. */
 
 :root {
   color-scheme: dark;
@@ -45,7 +45,6 @@
     color: var(--foreground);
     font-family: var(--font-sans);
     -webkit-text-size-adjust: 100%;
-    scroll-behavior: smooth;
   }
 
   body {
@@ -64,22 +63,15 @@
     border-radius: 1px;
   }
 
-  /* Anchored sections land with some air above them. */
-  :target {
-    scroll-margin-top: 2rem;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
+  button {
+    cursor: pointer;
   }
 }
 
 /* ------------------------------------------------------------- utilities */
 
-/* The page's frame, shared by the header, every section and the footer,
-   so their edges line up at every width. */
+/* The page's frame, shared by the header and the main content, so their
+   edges line up at every width. */
 @utility shell {
   width: 100%;
   max-width: 84rem;
@@ -91,16 +83,23 @@
 }
 
 /* The page's four sizes: the headline, titles, body (set on <body>), and
-   the mono label for metadata. */
+   the mono label for metadata. The headline shrinks on short screens, so
+   the intro stays over the dark part of the sky. */
 @utility text-display {
-  font-size: clamp(2.25rem, 1.2rem + 4.2vw, 4.75rem);
+  font-size: clamp(2.25rem, 1.2rem + 3.4vw, 4.25rem);
   font-weight: 500;
   line-height: 1.04;
   letter-spacing: -0.035em;
+  @media (height <= 800px) {
+    font-size: clamp(2rem, 1.2rem + 2.4vw, 3.25rem);
+  }
+  @media (height <= 700px) {
+    font-size: clamp(1.875rem, 1.2rem + 2vw, 2.75rem);
+  }
 }
 
 @utility text-title {
-  font-size: clamp(1.625rem, 1.2rem + 1.6vw, 2.5rem);
+  font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
   font-weight: 500;
   line-height: 1.1;
   letter-spacing: -0.02em;
@@ -127,160 +126,427 @@
   }
 }
 
-/* --------------------------------------------------------------- horizon
-   The pixel-art sunset (public/sunset/horizon.png, drawn by
-   scripts/sunset.mjs) is 480 by 90 pixels. It's only ever shown at a whole
-   number of screen pixels per pixel, so every pixel is square and the same
-   size: the smallest scale at which it covers the width, cropped from the
-   middle on narrower screens. image-rendering keeps the edges hard. */
+/* --------------------------------------------------------------- controls */
 
-.horizon {
-  --px: 2;
+/* The header's buttons, which open the Skills and Contact dialogs. */
+.nav {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--muted);
+  transition: color 150ms var(--ease);
+  &:hover {
+    color: var(--foreground);
+  }
+}
+
+/* A product's button. It sits on a solid surface, so its text keeps its
+   contrast over the water and the sun's reflection behind it. On hover it
+   jumps up one step, the way the scene moves, and its edge lights. */
+.card {
   display: flex;
-  justify-content: center;
-  overflow: hidden;
-  height: calc(90px * var(--px));
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.125rem;
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  padding: 0.5rem 0.75rem;
+  line-height: 1.3;
+  text-align: left;
+  transition:
+    translate 160ms steps(2, end),
+    border-color 160ms var(--ease);
+  &:hover {
+    translate: 0 -0.25rem;
+    border-color: var(--foreground);
+  }
+  &:active {
+    translate: 0 0;
+  }
+  @media (width >= 40rem) {
+    padding: 0.875rem 1rem;
+  }
+}
 
-  & img {
-    flex: none;
-    max-width: none;
-    width: calc(480px * var(--px));
-    height: calc(90px * var(--px));
-    image-rendering: pixelated;
+/* The motion switch: a square track and knob, drawn with borders so it
+   stays visible in forced colours. The checkbox itself is visually
+   hidden, and its focus ring moves to the track. */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 1.75rem;
+  height: 1rem;
+  border: 1px solid currentColor;
+  &::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 0.625rem;
+    height: 0.625rem;
+    border: 5px solid currentColor;
+    transition: translate 160ms steps(2, end);
+  }
+}
+:checked + .switch {
+  color: var(--foreground);
+  &::after {
+    translate: 0.75rem 0;
+  }
+}
+:focus-visible + .switch {
+  outline: 2px solid var(--foreground);
+  outline-offset: 3px;
+}
+
+/* ---------------------------------------------------------------- dialogs
+   Each product, Skills and Contact open in a modal dialog (Sheet.tsx) over
+   a darkened scene. They rise into place and fade, and leave the same way;
+   transition-behavior lets display and the top layer wait for the fade. */
+
+.sheet {
+  margin: auto;
+  width: min(72rem, 100vw - 1rem);
+  max-height: calc(100dvh - 1rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--rule);
+  padding: 0;
+  background: var(--surface);
+  color: var(--foreground);
+  opacity: 1;
+  translate: 0 0;
+  transition:
+    opacity 220ms var(--ease),
+    translate 320ms var(--ease),
+    overlay 320ms allow-discrete,
+    display 320ms allow-discrete;
+  &:not([open]) {
+    opacity: 0;
+    translate: 0 1.5rem;
+  }
+  @starting-style {
+    &[open] {
+      opacity: 0;
+      translate: 0 1.5rem;
+    }
+  }
+  &::backdrop {
+    background: rgb(20 17 15 / 0.75);
+    transition:
+      background-color 320ms var(--ease),
+      overlay 320ms allow-discrete,
+      display 320ms allow-discrete;
+  }
+  &:not([open])::backdrop {
+    background: rgb(20 17 15 / 0);
+  }
+  @starting-style {
+    &[open]::backdrop {
+      background: rgb(20 17 15 / 0);
+    }
+  }
+  @media (width >= 40rem) {
+    width: min(72rem, 100vw - 4rem);
+    max-height: calc(100dvh - 4rem);
   }
 
-  @media (width > 960px) {
+  /* Screenshots rise in one after another once it's open. */
+  &[open] .shot {
+    animation: rise 600ms var(--ease) both;
+    animation-delay: calc(var(--i, 0) * 90ms + 120ms);
+  }
+}
+
+/* ------------------------------------------------------------------ scene
+   The pixel art behind the page (Horizon.tsx, drawn by scripts/sunset.mjs)
+   is 480 by 300 scene pixels, each shown as --px by --px screen pixels:
+   the smallest whole number that covers the screen's width and puts the
+   horizon low enough on tall screens. It's anchored to the bottom centre,
+   so wider screens crop nothing and narrow ones crop the sides; above it
+   the sky's top row is the page's own colour. Every layer is placed in
+   scene pixels (--x, --y, --w, --h), and every movement below is in steps
+   of a whole scene pixel, so the art never blurs or changes pixel size. */
+
+.scene-frame {
+  --px: 2;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+  forced-color-adjust: none;
+
+  @media (width > 960px), (height > 780px) {
     --px: 3;
   }
-  @media (width > 1440px) {
+  @media (width > 1440px), (height > 1050px) {
     --px: 4;
   }
-  @media (width > 1920px) {
+  @media (width > 1920px), (height > 1300px) {
     --px: 5;
   }
-  @media (width > 2400px) {
+  @media (width > 2400px), (height > 1560px) {
     --px: 6;
   }
-  @media (width > 2880px) {
+  @media (width > 2880px), (height > 1820px) {
+    --px: 7;
+  }
+  @media (width > 3360px), (height > 2080px) {
     --px: 8;
   }
 }
 
-/* ---------------------------------------------------------------- motion
-   The one piece of motion: screenshots ease in as they scroll into view,
-   driven by the scroll position in CSS, so there's no script. Browsers
-   without scroll-driven animations, and anyone asking for less motion,
-   see them still. */
+/* How much of the river shows: the scene sinks below the screen's bottom
+   edge on shorter screens, so the clouds and the warm sky stay below the
+   intro, and the work's buttons still sit on the water. Rounded to a
+   whole pixel, so the art stays sharp; browsers without round() keep the
+   whole river. */
+.scene {
+  --water: 30dvh;
+  position: absolute;
+  bottom: 0;
+  bottom: round(down, min(var(--water), var(--px) * 100px) - var(--px) * 100px, 1px);
+  left: 50%;
+  width: calc(var(--w) * var(--px) * 1px);
+  height: calc(var(--h) * var(--px) * 1px);
+  translate: -50% 0;
 
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    .shot {
-      animation: shot-in linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 60%;
-    }
+  @media (orientation: portrait) {
+    --water: 34dvh;
+  }
+  @media (orientation: portrait) and (height <= 700px) {
+    --water: 30dvh;
+  }
+
+  & .layer {
+    position: absolute;
+    left: calc(var(--x, 0) * var(--px) * 1px);
+    top: calc(var(--y, 0) * var(--px) * 1px);
+    width: calc(var(--w) * var(--px) * 1px);
+    height: calc(var(--h) * var(--px) * 1px);
+    max-width: none;
+    image-rendering: pixelated;
   }
 }
 
-@keyframes shot-in {
+/* One scene pixel, for the stars and the lighthouse's light. */
+.star,
+.light {
+  position: absolute;
+  left: calc(var(--x) * var(--px) * 1px);
+  top: calc(var(--y) * var(--px) * 1px);
+  width: calc(var(--px) * 1px);
+  height: calc(var(--px) * 1px);
+}
+
+/* Dim on purpose: text over the brightest star still has 4.5:1. */
+.star {
+  background: #57535f;
+  opacity: 0.9;
+}
+.star-bright {
+  background: #66616e;
+  opacity: 1;
+}
+
+/* The lighthouse's flash: its light and a cross of glow around it,
+   drawn with shadows one scene pixel out. Dark between flashes. */
+.light {
+  --g: calc(var(--px) * 1px);
+  background: #fffaf0;
+  box-shadow:
+    var(--g) 0 0 #fbdc96,
+    calc(var(--g) * -1) 0 0 #fbdc96,
+    0 calc(var(--g) * -1) 0 #fbdc96;
+  opacity: 0;
+}
+
+.clouds {
+  background-repeat: repeat-x;
+  background-size: calc(480px * var(--px)) 100%;
+  image-rendering: pixelated;
+}
+.clouds-far {
+  background-image: url("/sunset/clouds-far.png");
+}
+.clouds-near {
+  background-image: url("/sunset/clouds-near.png");
+}
+
+.bird {
+  background: url("/sunset/birds.png") 0 0 / calc(17px * var(--px)) calc(3px * var(--px));
+  image-rendering: pixelated;
+}
+
+/* ----------------------------------------------------------------- motion
+   Everything moves in CSS:
+   - the intro and the work rise in, one after another, when the page loads
+   - the sun sets the last few pixels onto the horizon
+   - two bands of cloud drift at different speeds and wrap around
+   - the river steps through four frames of glints
+   - gulls cross now and then, flapping; a sailboat crosses very slowly
+   - the stars twinkle and the lighthouse flashes
+   - buttons jump a step on hover, and the dialogs rise in
+   Only transform, translate and opacity move, except the gulls' two-frame
+   sprite, on a few tiny elements. The motion switch in the header stops
+   all of it (the rules at the end), and so does a system that asks for
+   reduced motion. */
+
+.rise {
+  animation: rise 700ms var(--ease) both;
+  animation-delay: calc(var(--i, 0) * 70ms + 150ms);
+}
+
+@keyframes rise {
   from {
-    opacity: 0.4;
-    transform: translateY(1.5rem);
+    opacity: 0;
+    translate: 0 0.75rem;
   }
 }
 
-/* ------------------------------------------------------------- numogram
-   Drawn like the CCRU's original: zones as rings, syzygies and currents
-   as stippled bands, gates as thin lines through small numbered rings.
-   A solid pulse runs along each current in its direction of flow; under
-   reduced motion it's hidden and the stippled tracks carry the flow.
-   Sizes are in the drawing's own units (it's 1080 wide). */
+.sun {
+  animation: sun-set 5s steps(10, end) both;
+}
+@keyframes sun-set {
+  from {
+    transform: translateY(calc(var(--px) * -10px));
+  }
+}
 
-.numogram {
-  color: var(--foreground);
-  font-family: var(--font-mono);
-  overflow: visible;
+.clouds-far,
+.clouds-near {
+  will-change: transform;
+  animation: drift linear infinite;
+}
+.clouds-far {
+  animation-duration: 480s;
+  animation-timing-function: steps(480, end);
+}
+.clouds-near {
+  animation-duration: 240s;
+  animation-timing-function: steps(480, end);
+  animation-delay: -60s;
+}
+@keyframes drift {
+  to {
+    transform: translateX(calc(var(--px) * -480px));
+  }
+}
 
-  & .numogram-regions text {
-    fill: var(--muted);
-    font-size: 36px;
-    letter-spacing: 0.04em;
-    text-anchor: end;
+.water {
+  will-change: transform;
+  animation: glint 2.4s steps(4, end) infinite;
+}
+@keyframes glint {
+  to {
+    transform: translateY(calc(var(--px) * -400px));
   }
-  & .numogram-syzygies line {
-    stroke: url(#numogram-stipple);
-    stroke-width: 70;
+}
+
+/* The gulls cross from right to left in the first half of each minute,
+   one scene pixel at a time, then wait off-screen. */
+.flock {
+  will-change: transform;
+  animation: fly 60s infinite;
+  animation-delay: 3s;
+}
+@keyframes fly {
+  0% {
+    transform: translateX(0);
+    animation-timing-function: steps(540, end);
   }
-  & .numogram-gates path {
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 3;
+  50%,
+  100% {
+    transform: translateX(calc(var(--px) * -540px));
   }
-  & .numogram-track {
-    fill: none;
-    stroke: url(#numogram-stipple);
-    stroke-width: 34;
+}
+.bird {
+  animation: flap 560ms steps(2, end) infinite;
+  animation-delay: calc(var(--i) * -190ms);
+}
+@keyframes flap {
+  to {
+    background-position-x: calc(var(--px) * -20px);
   }
-  & .numogram-flow {
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 34;
-    stroke-dasharray: 9 91;
-    stroke-dashoffset: 100;
+}
+
+/* The sailboat rests just right of the sun's path; moving, it starts
+there and takes ten minutes to cross. */
+.boat {
+  will-change: transform;
+  animation: sail 600s steps(500, end) infinite;
+  animation-delay: -408s;
+}
+@keyframes sail {
+  from {
+    transform: translateX(calc(var(--px) * -340px));
+  }
+  to {
+    transform: translateX(calc(var(--px) * 160px));
+  }
+}
+
+.star {
+  animation: twinkle calc(2.6s + var(--i) * 0.37s) steps(1, end) infinite;
+  animation-delay: calc(var(--i) * -0.83s);
+}
+@keyframes twinkle {
+  0% {
+    opacity: 0.9;
+  }
+  35% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  80% {
+    opacity: 0.55;
+  }
+}
+
+.light {
+  animation: flash 4s steps(1, end) infinite;
+  animation-delay: 1.5s;
+}
+@keyframes flash {
+  0% {
+    opacity: 1;
+  }
+  8% {
+    opacity: 0.4;
+  }
+  12% {
     opacity: 0;
   }
-  & .numogram-zones circle,
-  & .numogram-gate-labels circle {
-    fill: var(--background);
-    stroke: currentColor;
-    stroke-width: 5;
-  }
-  & .numogram-gate-labels circle {
-    stroke-width: 3;
-  }
-  & .numogram-zones text,
-  & .numogram-gate-labels text {
-    fill: currentColor;
-    text-anchor: middle;
-  }
-  & .numogram-zones text {
-    font-size: 56px;
-  }
-  & .numogram-gate-labels text {
-    font-size: 28px;
-  }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .numogram .numogram-flow {
-    opacity: 1;
-    animation: numogram-flow 3s linear infinite;
-  }
+/* The switch: unchecked, nothing moves. Without scripts the switch can't
+   know the system setting, so that stops the motion instead; with them,
+   MotionScript (Motion.tsx) sets the switch from it, and the visitor can
+   turn the motion back on. */
+html:not(:has(#motion:checked)) *,
+html:not(:has(#motion:checked)) *::before,
+html:not(:has(#motion:checked)) *::after,
+html:not(:has(#motion:checked)) *::backdrop {
+  animation: none !important;
+  transition: none !important;
 }
-
-@keyframes numogram-flow {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-@media (forced-colors: active) {
-  .numogram {
-    color: CanvasText;
-    & .numogram-regions text,
-    & .numogram-zones text,
-    & .numogram-gate-labels text {
-      fill: CanvasText;
-    }
-    & .numogram-zones circle,
-    & .numogram-gate-labels circle {
-      fill: Canvas;
-    }
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-js]) *,
+  html:not([data-js]) *::before,
+  html:not([data-js]) *::after,
+  html:not([data-js]) *::backdrop {
+    animation: none !important;
+    transition: none !important;
   }
 }
 
 /* Windows contrast themes: hairlines become solid system lines, so the
-   structure survives. */
+   structure survives; the scene keeps its own colours. */
 @media (forced-colors: active) {
   * {
     border-color: CanvasText;

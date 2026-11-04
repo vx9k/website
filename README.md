@@ -36,11 +36,11 @@ src/
 │   ├── index.md/         the page as Markdown, for agents
 │   ├── robots.txt/       robots.txt, with a Content Signal
 │   └── opengraph-image.tsx, sitemap.ts, manifest.ts, icons
-├── assets/               the horizon at 3x, for the share image
-└── components/site/      the section frame, the product block, the numogram, the horizon and the mark
+├── assets/               the still scene at 3x, for the share image
+└── components/site/      the scene, the dialogs, the motion switch and the mark
 public/
 ├── work/                 product screenshots (AVIF and WebP)
-├── sunset/               the pixel-art horizon (PNG at its real size)
+├── sunset/               the pixel-art scene's layers (PNGs at their real size)
 ├── _headers              security headers and caching
 └── _redirects            old /en, /es and /pt links go to /
 ```
@@ -50,7 +50,7 @@ public/
 | `AGENTS.md` | The guide for anyone, or any coding agent, changing the site: the brief, content rules, accessibility, security. `CLAUDE.md` points to it. |
 | `wrangler.jsonc` | Cloudflare Workers config: serves `out/` as static assets on kthread.dev, runs `src/worker.ts` for `/` only, and turns on the Worker's logs. |
 | `scripts/csp.mjs` | Runs after `next build`: hashes every inline script in `out/` into the CSP. |
-| `scripts/sunset.mjs` | Draws the pixel-art sunset under the intro, pixel by pixel, and writes it as indexed PNGs. Run it with `node scripts/sunset.mjs` after changing the art. |
+| `scripts/sunset.mjs` | Draws the pixel-art sunset behind the page, pixel by pixel, in layers the page animates, and writes them as indexed PNGs with their positions. Run it with `node scripts/sunset.mjs` after changing the art. |
 
 ## Agent tooling
 
@@ -65,7 +65,7 @@ Set up for Claude Code:
 
 ## Editing content
 
-Everything the page says lives in `src/app/content.ts`. Keep it factual: everything on the page should be checkable against vx's public repos. Product screenshots go in `public/work/` as `<id>-640` and `<id>-1280`, each in AVIF and WebP. Every change has to work at phone and desktop widths.
+Everything the page says lives in `src/app/content.ts`. Keep it factual: everything on the page should be checkable against vx's public repos. Product screenshots go in `public/work/` as `<id>-640` and `<id>-<source width>`, each in AVIF and WebP. The site is one screen with no scrolling, so every change has to fit at phone and desktop sizes, down to 375 by 667.
 
 ## Deploying
 
