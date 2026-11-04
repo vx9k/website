@@ -1,18 +1,23 @@
 @import "tailwindcss" source("..");
 
 /* ---------------------------------------------------------------- palette
-   Carbon: black and white, one dark theme whatever the system asks for.
-   The only colour is in the product screenshots and the flag in the
-   footer's mark. Contrast against --background: --foreground 18:1,
-   --muted 8.3:1 (7.9:1 on --surface). */
+   Dusk: one dark theme whatever the system asks for, its neutrals tinted
+   warm towards the sunset in the horizon under the intro (Horizon.tsx).
+   The colour lives in that one picture and the product screenshots; the
+   accent, the sun's amber, marks only the status by the headline and the
+   text selection. --background is the scene's first colour, so the picture
+   dithers into the page with no edge. Contrast against --background:
+   --foreground 15.5:1, --muted 7.2:1 (6.8:1 on --surface), --accent
+   8.6:1. */
 
 :root {
   color-scheme: dark;
-  --background: #000;
-  --foreground: #f2f2f2;
-  --muted: #a3a3a3;
-  --rule: rgb(255 255 255 / 22%);
-  --surface: #0a0a0a;
+  --background: #14110f;
+  --foreground: #f0e8db;
+  --muted: #ab9f8e;
+  --accent: #ee9e52;
+  --rule: rgb(240 232 219 / 18%);
+  --surface: #1c1815;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -23,6 +28,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
+  --color-accent: var(--accent);
   --color-rule: var(--rule);
   --color-surface: var(--surface);
 }
@@ -48,7 +54,7 @@
   }
 
   ::selection {
-    background: var(--foreground);
+    background: var(--accent);
     color: var(--background);
   }
 
@@ -89,25 +95,23 @@
 @utility text-display {
   font-size: clamp(2.25rem, 1.2rem + 4.2vw, 4.75rem);
   font-weight: 500;
-  line-height: 1.02;
-  letter-spacing: -0.055em;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
 }
 
 @utility text-title {
   font-size: clamp(1.625rem, 1.2rem + 1.6vw, 2.5rem);
   font-weight: 500;
   line-height: 1.1;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
 }
 
-/* Labels: small mono capitals, widely tracked, in the text colour. */
+/* Labels: small mono in sentence case, in the muted colour. */
 @utility label {
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   line-height: 1.25rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--foreground);
+  color: var(--muted);
 }
 
 /* Text links: underlined, the underline thickening on hover. Every link
@@ -120,6 +124,45 @@
   transition: text-decoration-color 200ms var(--ease);
   &:hover {
     text-decoration-color: currentColor;
+  }
+}
+
+/* --------------------------------------------------------------- horizon
+   The pixel-art sunset (public/sunset/horizon.png, drawn by
+   scripts/sunset.mjs) is 480 by 90 pixels. It's only ever shown at a whole
+   number of screen pixels per pixel, so every pixel is square and the same
+   size: the smallest scale at which it covers the width, cropped from the
+   middle on narrower screens. image-rendering keeps the edges hard. */
+
+.horizon {
+  --px: 2;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  height: calc(90px * var(--px));
+
+  & img {
+    flex: none;
+    max-width: none;
+    width: calc(480px * var(--px));
+    height: calc(90px * var(--px));
+    image-rendering: pixelated;
+  }
+
+  @media (width > 960px) {
+    --px: 3;
+  }
+  @media (width > 1440px) {
+    --px: 4;
+  }
+  @media (width > 1920px) {
+    --px: 5;
+  }
+  @media (width > 2400px) {
+    --px: 6;
+  }
+  @media (width > 2880px) {
+    --px: 8;
   }
 }
 

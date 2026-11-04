@@ -84,6 +84,25 @@ this one session; there's no need for subagents on a site this size.
 4. With a real browser and `pnpm wrangler dev`, open `/` and a missing path
    with the console open: no CSP or Trusted Types errors.
 
+## Changing the design
+
+`AGENTS.md` sets the direction (dusk, one pixel-art horizon, quiet chrome);
+talk to vx before moving away from it. For a design pass, use the `unslop`
+skill's audit and passes, inside the rules in `AGENTS.md`.
+
+The horizon is drawn in `scripts/sunset.mjs`. After changing it, run
+`node scripts/sunset.mjs` and look at it enlarged without smoothing
+before building:
+
+```sh
+convert public/sunset/horizon.png -filter point -resize 400% /tmp/horizon.png
+```
+
+Keep the palette's first colour equal to `--background` in `globals.css`,
+or the picture gets a visible edge. The page shows it at 2x up to 960px
+wide, then 3x, 4x and so on (`.horizon`), so check a phone and a wide
+desktop.
+
 ## Dependencies
 
 Dependabot opens one PR per package, and each rewrites `pnpm-lock.yaml`,

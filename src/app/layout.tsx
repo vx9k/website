@@ -37,7 +37,7 @@ export const metadata: Metadata = {
 
 // One dark theme; the browser chrome matches it.
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: "#14110f",
   colorScheme: "dark",
 };
 

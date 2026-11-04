@@ -1,5 +1,5 @@
-/** The e/acc mark: a white frame, black inside, and white under an
- *  exponential curve. With `flag`, it carries Uruguay's: the white under
+/** The e/acc mark: a light frame, dark inside, and light under an
+ *  exponential curve, in the page's own off-white and near-black. With `flag`, it carries Uruguay's: the white under
  *  the curve takes the flag's nine stripes (four blue), and a small Sun of
  *  May sits in the top-left corner, where the flag has it. The same
  *  drawing is the favicon (src/app/icon.svg). Decorative wherever it's
@@ -17,8 +17,8 @@ const h = 24 / 9;
 export default function Mark({ size, flag = false, id }: { size: number; flag?: boolean; id: string }) {
   return (
     <svg viewBox="0 0 32 32" width={size} height={size} aria-hidden className="block shrink-0">
-      <rect x="2.5" y="2.5" width="27" height="27" fill="#000" stroke="#fff" strokeWidth="2.5" />
-      <path d={curve} fill="#fff" />
+      <rect x="2.5" y="2.5" width="27" height="27" strokeWidth="2.5" className="fill-background stroke-foreground" />
+      <path d={curve} className="fill-foreground" />
       {flag && (
         <>
           <clipPath id={`${id}-curve`}>

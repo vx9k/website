@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 export default function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
   return (
     <section id={id} aria-labelledby={`${id}-title`} className="shell py-20 sm:py-28">
-      <h2 id={`${id}-title`} className="label mb-12 border-t-2 border-foreground pt-6 sm:mb-16">
+      <h2 id={`${id}-title`} className="label mb-12 border-t-2 border-foreground pt-6 text-foreground sm:mb-16">
         {title}
       </h2>
       {children}

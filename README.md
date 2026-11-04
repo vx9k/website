@@ -36,9 +36,11 @@ src/
 │   ├── index.md/         the page as Markdown, for agents
 │   ├── robots.txt/       robots.txt, with a Content Signal
 │   └── opengraph-image.tsx, sitemap.ts, manifest.ts, icons
-└── components/site/      the shared section frame and the product block
+├── assets/               the horizon at 3x, for the share image
+└── components/site/      the section frame, the product block, the numogram, the horizon and the mark
 public/
 ├── work/                 product screenshots (AVIF and WebP)
+├── sunset/               the pixel-art horizon (PNG at its real size)
 ├── _headers              security headers and caching
 └── _redirects            old /en, /es and /pt links go to /
 ```
@@ -48,6 +50,7 @@ public/
 | `AGENTS.md` | The guide for anyone, or any coding agent, changing the site: the brief, content rules, accessibility, security. `CLAUDE.md` points to it. |
 | `wrangler.jsonc` | Cloudflare Workers config: serves `out/` as static assets on kthread.dev, runs `src/worker.ts` for `/` only, and turns on the Worker's logs. |
 | `scripts/csp.mjs` | Runs after `next build`: hashes every inline script in `out/` into the CSP. |
+| `scripts/sunset.mjs` | Draws the pixel-art sunset under the intro, pixel by pixel, and writes it as indexed PNGs. Run it with `node scripts/sunset.mjs` after changing the art. |
 
 ## Agent tooling
 
@@ -56,7 +59,8 @@ Set up for Claude Code:
 | Where | What |
 | --- | --- |
 | `AGENTS.md` | The rules for the site; `CLAUDE.md` points to it. |
-| `.claude/skills/website/` | The one project skill: how to add a product, verify a change, update dependencies and ship. |
+| `.claude/skills/website/` | The project's own skill: how to add a product, verify a change, update dependencies and ship. |
+| `.claude/skills/unslop/` | [unslop](https://github.com/heydamir/unslop) by Damir Sokolovsky ([@heydamir](https://x.com/heydamir)), CC BY 4.0: a design-review skill that finds AI-looking UI patterns and fixes them pass by pass. |
 | `.mcp.json` | MCP servers: Cloudflare's, and `next-devtools-mcp` for a running dev server. `.claude/settings.json` enables them. |
 
 ## Editing content

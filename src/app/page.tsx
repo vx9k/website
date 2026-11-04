@@ -1,3 +1,4 @@
+import Horizon from "@/components/site/Horizon";
 import Mark from "@/components/site/Mark";
 import Numogram from "@/components/site/Numogram";
 import Product from "@/components/site/Product";
@@ -59,15 +60,22 @@ export default function Home() {
       </header>
 
       <main id="main" tabIndex={-1} className="focus:outline-none">
-        <div className="shell grid items-center gap-16 pt-20 pb-12 sm:pt-28 sm:pb-16 lg:grid-cols-12 lg:gap-12">
-          <div className="lg:col-span-8">
-            <p className="label flex items-center gap-2">
+        {/* The first screen: the intro, then the horizon along the bottom
+            of the viewport (below the header's 4.5rem) when they fit. */}
+        <div className="flex min-h-[calc(100dvh-4.5rem)] flex-col">
+          <div className="shell grid flex-1 content-center items-center gap-16 pt-16 pb-12 sm:pt-20 lg:grid-cols-12 lg:gap-12 lg:pt-12 lg:pb-8">
+            <div className="lg:col-span-8">
+              <p className="label flex items-center gap-2.5 text-foreground">
+                {/* One pixel of the sun: the accent's only mark on the page. */}
+                <span aria-hidden className="size-2 bg-accent" />
                 {intro.status}
-            </p>
-            <h1 className="mt-6 max-w-[18ch] text-display text-balance">{intro.line}</h1>
-            <p className="mt-8 max-w-[52ch] text-lg text-muted text-pretty sm:text-xl">{intro.lede}</p>
+              </p>
+              <h1 className="mt-6 max-w-[18ch] text-display text-balance">{intro.line}</h1>
+              <p className="mt-8 max-w-[52ch] text-lg text-muted text-pretty sm:text-xl">{intro.lede}</p>
+            </div>
+            <Numogram className="mx-auto w-full max-w-56 sm:max-w-64 lg:col-span-4 lg:max-w-72" />
           </div>
-          <Numogram className="mx-auto w-full max-w-56 sm:max-w-64 lg:col-span-4 lg:max-w-80" />
+          <Horizon />
         </div>
 
         <Section id="work" title="Work">

@@ -19,7 +19,7 @@ The personal site of vx ([github.com/vx9k](https://github.com/vx9k)), live at [k
 - **Products, showcased.** Each product gets real space: its name, one sentence on what it does, a few specifics, what it's built with, its status, its license, and a link to its repository (and to a live version or release, if one exists). A screenshot when the repository or vx provides one. Products are ordered by how much they say about vx's work, not by date.
 - **The numogram.** The CCRU's numogram sits beside the headline (`Numogram.tsx`), vx's choice. It follows the layout of the CCRU's own drawing (Warp on top, Time-Circuit, Plex below) and its rules: syzygies summing to 9, currents to the zone their difference names, gates Gt-1 to Gt-45. Keep it accurate to both.
 - **Left-aligned, full width.** Section titles sit above their content, never in a side column; on wide screens each product puts its name and links beside its facts, with the screenshot across the full width under them.
-- **Carbon.** Black and white, one dark theme whatever the system asks for, vx's choice (the effective accelerationist look). The e/acc mark sits by the name in the header; the footer's and the favicon's carry a touch of Uruguay's flag (`Mark.tsx`, `src/app/icon.svg`). The only other colour is in the product screenshots. Precise typography, alignment and hairlines do the work. Motion is CSS only and stops under reduced motion: screenshots ease in as they scroll into view, and the currents flow in the numogram.
+- **Dusk, in pixel art.** vx's choice: one dark theme whatever the system asks for, its neutrals tinted warm, and one picture that carries the colour. That picture is the horizon along the bottom of the first screen (`Horizon.tsx`): the sun going down over the Río de la Plata, with the Cerro on the horizon, drawn pixel by pixel in `scripts/sunset.mjs` in a 25-colour palette. Keep it real pixel art: one pixel size everywhere (it's only shown at whole-number scales, with `image-rendering: pixelated`), hand-dithered seams between solid bands, no blur, no gradients, and no synthwave clichés (striped suns, neon grids, purple-to-pink skies). Type stays sharp: no pixel or bitmap fonts. Around it the chrome is quiet: the accent is the sun's amber and marks only the "Open to work" status and the text selection. The e/acc mark sits by the name in the header, in the page's off-white and near-black; the footer's and the favicon's carry a touch of Uruguay's flag (`Mark.tsx`, `src/app/icon.svg`). The only other colour is in the product screenshots. Precise typography, alignment and hairlines do the rest. Motion is CSS only and stops under reduced motion: screenshots ease in as they scroll into view, and the currents flow in the numogram.
 - **Fast and accessible.** Static, small, readable without JavaScript, WCAG 2.2 AA.
 
 Talk to the owner before changing the visual direction.
@@ -51,10 +51,10 @@ There are no tests. Verify a change by building, serving `out/` (`pnpm wrangler 
 
 ## Agent tooling
 
-- **One agent, one skill.** Work in a single session; don't spawn subagents for this site. `.claude/skills/website/SKILL.md` holds the procedures (adding a product, verifying a change, updating dependencies, shipping); this file holds the rules and wins where the two differ.
+- **One agent, two skills.** Work in a single session; don't spawn subagents for this site. `.claude/skills/website/SKILL.md` holds the procedures (adding a product, verifying a change, updating dependencies, shipping). `.claude/skills/unslop/` is [heydamir/unslop](https://github.com/heydamir/unslop) (commit `a6f121e`, CC BY 4.0, by Damir Sokolovsky; keep its credit and `LICENSE`, and leave its files as they are), for design passes: auditing the page for AI-looking patterns and fixing them pass by pass. Its Codex-only `agents/openai.yaml` is left out. This file holds the rules and wins where either skill differs: the brief, the content rules and the CSP stand, so no generated images, no new colour beyond the horizon and the screenshots, and no copy that fails the content rules below.
 - **MCP servers** are in `.mcp.json`, enabled for the project in `.claude/settings.json`: Cloudflare's (`https://mcp.cloudflare.com/mcp`, which asks you to sign in to Cloudflare the first time) and `next-devtools-mcp`, which connects to a running `pnpm dev`.
 - **Next.js** guidance comes from the bundled docs (the managed block at the top).
-- No other skills or plugins are installed for the project. Review a skill before adding one: skills run with the agent's full permissions.
+- No other skills or plugins are installed for the project. Review a skill before adding one, scripts included: skills run with the agent's full permissions. (unslop's two scripts were reviewed when it was added: `snapshot.mjs` saves a live page with Playwright, and `story.mjs` renders a video through a server bound to 127.0.0.1 and ffmpeg.)
 
 ## Layout of the code
 
@@ -69,10 +69,13 @@ src/app/
   index.md/route.ts   the page as Markdown, for agents
   robots.txt/route.ts robots.txt, with the Content Signal
   opengraph-image.tsx, sitemap.ts, manifest.ts, icon.svg, apple-icon.png
-src/components/site/  Section (the shared frame), Product (one product), Numogram (the intro's SVG) and Mark (the e/acc mark)
+src/components/site/  Section (the shared frame), Product (one product), Numogram (the intro's SVG), Horizon (the pixel-art sunset) and Mark (the e/acc mark)
+src/assets/           sunset-og.png, the horizon at 3x for the share image
 public/work/          product screenshots, AVIF and WebP at 640 and 1280 pixels wide
+public/sunset/        horizon.png, the pixel-art sunset at its real size (480 by 90)
 public/_headers, public/_redirects
 scripts/csp.mjs       after next build: hashes the inline scripts into the CSP
+scripts/sunset.mjs    draws the horizon and writes both PNGs; run it by hand after changing the art
 ```
 
 The page is server components rendering static markup, with no client components. Keep it that way: add `"use client"` only where a browser API or event handler needs it.
@@ -117,6 +120,6 @@ Anything from another origin (analytics, a font service, an embed, an image) nee
 
 - Match the surrounding code: small components, Tailwind classes inline, and comments that explain *why* in plain sentences.
 - Server components by default. Add `"use client"` only for event handlers or browser APIs.
-- `gap-*` not `space-*`, `size-*` for squares, and the semantic tokens (`text-muted`, `bg-surface`, `border` for hairlines) rather than raw palette classes.
+- `gap-*` not `space-*`, `size-*` for squares, and the semantic tokens (`text-muted`, `bg-surface`, `bg-accent`, `border` for hairlines) rather than raw palette classes.
 - Semantic HTML over `div`s. Remove unused code, styles and strings when deleting a feature.
 - Commit messages: a short imperative summary line, then a body that explains the change.
