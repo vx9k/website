@@ -17,7 +17,7 @@ export default function Frame({ nav, children }: { nav?: ReactNode; children: Re
   return (
     <div className="frame">
       <header className="frame-head">
-        <a href="/" className="inline-flex min-h-10 items-center gap-3 font-mono text-sm font-medium">
+        <a href="/" className="inline-flex min-h-10 items-center gap-3 font-semibold">
           <Mark />
           vx
         </a>

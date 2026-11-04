@@ -1,21 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
+import { Atkinson_Hyperlegible_Next } from "next/font/google";
 import "./globals.css";
 import { site } from "./content";
 
-// Instrument Sans sets everything; IBM Plex Mono sets the small labels.
-// Both are self-hosted by next/font and subset to latin.
-const sans = Instrument_Sans({
+// Atkinson Hyperlegible Next sets everything, labels included: one
+// variable font, self-hosted by next/font, subset to latin and preloaded.
+// next/font has no metrics for it to size a fallback by, so it doesn't
+// try (adjustFontFallback); the system's sans stands in until it loads.
+const sans = Atkinson_Hyperlegible_Next({
   variable: "--font-face-sans",
   subsets: ["latin"],
   display: "swap",
-});
-
-const mono = IBM_Plex_Mono({
-  variable: "--font-face-mono",
-  weight: ["400", "500"],
-  subsets: ["latin"],
-  display: "swap",
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {
@@ -75,7 +71,7 @@ const analyticsToken = process.env.CF_WEB_ANALYTICS_TOKEN;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en-US" dir="ltr" className={`${sans.variable} ${mono.variable}`}>
+    <html lang="en-US" dir="ltr" className={sans.variable}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: trustedTypesPolicy }} />
       </head>
