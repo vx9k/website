@@ -124,7 +124,7 @@ After any change, check at 1440×900, 1366×768, 1920×1080, 768×1024,
 - the page doesn't scroll (`scrollHeight` equals `innerHeight`), and the
   panel's content fits it (`.frame-main`'s `scrollHeight` against its
   `clientHeight`)
-- the cross (scene pixel 345, 158) and the top of the sun (394, 168) are
+- the cross (scene pixel 345, 158) and the top of the sun (398, 178) are
   in the open, inside the stage and outside the panel
 - every line of text keeps 4.5:1 over what's rendered behind it: hide the
   text, screenshot, and compare each line's colour with every pixel in

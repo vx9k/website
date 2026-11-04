@@ -1,7 +1,7 @@
 // Draws the pixel art for the site: the sun going down behind Cerro Pan de
 // Azúcar, in Maldonado, seen from the east across the plains, with the
-// 35-metre cross on its summit; and the site's mark, the cross against the
-// sun, used as the favicon. Every pixel is placed here, in one palette,
+// 35-metre cross on its summit; and the site's mark, the cross close up
+// against the sun, used as the favicon. Every pixel is placed here, in one palette,
 // and written as indexed PNGs (and an SVG for the favicon) at their real
 // size; the page scales them by whole numbers only, so every pixel stays
 // square and the same size.
@@ -13,8 +13,8 @@
 //   sun.png          the sun and its halo; sets behind the hill on load
 //   clouds-far.png   high clouds lit pink; drift slowly, and wrap
 //   clouds-near.png  low clouds, dark with gold rims; drift faster
-//   land.png         the Cerro and the cross, the plains, their tree lines
-//                    and the fence
+//   land.png         the Cerro and the cross, the sea far off, the plains,
+//                    their woods and tree lines, and the fence
 //   grass.png        four frames of the tall grass in front, stacked; the
 //                    page steps through them so it sways
 //   birds.png        two frames of a tero's wingbeat
@@ -37,14 +37,18 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const W = 480;
 const H = 300;
 const HORIZON = 210; // first row of the plains
-const SUN = { x: 394, y: 178, r: 12 }; // half behind the Cerro's north slope
+const SUN = { x: 398, y: 190, r: 12 }; // half set, behind the Cerro's north shoulder
 
-// The Cerro: a broad granite dome rising alone from the plains, its south
-// flank (left, looking west) a little gentler than its north. It's about
-// 400 m high and the cross 35 m, so the cross is drawn at about a tenth
-// of the hill's height, a pixel or so taller so it reads.
-const CERRO = { x: 345, h: 46, left: 118, right: 100 };
-const CROSS = { h: 6, arm: 2, armAt: 2 }; // arms two pixels each side, two rows down
+// The Cerro, seen from the east: a steep granite dome, bare rock at the
+// top, with a saddle on its north side (right, looking west) and a lower
+// shoulder running on north from it. It's 389 to 423 m high (sources
+// differ) and the cross 35 m, so the cross is about a tenth of the hill's
+// height, a pixel or so taller so it reads: too small for the ring around
+// its crossing, which only the mark shows.
+const CERRO = { x: 345, h: 46, left: 82, right: 50 };
+// The cross: its arms span about 0.4 of its height, a fifth of the way
+// down, and it stands on a stepped base (the photographs).
+const CROSS = { h: 6, arm: 1, armAt: 1 };
 
 // ------------------------------------------------------------- palette
 // Index 0 is transparent, for the layers. The page's background comes
@@ -77,6 +81,8 @@ const palette = {
   hillRock: "#2e2236",
   rim: "#5e3646",
   rimHot: "#b45d4e",
+  sea: "#a85d5b",
+  seaLit: "#e39a68",
   field0: "#6a3f49",
   field1: "#4b3141",
   field2: "#352737",
@@ -256,45 +262,76 @@ const put = (x, y, name) => land.set(x, y - LAND.y, name);
 const at = (x, y) => land.get(x, y - LAND.y);
 const rl = random(0x1a4d);
 
-// Low hills far off, hazy, barely above the horizon: the plains are
-// mostly flat.
-for (let x = 0; x < W; x++) {
-  const h = Math.max(0, Math.round(1.6 + 1.4 * Math.sin(x / 23) + 1.1 * Math.sin(x / 9.5 + 1)));
+// Far off on the horizon: on the left, south-west, a line of the sea
+// past the coast by Piriápolis, holding the sky's light, up to the
+// Cerro's south foot (the coast is about 6 km south of it); on the right,
+// low hazy hills, the Cuchilla Grande's other hills. Between them, the
+// plains are flat.
+const SEA = { to: 258 };
+for (let x = 0; x < SEA.to; x++) {
+  // The far edge of the water holds the most light; glints below it.
+  put(x, HORIZON - 3, threshold(x, HORIZON) < 0.6 ? "seaLit" : "sea");
+  put(x, HORIZON - 2, "sea");
+  put(x, HORIZON - 1, Math.sin(x / 5.3) * Math.sin(x / 2.1) > 0.55 ? "seaLit" : "sea");
+}
+for (let x = SEA.to - 14; x < W; x++) {
+  const rise = Math.min(1, (x - SEA.to + 14) / 30); // the coast, then the hills
+  const h = Math.max(0, Math.round(rise * (1.6 + 1.4 * Math.sin(x / 23) + 1.1 * Math.sin(x / 9.5 + 1))));
   for (let y = HORIZON - h; y < HORIZON; y++) put(x, y, "haze");
 }
 
-// The hill, with its outline nudged a pixel here and there for the rock,
-// darker clumps of trees and a few lighter boulders on its flanks, and a
-// rim of light along its north side, against the sun.
+// The hill's outline, column by column: the dome, steeper on the north,
+// then the saddle and the shoulder, which runs off lower and lower.
+function cerro(x) {
+  const s = x - CERRO.x;
+  const u = Math.abs(s) / (s < 0 ? CERRO.left : CERRO.right);
+  const dome = u < 1 ? CERRO.h * Math.cos((u * Math.PI) / 2) ** (s < 0 ? 1.3 : 1.1) : 0;
+  const shoulder = s > 0 ? 9 * Math.exp(-(((s - 52) / 22) ** 2)) + Math.max(0, 12 * (1 - (s - 30) / 120)) * (s > 30 ? 1 : (s / 30) ** 2) : 0;
+  return Math.max(dome, shoulder);
+}
+
+// The hill, its outline nudged a pixel here and there, boulders and
+// slabs of bare granite on the summit, darker scrub and trees lower down,
+// and a rim of light along its north side, against the sun.
 let wobble = 0;
 const top = new Map();
-for (let x = CERRO.x - CERRO.left; x <= CERRO.x + CERRO.right; x++) {
-  const u = (x - CERRO.x) / (x < CERRO.x ? CERRO.left : CERRO.right);
-  const dome = Math.cos((Math.abs(u) * Math.PI) / 2) ** (x < CERRO.x ? 1.25 : 1.05);
+for (let x = CERRO.x - CERRO.left; x < W; x++) {
+  const s = x - CERRO.x;
   if (rl() < 0.3) wobble = Math.max(-1, Math.min(1, wobble + (rl() < 0.5 ? -1 : 1)));
-  const h = Math.max(0, Math.round(CERRO.h * dome + (Math.abs(u) > 0.08 && Math.abs(u) < 0.9 ? wobble : 0)));
+  // The granite on top breaks the line: a boulder a pixel or two proud
+  // of it here and there, but not under the cross.
+  const boulder = Math.abs(s) > 4 && Math.abs(s) < 26 && rl() < 0.16 ? 1 : 0;
+  const base = cerro(x);
+  const h = Math.max(0, Math.round(base + (base > 3 && Math.abs(s) > 4 ? wobble : 0)) + boulder);
+  if (h === 0) continue;
   top.set(x, HORIZON - h);
   for (let y = HORIZON - h; y < HORIZON; y++) put(x, y, "hill");
 }
-for (let i = 0; i < 260; i++) {
-  const x = CERRO.x - CERRO.left + Math.floor(rl() * (CERRO.left + CERRO.right));
+for (let i = 0; i < 420; i++) {
+  const x = CERRO.x - CERRO.left + Math.floor(rl() * (CERRO.left + W - CERRO.x));
   const t = top.get(x);
   if (t === undefined || t >= HORIZON - 2) continue;
-  const y = t + 1 + Math.floor(rl() * (HORIZON - t - 1));
-  const w = 1 + Math.floor(rl() * 3);
-  const tone = rl() < 0.8 ? "hillDark" : "hillRock";
+  const depth = Math.floor(rl() * (HORIZON - t - 1));
+  const y = t + 1 + depth;
+  // Near the top, bare rock in long slabs; lower down, scrub.
+  const high = depth < 9 && Math.abs(x - CERRO.x) < 40;
+  const w = high ? 2 + Math.floor(rl() * 4) : 1 + Math.floor(rl() * 3);
+  const tone = high ? (rl() < 0.75 ? "hillRock" : "hillDark") : rl() < 0.85 ? "hillDark" : "hillRock";
   for (let k = 0; k < w; k++) if (at(x + k, y) === "hill") put(x + k, y, tone);
 }
 for (const [x, t] of top) {
-  if (t >= HORIZON) continue;
-  if (x > CERRO.x + 2) put(x, t, Math.abs(x - SUN.x) < SUN.r + 10 ? "rimHot" : "rim");
+  if (x > CERRO.x + 1) put(x, t, Math.abs(x - SUN.x) < SUN.r + 12 ? "rimHot" : "rim");
 }
-// The cross on the summit: concrete, in silhouette, lit on its sun side.
-const summit = top.get(CERRO.x);
+// The cross on the summit: concrete, in silhouette, on its stepped base,
+// lit on its sun side.
+const summit = HORIZON - Math.round(cerro(CERRO.x));
+for (let k = -1; k <= 1; k++) put(CERRO.x + k, summit - 1, "hill");
 for (let k = 1; k <= CROSS.h; k++) put(CERRO.x, summit - k, "hill");
-for (let k = -CROSS.arm; k <= CROSS.arm; k++) put(CERRO.x + k, summit - CROSS.h + CROSS.armAt, "hill");
-put(CERRO.x + CROSS.arm, summit - CROSS.h + CROSS.armAt, "rim");
+const armY = summit - CROSS.h + CROSS.armAt;
+for (let k = -CROSS.arm; k <= CROSS.arm; k++) put(CERRO.x + k, armY, "hill");
+put(CERRO.x + CROSS.arm, armY, "rim");
 put(CERRO.x, summit - CROSS.h, "rim");
+put(CERRO.x + 1, summit - 1, "rim");
 
 // The plains, lit warm at the horizon and darker towards the viewer.
 // The grass in front covers their last rows and meets the page.
@@ -323,6 +360,31 @@ for (const row of [213, 217, 223, 231]) {
     x += len + 6 + Math.floor(rl() * (20 + r * 30));
   }
 }
+// Woods of eucalyptus, planted all over these plains: one at the
+// Cerro's foot, hiding where it meets the land, one off to the north and
+// one nearer, on the left. Ragged tall crowns, lit where they face the sun.
+function wood(from, to, row, tall) {
+  let h = 1;
+  for (let x = from; x <= to; x++) {
+    const edge = Math.min(x - from, to - x) / 6; // lower towards its ends
+    const want = Math.round(Math.min(1, edge) * tall * (0.65 + 0.35 * Math.sin(x / 3.1) * Math.sin(x / 7.3 + 2)));
+    h = Math.max(1, h + Math.sign(want - h) * (rl() < 0.7 ? 1 : 0) + (rl() < 0.15 ? (rl() < 0.5 ? -1 : 1) : 0));
+    for (let j = 0; j < h; j++) put(x, row - j, "hedge");
+    if (rl() < 0.45 && Math.abs(x - SUN.x) < 150) put(x, row - h, "hedgeLit");
+  }
+}
+wood(248, 318, 211, 7);
+wood(430, 479, 212, 6);
+wood(14, 104, 225, 12);
+
+// The lights of the houses scattered around the Cerro's foot, towards
+// Piriápolis, and of a farm or two: the page draws them, so they can come
+// on as the sun goes.
+const lights = [
+  { x: 176, y: 212 }, { x: 191, y: 213 }, { x: 204, y: 211 }, { x: 213, y: 214 }, { x: 228, y: 212 },
+  { x: 241, y: 213 }, { x: 236, y: 216 }, { x: 318, y: 212 }, { x: 452, y: 214 }, { x: 121, y: 219 },
+];
+
 // Lit streaks where a field's edge catches the sun.
 for (let i = 0; i < 36; i++) {
   const y = 226 + Math.floor(rl() * 22);
@@ -397,25 +459,37 @@ const birds = layer(19, 5);
 tero.forEach((row, y) => [...row].forEach((c, x) => c === "X" && birds.set(x, y, "post")));
 
 // ------------------------------------------------------------------ mark
-// The site's mark, on an 18 by 18 grid: the cross on its hill against the
-// setting sun, in four bands of dusk. It's the favicon, the Apple icon
+// The site's mark, on a 17 by 17 grid: the cross close up, on the
+// Cerro's granite top against the setting sun, in four bands of dusk.
+// Here, unlike in the scene, it's big enough to show what makes it this
+// cross: the ring around its crossing, the arms reaching past the ring,
+// the long shaft and the stepped base. It's the favicon, the Apple icon
 // (at 10x) and the mark in the page's header.
-const M = 18;
+const M = 17;
+const C = 8; // the cross's column, the grid's middle
 const mark = layer(M, M);
 const markBands = ["markSky", "markSky", "markDusk", "markEmber", "markGold"];
 for (let y = 0; y < M; y++) {
   for (let x = 0; x < M; x++) {
     mark.set(x, y, markBands[Math.min(markBands.length - 1, Math.floor((y / M) * 1.35 * markBands.length))]);
-    if (Math.hypot(x + 0.5 - 9, y + 0.5 - 11) <= 5.2) mark.set(x, y, y >= 11 ? "halo" : "sun");
+    if (Math.hypot(x - C, y + 0.5 - 8) <= 6.3) mark.set(x, y, y >= 8 ? "halo" : "sun");
   }
 }
 for (let x = 0; x < M; x++) {
-  const u = (x + 0.5 - 9) / 9;
-  const t = Math.round(12 + 6 * u * u);
-  for (let y = t; y < M; y++) mark.set(x, y, "hill");
+  const u = (x - C) / (M / 2);
+  for (let y = Math.round(14 + 3 * u * u); y < M; y++) mark.set(x, y, "hill");
 }
-for (let y = 5; y < 12; y++) mark.set(9, y, "hill");
-for (let x = 7; x <= 11; x++) mark.set(x, 7, "hill");
+const ARM_Y = 5;
+for (let y = 1; y < 13; y++) mark.set(C, y, "hill");
+for (let x = C - 4; x <= C + 4; x++) mark.set(x, ARM_Y, "hill");
+for (let y = 0; y < M; y++) {
+  for (let x = 0; x < M; x++) {
+    const d = Math.hypot(x - C, y - ARM_Y);
+    if (d >= 2.2 && d < 3.1) mark.set(x, y, "hill");
+  }
+}
+for (let x = C - 1; x <= C + 1; x++) mark.set(x, 12, "hill");
+for (let x = C - 2; x <= C + 2; x++) mark.set(x, 13, "hill");
 
 // ------------------------------------------------------------------ png
 function crc32(buf) {
@@ -488,6 +562,7 @@ const scene = {
   grass: GRASS,
   stars,
   fireflies,
+  lights,
   birds: { y: 144, w: 9, h: 5 },
 };
 write(join(root, "src/components/site/scene.json"), Buffer.from(JSON.stringify(scene) + "\n"));

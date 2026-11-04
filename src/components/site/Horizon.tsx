@@ -2,7 +2,8 @@ import type { CSSProperties } from "react";
 import scene from "./scene.json";
 
 /** The pixel-art scene: the sun going down behind Cerro Pan de Azúcar and
- *  its cross, seen across the plains. Each layer is drawn in
+ *  its cross, seen from the east across the plains, with the sea far off
+ *  on the left. Each layer is drawn in
  *  scripts/sunset.mjs and placed here in scene pixels (--x, --y, --w,
  *  --h); globals.css (.scene) turns those into screen pixels at a
  *  whole-number scale and moves the layers, in whole scene pixels too.
@@ -19,7 +20,7 @@ const at = ({ x = 0, y = 0, w, h, i }: Box) =>
     ...(i !== undefined && { "--i": i }),
   }) as CSSProperties;
 
-const { width: W, height: H, horizon, focus, sun, far, near, land, grass, stars, fireflies, birds } = scene;
+const { width: W, height: H, horizon, focus, sun, far, near, land, grass, stars, fireflies, lights, birds } = scene;
 
 export default function Horizon() {
   return (
@@ -46,6 +47,11 @@ export default function Horizon() {
       </div>
 
       <img className="layer" src="/scene/land.png" alt="" width={W} height={land.h} style={at({ y: land.y, w: W, h: land.h })} />
+
+      {/* The houses' lights, coming on one by one as the sun goes. */}
+      {lights.map((l, i) => (
+        <span key={i} className="dot light" style={at({ x: l.x, y: l.y, i })} />
+      ))}
 
       {/* Four frames stacked; the page steps through them. */}
       <div className="layer overflow-hidden" style={at({ y: grass.y, w: W, h: grass.h })}>

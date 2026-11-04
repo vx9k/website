@@ -1,8 +1,9 @@
 import mark from "./mark.json";
 
 /** The site's mark: the cross on Cerro Pan de Azúcar against the setting
- *  sun, 18 by 18 pixels, drawn by scripts/sunset.mjs as runs of one colour
- *  per row; the favicon is the same drawing (src/app/icon.svg). Shown at
+ *  sun, close up, with the ring around its crossing; 17 by 17 pixels,
+ *  drawn by scripts/sunset.mjs as runs of one colour per row; the favicon
+ *  is the same drawing (src/app/icon.svg). Shown at
  *  a whole multiple of its size so its pixels stay square. Decorative: the
  *  name next to it says what it is. */
 export default function Mark({ scale = 2 }: { scale?: number }) {

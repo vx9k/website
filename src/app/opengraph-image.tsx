@@ -32,7 +32,7 @@ export default function Image() {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 20, fontSize: 28, color: "#a6a9b6" }}>
-            <svg viewBox={`0 0 ${mark.size} ${mark.size}`} width={54} height={54} shapeRendering="crispEdges">
+            <svg viewBox={`0 0 ${mark.size} ${mark.size}`} width={51} height={51} shapeRendering="crispEdges">
               {mark.runs.map(([x, y, n, fill]) => (
                 <rect key={`${x}-${y}`} x={x} y={y} width={n} height={1} fill={fill as string} />
               ))}

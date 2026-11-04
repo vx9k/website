@@ -489,7 +489,7 @@
   }
 }
 
-/* One scene pixel: the stars and the fireflies. */
+/* One scene pixel: the stars, the houses' lights and the fireflies. */
 .dot {
   position: absolute;
   left: calc(var(--x) * var(--px) * 1px);
@@ -505,6 +505,10 @@
 .star-bright {
   background: #8a8ca0;
   opacity: 1;
+}
+
+.light {
+  background: #f3c27a;
 }
 
 /* A firefly: its light and a cross of glow one scene pixel out. */
@@ -539,7 +543,8 @@
 /* ----------------------------------------------------------------- motion
    Everything moves in CSS:
    - the header and panel slide in, and their contents rise in, on load
-   - the sun sets behind the Cerro's north shoulder
+   - the sun sets behind the Cerro's north shoulder, and the lights of
+     the houses at its foot come on
    - two bands of cloud drift at different speeds and wrap around
    - the grass sways through four frames, and fireflies blink over it
    - teros cross now and then, flapping; the stars twinkle
@@ -584,6 +589,18 @@
 @keyframes sun-set {
   from {
     transform: translateY(calc(var(--px) * -12px));
+  }
+}
+
+/* Each light comes on in turn as the sun gets low; with motion off,
+   they're simply on. */
+.light {
+  animation: light-on 1ms steps(1, end) backwards;
+  animation-delay: calc(3.6s + var(--i) * 0.45s);
+}
+@keyframes light-on {
+  from {
+    opacity: 0;
   }
 }
 
