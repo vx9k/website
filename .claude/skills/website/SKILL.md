@@ -94,23 +94,25 @@ this one session; there's no need for subagents on a site this size.
 
 ## Changing the design
 
-`AGENTS.md` sets the direction (one screen over a pixel-art dusk, motion in CSS with a switch, quiet chrome);
+`AGENTS.md` sets the direction (one screen, a panel beside a pixel-art dusk at Pan de Azúcar, motion in CSS with a switch, quiet chrome);
 talk to vx before moving away from it. For a design pass, use the `unslop`
 skill's audit and passes, inside the rules in `AGENTS.md`.
 
-The scene is drawn in `scripts/sunset.mjs`, in layers. After changing
-it, write a still frame and look at it enlarged without smoothing before
-building:
+The scene and the mark are drawn in `scripts/sunset.mjs`, the scene in
+layers. After changing them, write a still frame and look at it, and at
+the mark, enlarged without smoothing before building:
 
 ```sh
 node scripts/sunset.mjs --preview=/tmp/scene.png
 convert /tmp/scene.png -filter point -resize 300% /tmp/scene3.png
+# the mark at 10x is src/app/apple-icon.png
 ```
 
 Keep the palette's second colour (after the transparent one) equal to
 `--background` in `globals.css`, or the scene gets a visible edge. The
-page picks a whole-number scale from the screen's width and height and
-sinks the scene on short screens (`.scene-frame` and `.scene`); new
+page picks a whole-number scale and where to anchor the scene in
+`.stage` and `.scene`: centred on the Cerro in the narrow layouts' window,
+filling the screen behind the wide panel; new
 motion goes in `globals.css` in whole scene pixels with `steps()`, and
 must stop when the Motion switch is off (the rules at the end of the
 file stop every animation and transition).
@@ -119,8 +121,11 @@ After any change, check at 1440×900, 1366×768, 1920×1080, 768×1024,
 390×844 and 375×667, with Playwright's Chromium against
 `pnpm wrangler dev`, that:
 
-- the page doesn't scroll (`scrollHeight` equals `innerHeight`)
-- the intro ends above the clouds (`.clouds-far`'s top)
+- the page doesn't scroll (`scrollHeight` equals `innerHeight`), and the
+  panel's content fits it (`.frame-main`'s `scrollHeight` against its
+  `clientHeight`)
+- the cross (scene pixel 345, 158) and the top of the sun (394, 168) are
+  in the open, inside the stage and outside the panel
 - every line of text keeps 4.5:1 over what's rendered behind it: hide the
   text, screenshot, and compare each line's colour with every pixel in
   its box, in a separate blank page (the CSP blocks `data:` images)

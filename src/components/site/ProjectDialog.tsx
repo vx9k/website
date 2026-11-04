@@ -2,16 +2,14 @@ import type { CSSProperties } from "react";
 import type { Product } from "@/app/content";
 import Sheet from "./Sheet";
 
-/** One product, in the dialog its button on the page opens: what it is, a
+/** One product, in the drawer its row in the panel opens: what it is, a
  *  few specifics, the facts (group, stack, status, licence), its links,
- *  and its screenshots. On wide screens the text and the screenshots sit
- *  side by side. */
+ *  and then its screenshots. */
 export default function ProjectDialog({ product: p, index }: { product: Product; index: number }) {
-  const hasImages = !!p.images?.length;
   return (
     <Sheet id={`p-${p.id}`} eyebrow={`${String(index + 1).padStart(2, "0")} · ${p.kind}`} title={p.name}>
-      <div className={hasImages ? "grid gap-8 lg:grid-cols-12 lg:gap-10" : "max-w-[64ch]"}>
-        <div className="flex flex-col gap-6 lg:col-span-5">
+      <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-6">
           <p className="text-pretty">{p.summary}</p>
           {p.notes.length > 0 && (
             <ul className="flex flex-col gap-2 text-muted">
@@ -62,11 +60,11 @@ export default function ProjectDialog({ product: p, index }: { product: Product;
           </ul>
         </div>
 
-        {hasImages && (
-          <div className="flex flex-col gap-4 lg:col-span-7">
+        {!!p.images?.length && (
+          <div className="flex flex-col gap-4">
             {p.images!.map((img, i) => {
               const set = (ext: string) => img.widths.map((w) => `${img.src}-${w}.${ext} ${w}w`).join(", ");
-              const sizes = "(min-width: 64rem) 40rem, 100vw";
+              const sizes = "(min-width: 48rem) 42rem, 100vw";
               return (
                 // next/image can't optimise a static export, so each
                 // screenshot is pre-sized in AVIF with a WebP fallback.

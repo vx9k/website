@@ -42,8 +42,8 @@
 /work/*
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
-# The same goes for the horizon's pixel art (scripts/sunset.mjs).
-/sunset/*
+# The same goes for the scene's pixel art (scripts/sunset.mjs).
+/scene/*
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
 # The share image Next.js draws at build time (src/app/opengraph-image.tsx)

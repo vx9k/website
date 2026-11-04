@@ -37,10 +37,10 @@ src/
 │   ├── robots.txt/       robots.txt, with a Content Signal
 │   └── opengraph-image.tsx, sitemap.ts, manifest.ts, icons
 ├── assets/               the still scene at 3x, for the share image
-└── components/site/      the scene, the dialogs, the motion switch and the mark
+└── components/site/      the frame, the scene, the dialogs, the motion switch and the mark
 public/
 ├── work/                 product screenshots (AVIF and WebP)
-├── sunset/               the pixel-art scene's layers (PNGs at their real size)
+├── scene/                the pixel-art scene's layers (PNGs at their real size)
 ├── _headers              security headers and caching
 └── _redirects            old /en, /es and /pt links go to /
 ```
@@ -50,7 +50,7 @@ public/
 | `AGENTS.md` | The guide for anyone, or any coding agent, changing the site: the brief, content rules, accessibility, security. `CLAUDE.md` points to it. |
 | `wrangler.jsonc` | Cloudflare Workers config: serves `out/` as static assets on kthread.dev, runs `src/worker.ts` for `/` only, and turns on the Worker's logs. |
 | `scripts/csp.mjs` | Runs after `next build`: hashes every inline script in `out/` into the CSP. |
-| `scripts/sunset.mjs` | Draws the pixel-art sunset behind the page, pixel by pixel, in layers the page animates, and writes them as indexed PNGs with their positions. Run it with `node scripts/sunset.mjs` after changing the art. |
+| `scripts/sunset.mjs` | Draws the pixel art pixel by pixel: the sunset behind Cerro Pan de Azúcar in layers the page animates, and the mark used as the favicon. Writes indexed PNGs, their positions and the favicon's SVG. Run it with `node scripts/sunset.mjs` after changing the art. |
 
 ## Agent tooling
 

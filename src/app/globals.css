@@ -1,23 +1,25 @@
 @import "tailwindcss" source("..");
 
 /* ---------------------------------------------------------------- palette
-   Dusk: one dark theme whatever the system asks for, its neutrals tinted
-   warm towards the pixel-art sunset behind the page (Horizon.tsx). The
-   colour lives in that scene and the product screenshots; the accent, the
-   sun's amber, marks only the status by the headline and the text
-   selection. --background is the scene's first colour, so the sky comes out
-   of the page with no edge. Contrast against --background: --foreground
-   15.5:1, --muted 7.2:1 (6.8:1 on --surface), --accent 8.6:1. Text over the
-   scene sits on its dark sky, where --foreground stays above 10:1. */
+   Dusk ink: one dark theme whatever the system asks for, its neutrals
+   tinted towards the night sky at the top of the scene (Horizon.tsx), so
+   the page and the picture are one. The colour lives in the scene and the
+   product screenshots; the accent, the sun's ember, marks what's live (the
+   status, the row under the pointer) and the text selection. --background
+   is the scene's first colour, so its sky comes out of the page with no
+   edge. Contrast: --foreground 16.3:1 on --background, 15.3:1 on
+   --surface, 13.9:1 on --raised; --muted 8.2:1, 7.7:1 and 7:1; --accent
+   8.1:1, 7.6:1 and 6.9:1. No text sits over the scene. */
 
 :root {
   color-scheme: dark;
-  --background: #14110f;
-  --foreground: #f0e8db;
-  --muted: #ab9f8e;
-  --accent: #ee9e52;
-  --rule: rgb(240 232 219 / 18%);
-  --surface: #1c1815;
+  --background: #0e0f16;
+  --surface: #141621;
+  --raised: #1c1f2d;
+  --foreground: #f1ece3;
+  --muted: #a6a9b6;
+  --accent: #ea9450;
+  --rule: rgb(241 236 227 / 13%);
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -26,11 +28,12 @@
   --font-mono: var(--font-face-mono), ui-monospace, monospace;
 
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-rule: var(--rule);
-  --color-surface: var(--surface);
 }
 
 /* ------------------------------------------------------------------ base */
@@ -49,7 +52,7 @@
 
   body {
     font-size: 1.0625rem;
-    line-height: 1.6;
+    line-height: 1.55;
   }
 
   ::selection {
@@ -59,8 +62,7 @@
 
   :focus-visible {
     outline: 2px solid var(--foreground);
-    outline-offset: 3px;
-    border-radius: 1px;
+    outline-offset: 2px;
   }
 
   button {
@@ -70,39 +72,24 @@
 
 /* ------------------------------------------------------------- utilities */
 
-/* The page's frame, shared by the header and the main content, so their
-   edges line up at every width. */
-@utility shell {
-  width: 100%;
-  max-width: 84rem;
-  margin-inline: auto;
-  padding-inline: 1rem;
-  @media (width >= 40rem) {
-    padding-inline: 2rem;
-  }
-}
-
-/* The page's four sizes: the headline, titles, body (set on <body>), and
-   the mono label for metadata. The headline shrinks on short screens, so
-   the intro stays over the dark part of the sky. */
+/* The four sizes: the headline, titles, body (set on <body>), and the mono
+   label for metadata. The headline shrinks on short screens, so the
+   panel fits. */
 @utility text-display {
-  font-size: clamp(2.25rem, 1.2rem + 3.4vw, 4.25rem);
+  font-size: clamp(1.875rem, 1.4rem + 1.5vw, 3rem);
   font-weight: 500;
-  line-height: 1.04;
-  letter-spacing: -0.035em;
+  line-height: 1.06;
+  letter-spacing: -0.025em;
   @media (height <= 800px) {
-    font-size: clamp(2rem, 1.2rem + 2.4vw, 3.25rem);
-  }
-  @media (height <= 700px) {
-    font-size: clamp(1.875rem, 1.2rem + 2vw, 2.75rem);
+    font-size: clamp(1.75rem, 1.3rem + 1.2vw, 2.5rem);
   }
 }
 
 @utility text-title {
-  font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
+  font-size: clamp(1.5rem, 1.2rem + 1vw, 2.25rem);
   font-weight: 500;
   line-height: 1.1;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
 }
 
 /* Labels: small mono in sentence case, in the muted colour. */
@@ -114,7 +101,7 @@
 }
 
 /* Text links: underlined, the underline thickening on hover. Every link
-   on the page is at least 24px tall (min-h-6) for WCAG 2.2's target size. */
+   is at least 24px tall (min-h-6) for WCAG 2.2's target size. */
 @utility link {
   text-decoration-line: underline;
   text-decoration-thickness: 1px;
@@ -123,6 +110,112 @@
   transition: text-decoration-color 200ms var(--ease);
   &:hover {
     text-decoration-color: currentColor;
+  }
+}
+
+/* ------------------------------------------------------------------ frame
+   The one screen (Frame.tsx). Narrow: the header, a window onto the scene,
+   and the panel, stacked to fill the screen. Wide: the scene fills the
+   window and the header and panel make one solid column down the left.
+   Nothing scrolls but a dialog; zoomed text may, as WCAG's reflow rule
+   needs, so overflow is never locked. */
+
+.frame {
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+}
+
+.frame-head {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 3.5rem;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.25rem 1rem;
+}
+
+.stage {
+  position: relative;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  contain: strict;
+  forced-color-adjust: none;
+}
+
+.frame-main {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.25rem;
+  border-top: 1px solid var(--rule);
+  background: var(--surface);
+  padding: 1rem 1rem 1.25rem;
+}
+
+/* The email and GitHub links under the lede, only where the panel has
+   room for them: wide screens taller than 800px. */
+.reach {
+  display: none;
+  @media (width >= 64rem) and (height > 800px) {
+    display: flex;
+  }
+}
+
+/* On the shortest phones the headline and the work fill the panel; the
+   lede is still in the share card and the Markdown. */
+@media (width < 40rem) and (height <= 700px) {
+  .lede {
+    display: none;
+  }
+}
+
+@media (width >= 40rem) {
+  .frame-head,
+  .frame-main {
+    padding-inline: 2rem;
+  }
+  .frame-main {
+    padding-block: 1.5rem 1.75rem;
+  }
+}
+
+@media (width >= 64rem) {
+  .frame {
+    display: grid;
+    height: 100dvh;
+    grid-template-columns: minmax(26rem, 30rem) 1fr;
+    grid-template-rows: auto 1fr;
+    padding: 1.5rem;
+  }
+  .frame-head,
+  .frame-main {
+    grid-column: 1;
+    border: 1px solid var(--rule);
+    background: var(--surface);
+    padding-inline: 1.75rem;
+  }
+  .frame-head {
+    min-height: 4.5rem;
+    border-bottom: 0;
+    padding-top: 0.75rem;
+  }
+  .frame-main {
+    min-height: 0;
+    border-top: 0;
+    padding-block: 1.25rem 1.5rem;
+  }
+  .stage {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
   }
 }
 
@@ -141,32 +234,99 @@
   }
 }
 
-/* A product's button. It sits on a solid surface, so its text keeps its
-   contrast over the water and the sun's reflection behind it. On hover it
-   jumps up one step, the way the scene moves, and its edge lights. */
-.card {
+/* The work: a grid of names on phones, of names and kinds on tablets, and
+   a list of rows down the panel on wide screens. Each row opens its
+   product's drawer; under the pointer it steps right and its number takes
+   the accent. */
+.work {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.375rem;
+}
+
+.row {
   display: flex;
   width: 100%;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.125rem;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.75rem;
   border: 1px solid var(--rule);
-  background: var(--surface);
-  padding: 0.5rem 0.75rem;
-  line-height: 1.3;
+  background: var(--raised);
+  padding: 0.375rem 0.75rem;
   text-align: left;
+  line-height: 1.3;
   transition:
-    translate 160ms steps(2, end),
+    background-color 160ms var(--ease),
     border-color 160ms var(--ease);
   &:hover {
-    translate: 0 -0.25rem;
     border-color: var(--foreground);
   }
-  &:active {
-    translate: 0 0;
+}
+
+.row-name {
+  font-weight: 500;
+  transition: translate 160ms steps(2, end);
+}
+
+.row-index,
+.row-kind {
+  display: none;
+}
+
+@media (width >= 40rem) {
+  .work {
+    grid-template-columns: repeat(4, 1fr);
   }
-  @media (width >= 40rem) {
-    padding: 0.875rem 1rem;
+  .row {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.125rem;
+    padding: 0.5rem 0.75rem;
+  }
+  .row-kind {
+    display: block;
+  }
+}
+
+@media (width >= 64rem) {
+  .work {
+    grid-template-columns: 1fr;
+    gap: 0;
+    border-top: 1px solid var(--rule);
+  }
+  .row {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.75rem;
+    border-width: 0 0 1px;
+    background: transparent;
+    padding: 0.625rem 0.5rem;
+    &:hover {
+      border-color: var(--rule);
+      background: var(--raised);
+    }
+    &:hover .row-name {
+      translate: 0.25rem 0;
+    }
+    &:hover .row-index {
+      color: var(--accent);
+    }
+  }
+  .row-index {
+    display: block;
+    width: 1.75rem;
+    flex: none;
+  }
+  .row-kind {
+    margin-left: auto;
+    text-align: right;
+  }
+  @media (height <= 800px) {
+    .row {
+      min-height: 2.5rem;
+      padding-block: 0.5rem;
+    }
   }
 }
 
@@ -198,21 +358,25 @@
 }
 :focus-visible + .switch {
   outline: 2px solid var(--foreground);
-  outline-offset: 3px;
+  outline-offset: 2px;
 }
 
 /* ---------------------------------------------------------------- dialogs
-   Each product, Skills and Contact open in a modal dialog (Sheet.tsx) over
-   a darkened scene. They rise into place and fade, and leave the same way;
-   transition-behavior lets display and the top layer wait for the fade. */
+   Each product, Skills and Contact open in a modal dialog (Sheet.tsx): a
+   sheet rising from the bottom on narrow screens, a drawer sliding in from
+   the right on wide ones, over a darkened page. They leave the same way;
+   transition-behavior lets display and the top layer wait for them. */
 
 .sheet {
-  margin: auto;
-  width: min(72rem, 100vw - 1rem);
-  max-height: calc(100dvh - 1rem);
+  --from: 0 2rem;
+  margin: auto 0 0;
+  width: 100%;
+  max-width: 100%;
+  max-height: 88dvh;
   overflow-y: auto;
   overscroll-behavior: contain;
-  border: 1px solid var(--rule);
+  border: 0;
+  border-top: 1px solid var(--rule);
   padding: 0;
   background: var(--surface);
   color: var(--foreground);
@@ -220,105 +384,98 @@
   translate: 0 0;
   transition:
     opacity 220ms var(--ease),
-    translate 320ms var(--ease),
-    overlay 320ms allow-discrete,
-    display 320ms allow-discrete;
+    translate 360ms var(--ease),
+    overlay 360ms allow-discrete,
+    display 360ms allow-discrete;
   &:not([open]) {
     opacity: 0;
-    translate: 0 1.5rem;
+    translate: var(--from);
   }
   @starting-style {
     &[open] {
       opacity: 0;
-      translate: 0 1.5rem;
+      translate: var(--from);
     }
   }
   &::backdrop {
-    background: rgb(20 17 15 / 0.75);
+    background: rgb(14 15 22 / 0.72);
     transition:
-      background-color 320ms var(--ease),
-      overlay 320ms allow-discrete,
-      display 320ms allow-discrete;
+      background-color 360ms var(--ease),
+      overlay 360ms allow-discrete,
+      display 360ms allow-discrete;
   }
   &:not([open])::backdrop {
-    background: rgb(20 17 15 / 0);
+    background: rgb(14 15 22 / 0);
   }
   @starting-style {
     &[open]::backdrop {
-      background: rgb(20 17 15 / 0);
+      background: rgb(14 15 22 / 0);
     }
   }
-  @media (width >= 40rem) {
-    width: min(72rem, 100vw - 4rem);
-    max-height: calc(100dvh - 4rem);
+  @media (width >= 48rem) {
+    --from: 3rem 0;
+    margin: 0 0 0 auto;
+    width: min(46rem, 100vw - 4rem);
+    height: 100dvh;
+    max-height: 100dvh;
+    border-top: 0;
+    border-left: 1px solid var(--rule);
   }
 
   /* Screenshots rise in one after another once it's open. */
   &[open] .shot {
     animation: rise 600ms var(--ease) both;
-    animation-delay: calc(var(--i, 0) * 90ms + 120ms);
+    animation-delay: calc(var(--i, 0) * 90ms + 160ms);
   }
 }
 
 /* ------------------------------------------------------------------ scene
-   The pixel art behind the page (Horizon.tsx, drawn by scripts/sunset.mjs)
-   is 480 by 300 scene pixels, each shown as --px by --px screen pixels:
-   the smallest whole number that covers the screen's width and puts the
-   horizon low enough on tall screens. It's anchored to the bottom centre,
-   so wider screens crop nothing and narrow ones crop the sides; above it
-   the sky's top row is the page's own colour. Every layer is placed in
-   scene pixels (--x, --y, --w, --h), and every movement below is in steps
-   of a whole scene pixel, so the art never blurs or changes pixel size. */
+   The pixel art (Horizon.tsx, drawn by scripts/sunset.mjs) is 480 by 300
+   scene pixels, each shown as --px by --px screen pixels, a whole number.
+   In the window between the header and the panel it's centred on the
+   Cerro (--focus) with the horizon near the window's bottom edge; behind
+   the wide panel it fills the screen, anchored to the bottom, at the
+   smallest scale that covers it. Every layer is placed in scene pixels
+   (--x, --y, --w, --h), and every movement below is in steps of a whole
+   scene pixel, so the art never blurs or changes pixel size. */
 
-.scene-frame {
+.stage {
   --px: 2;
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-  contain: strict;
-  forced-color-adjust: none;
-
-  @media (width > 960px), (height > 780px) {
+  @media (width >= 40rem) {
     --px: 3;
   }
-  @media (width > 1440px), (height > 1050px) {
+  @media (width >= 64rem) {
+    --px: 2;
+  }
+  @media (width >= 64rem) and ((width > 960px) or (height > 600px)) {
+    --px: 3;
+  }
+  @media (width >= 64rem) and ((width > 1440px) or (height > 900px)) {
     --px: 4;
   }
-  @media (width > 1920px), (height > 1300px) {
+  @media (width >= 64rem) and ((width > 1920px) or (height > 1200px)) {
     --px: 5;
   }
-  @media (width > 2400px), (height > 1560px) {
+  @media (width >= 64rem) and ((width > 2400px) or (height > 1500px)) {
     --px: 6;
   }
-  @media (width > 2880px), (height > 1820px) {
+  @media (width >= 64rem) and ((width > 2880px) or (height > 1800px)) {
     --px: 7;
   }
-  @media (width > 3360px), (height > 2080px) {
+  @media (width >= 64rem) and ((width > 3360px) or (height > 2100px)) {
     --px: 8;
   }
 }
 
-/* How much of the river shows: the scene sinks below the screen's bottom
-   edge on shorter screens, so the clouds and the warm sky stay below the
-   intro, and the work's buttons still sit on the water. Rounded to a
-   whole pixel, so the art stays sharp; browsers without round() keep the
-   whole river. */
 .scene {
-  --water: 30dvh;
   position: absolute;
-  bottom: 0;
-  bottom: round(down, min(var(--water), var(--px) * 100px) - var(--px) * 100px, 1px);
-  left: 50%;
+  left: calc(50% - var(--focus) * var(--px) * 1px);
+  bottom: calc(var(--px) * -78px);
   width: calc(var(--w) * var(--px) * 1px);
   height: calc(var(--h) * var(--px) * 1px);
-  translate: -50% 0;
-
-  @media (orientation: portrait) {
-    --water: 34dvh;
-  }
-  @media (orientation: portrait) and (height <= 700px) {
-    --water: 30dvh;
+  @media (width >= 64rem) {
+    left: calc(50% - var(--w) * var(--px) * 0.5px);
+    bottom: 0;
   }
 
   & .layer {
@@ -332,9 +489,8 @@
   }
 }
 
-/* One scene pixel, for the stars and the lighthouse's light. */
-.star,
-.light {
+/* One scene pixel: the stars and the fireflies. */
+.dot {
   position: absolute;
   left: calc(var(--x) * var(--px) * 1px);
   top: calc(var(--y) * var(--px) * 1px);
@@ -342,26 +498,25 @@
   height: calc(var(--px) * 1px);
 }
 
-/* Dim on purpose: text over the brightest star still has 4.5:1. */
 .star {
-  background: #57535f;
+  background: #5a5c70;
   opacity: 0.9;
 }
 .star-bright {
-  background: #66616e;
+  background: #8a8ca0;
   opacity: 1;
 }
 
-/* The lighthouse's flash: its light and a cross of glow around it,
-   drawn with shadows one scene pixel out. Dark between flashes. */
-.light {
+/* A firefly: its light and a cross of glow one scene pixel out. */
+.firefly {
   --g: calc(var(--px) * 1px);
-  background: #fffaf0;
+  background: #f6eb9a;
   box-shadow:
-    var(--g) 0 0 #fbdc96,
-    calc(var(--g) * -1) 0 0 #fbdc96,
-    0 calc(var(--g) * -1) 0 #fbdc96;
-  opacity: 0;
+    var(--g) 0 0 #807a46,
+    calc(var(--g) * -1) 0 0 #807a46,
+    0 var(--g) 0 #807a46,
+    0 calc(var(--g) * -1) 0 #807a46;
+  opacity: 0.8;
 }
 
 .clouds {
@@ -370,36 +525,52 @@
   image-rendering: pixelated;
 }
 .clouds-far {
-  background-image: url("/sunset/clouds-far.png");
+  background-image: url("/scene/clouds-far.png");
 }
 .clouds-near {
-  background-image: url("/sunset/clouds-near.png");
+  background-image: url("/scene/clouds-near.png");
 }
 
 .bird {
-  background: url("/sunset/birds.png") 0 0 / calc(17px * var(--px)) calc(3px * var(--px));
+  background: url("/scene/birds.png") 0 0 / calc(19px * var(--px)) calc(5px * var(--px));
   image-rendering: pixelated;
 }
 
 /* ----------------------------------------------------------------- motion
    Everything moves in CSS:
-   - the intro and the work rise in, one after another, when the page loads
-   - the sun sets the last few pixels onto the horizon
+   - the header and panel slide in, and their contents rise in, on load
+   - the sun sets behind the Cerro's north shoulder
    - two bands of cloud drift at different speeds and wrap around
-   - the river steps through four frames of glints
-   - gulls cross now and then, flapping; a sailboat crosses very slowly
-   - the stars twinkle and the lighthouse flashes
-   - buttons jump a step on hover, and the dialogs rise in
-   Only transform, translate and opacity move, except the gulls' two-frame
+   - the grass sways through four frames, and fireflies blink over it
+   - teros cross now and then, flapping; the stars twinkle
+   - rows step on hover, and the dialogs slide in
+   Only transform, translate and opacity move, except the teros' two-frame
    sprite, on a few tiny elements. The motion switch in the header stops
    all of it (the rules at the end), and so does a system that asks for
    reduced motion. */
 
-.rise {
-  animation: rise 700ms var(--ease) both;
-  animation-delay: calc(var(--i, 0) * 70ms + 150ms);
+.frame-head,
+.frame-main {
+  --enter: 0 1rem;
+  animation: panel-in 560ms steps(7, end) both;
+  @media (width >= 64rem) {
+    --enter: -1.5rem 0;
+  }
+}
+.frame-main {
+  animation-delay: 60ms;
+}
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    translate: var(--enter);
+  }
 }
 
+.rise {
+  animation: rise 700ms var(--ease) both;
+  animation-delay: calc(var(--i, 0) * 70ms + 240ms);
+}
 @keyframes rise {
   from {
     opacity: 0;
@@ -408,11 +579,11 @@
 }
 
 .sun {
-  animation: sun-set 5s steps(10, end) both;
+  animation: sun-set 6s steps(12, end) both;
 }
 @keyframes sun-set {
   from {
-    transform: translateY(calc(var(--px) * -10px));
+    transform: translateY(calc(var(--px) * -12px));
   }
 }
 
@@ -436,22 +607,23 @@
   }
 }
 
-.water {
+.grass {
   will-change: transform;
-  animation: glint 2.4s steps(4, end) infinite;
+  animation: sway 1.8s steps(4, end) infinite;
 }
-@keyframes glint {
+@keyframes sway {
   to {
-    transform: translateY(calc(var(--px) * -400px));
+    /* The whole stack of frames: four steps of one frame each. */
+    transform: translateY(calc(var(--h) * var(--px) * -1px));
   }
 }
 
-/* The gulls cross from right to left in the first half of each minute,
-   one scene pixel at a time, then wait off-screen. */
+/* Teros cross from right to left in the first half of each minute, one
+   scene pixel at a time, then wait off-screen. */
 .flock {
   will-change: transform;
   animation: fly 60s infinite;
-  animation-delay: 3s;
+  animation-delay: 4s;
 }
 @keyframes fly {
   0% {
@@ -464,28 +636,12 @@
   }
 }
 .bird {
-  animation: flap 560ms steps(2, end) infinite;
-  animation-delay: calc(var(--i) * -190ms);
+  animation: flap 480ms steps(2, end) infinite;
+  animation-delay: calc(var(--i) * -170ms);
 }
 @keyframes flap {
   to {
     background-position-x: calc(var(--px) * -20px);
-  }
-}
-
-/* The sailboat rests just right of the sun's path; moving, it starts
-there and takes ten minutes to cross. */
-.boat {
-  will-change: transform;
-  animation: sail 600s steps(500, end) infinite;
-  animation-delay: -408s;
-}
-@keyframes sail {
-  from {
-    transform: translateX(calc(var(--px) * -340px));
-  }
-  to {
-    transform: translateX(calc(var(--px) * 160px));
   }
 }
 
@@ -508,19 +664,32 @@ there and takes ten minutes to cross. */
   }
 }
 
-.light {
-  animation: flash 4s steps(1, end) infinite;
-  animation-delay: 1.5s;
+/* Each firefly glows for a moment, rising a pixel or two, then goes dark
+   for a few seconds, out of step with the others. */
+.firefly {
+  animation: glow calc(4.2s + var(--i) * 0.61s) steps(1, end) infinite;
+  animation-delay: calc(var(--i) * -1.37s);
 }
-@keyframes flash {
+@keyframes glow {
   0% {
-    opacity: 1;
-  }
-  8% {
-    opacity: 0.4;
-  }
-  12% {
     opacity: 0;
+    transform: translateY(0);
+  }
+  62% {
+    opacity: 0.6;
+  }
+  68% {
+    opacity: 1;
+    transform: translateY(calc(var(--px) * -1px));
+  }
+  78% {
+    opacity: 0.6;
+    transform: translateY(calc(var(--px) * -2px));
+  }
+  84%,
+  100% {
+    opacity: 0;
+    transform: translateY(calc(var(--px) * -2px));
   }
 }
 

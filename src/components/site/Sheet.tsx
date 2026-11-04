@@ -6,11 +6,12 @@ import type { ReactNode } from "react";
 export const opens = (id: string) => ({ command: "show-modal", commandfor: id }) as Record<string, string>;
 const closes = (id: string) => ({ command: "close", commandfor: id }) as Record<string, string>;
 
-/** A modal dialog over the scene: a title with a close button, then the
- *  content, which scrolls inside the dialog if it's taller than the
- *  screen. Esc closes it, and so does a click outside it where the browser
- *  supports closedby. Opening it focuses the close button, the first
- *  control in it. */
+/** A modal dialog over the page: a drawer from the right on wide
+ *  screens, a sheet from the bottom on narrow ones. A title with a close
+ *  button, then the content, which scrolls inside the dialog if it's
+ *  taller than the screen. Esc closes it, and so does a click outside it
+ *  where the browser supports closedby. Opening it focuses the close
+ *  button, the first control in it. */
 export default function Sheet({
   id,
   eyebrow,
