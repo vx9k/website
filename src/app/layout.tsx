@@ -1,18 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Host_Grotesk, Martian_Mono } from "next/font/google";
+import { IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
 import "./globals.css";
 import { site } from "./content";
 
-// Host Grotesk sets everything; Martian Mono sets the small labels. Both
-// are variable, self-hosted by next/font, and subset to latin.
-const sans = Host_Grotesk({
+// Instrument Sans sets everything; IBM Plex Mono sets the small labels.
+// Both are self-hosted by next/font and subset to latin.
+const sans = Instrument_Sans({
   variable: "--font-face-sans",
   subsets: ["latin"],
   display: "swap",
 });
 
-const mono = Martian_Mono({
+const mono = IBM_Plex_Mono({
   variable: "--font-face-mono",
+  weight: ["400", "500"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -35,10 +36,13 @@ export const metadata: Metadata = {
   formatDetection: { telephone: false, email: false, address: false },
 };
 
-// One dark theme; the browser chrome matches it.
+// Two themes, following the system; the browser chrome matches each.
 export const viewport: Viewport = {
-  themeColor: "#000000",
-  colorScheme: "dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#edf3f7" },
+    { media: "(prefers-color-scheme: dark)", color: "#0e0f16" },
+  ],
+  colorScheme: "light dark",
 };
 
 // The CSP requires Trusted Types for scripts (public/_headers), and Next.js

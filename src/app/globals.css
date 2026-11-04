@@ -1,19 +1,43 @@
 @import "tailwindcss" source("..");
 
 /* ---------------------------------------------------------------- palette
-   Carbon: black and white, one dark theme whatever the system asks for.
-   The only colour is in the product screenshots and the flag in the
-   footer's mark. Contrast against --background: --foreground 18:1,
-   --muted 8.3:1 (7.9:1 on --surface). */
+   Two themes, following the system: a sunny day in the light one and the
+   night in the dark one, the scene (Horizon.tsx) drawn for each. The
+   neutrals are tinted towards each theme's sky: pale blue-grey by day,
+   the night's ink by night. The colour lives in the scene and the
+   product screenshots; the accent, an ember, marks what's live (the
+   status, the row under the pointer) and the text selection. --stage is
+   the top of each sky, so the scene comes out of the page with no edge.
+   Contrast, light: --foreground 14.5:1 on --background, 15.7:1 on
+   --surface, 13.9:1 on --raised; --muted 6.7:1, 7.2:1 and 6.4:1; --accent
+   5.3:1, 5.7:1 and 5.1:1. Dark: --foreground 16.3:1, 15.3:1 and 13.9:1;
+   --muted 8.2:1, 7.7:1 and 7:1; --accent 8.1:1, 7.6:1 and 6.9:1. No text
+   sits over the scene. */
 
 :root {
-  color-scheme: dark;
-  --background: #000;
-  --foreground: #f2f2f2;
-  --muted: #a3a3a3;
-  --rule: rgb(255 255 255 / 22%);
-  --surface: #0a0a0a;
+  color-scheme: light dark;
+  --background: #edf3f7;
+  --surface: #f9fbfc;
+  --raised: #e8eef2;
+  --foreground: #18212b;
+  --muted: #4a5664;
+  --accent: #a8461a;
+  --rule: rgb(24 33 43 / 15%);
+  --stage: #3f7cc2;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0e0f16;
+    --surface: #141621;
+    --raised: #1c1f2d;
+    --foreground: #f1ece3;
+    --muted: #a6a9b6;
+    --accent: #ea9450;
+    --rule: rgb(241 236 227 / 13%);
+    --stage: #0e0f16;
+  }
 }
 
 @theme inline {
@@ -21,10 +45,12 @@
   --font-mono: var(--font-face-mono), ui-monospace, monospace;
 
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
+  --color-accent: var(--accent);
   --color-rule: var(--rule);
-  --color-surface: var(--surface);
 }
 
 /* ------------------------------------------------------------------ base */
@@ -39,79 +65,60 @@
     color: var(--foreground);
     font-family: var(--font-sans);
     -webkit-text-size-adjust: 100%;
-    scroll-behavior: smooth;
   }
 
   body {
     font-size: 1.0625rem;
-    line-height: 1.6;
+    line-height: 1.55;
   }
 
   ::selection {
-    background: var(--foreground);
+    background: var(--accent);
     color: var(--background);
   }
 
   :focus-visible {
     outline: 2px solid var(--foreground);
-    outline-offset: 3px;
-    border-radius: 1px;
+    outline-offset: 2px;
   }
 
-  /* Anchored sections land with some air above them. */
-  :target {
-    scroll-margin-top: 2rem;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
+  button {
+    cursor: pointer;
   }
 }
 
 /* ------------------------------------------------------------- utilities */
 
-/* The page's frame, shared by the header, every section and the footer,
-   so their edges line up at every width. */
-@utility shell {
-  width: 100%;
-  max-width: 84rem;
-  margin-inline: auto;
-  padding-inline: 1rem;
-  @media (width >= 40rem) {
-    padding-inline: 2rem;
+/* The four sizes: the headline, titles, body (set on <body>), and the mono
+   label for metadata. The headline shrinks on short screens, so the
+   panel fits. */
+@utility text-display {
+  font-size: clamp(1.875rem, 1.4rem + 1.5vw, 3rem);
+  font-weight: 500;
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+  @media (height <= 800px) {
+    font-size: clamp(1.75rem, 1.3rem + 1.2vw, 2.5rem);
   }
 }
 
-/* The page's four sizes: the headline, titles, body (set on <body>), and
-   the mono label for metadata. */
-@utility text-display {
-  font-size: clamp(2.25rem, 1.2rem + 4.2vw, 4.75rem);
-  font-weight: 500;
-  line-height: 1.02;
-  letter-spacing: -0.055em;
-}
-
 @utility text-title {
-  font-size: clamp(1.625rem, 1.2rem + 1.6vw, 2.5rem);
+  font-size: clamp(1.5rem, 1.2rem + 1vw, 2.25rem);
   font-weight: 500;
   line-height: 1.1;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.015em;
 }
 
-/* Labels: small mono capitals, widely tracked, in the text colour. */
+/* Labels: small mono in sentence case, in the muted colour. */
 @utility label {
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   line-height: 1.25rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--foreground);
+  color: var(--muted);
 }
 
 /* Text links: underlined, the underline thickening on hover. Every link
-   on the page is at least 24px tall (min-h-6) for WCAG 2.2's target size. */
+   is at least 24px tall (min-h-6) for WCAG 2.2's target size. */
 @utility link {
   text-decoration-line: underline;
   text-decoration-thickness: 1px;
@@ -123,121 +130,908 @@
   }
 }
 
-/* ---------------------------------------------------------------- motion
-   The one piece of motion: screenshots ease in as they scroll into view,
-   driven by the scroll position in CSS, so there's no script. Browsers
-   without scroll-driven animations, and anyone asking for less motion,
-   see them still. */
+/* ------------------------------------------------------------------ frame
+   The one screen (Frame.tsx). Narrow: the header, a window onto the scene,
+   and the panel, stacked to fill the screen. Wide: the scene fills the
+   window and the header and panel make one solid column down the left.
+   Nothing scrolls but a dialog; zoomed text may, as WCAG's reflow rule
+   needs, so overflow is never locked. */
 
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    .shot {
-      animation: shot-in linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 60%;
+.frame {
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+}
+
+.frame-head {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 3.5rem;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.25rem 1rem;
+}
+
+.stage {
+  position: relative;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  contain: strict;
+  background: var(--stage);
+  forced-color-adjust: none;
+}
+
+.frame-main {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.25rem;
+  border-top: 1px solid var(--rule);
+  background: var(--surface);
+  padding: 1rem 1rem 1.25rem;
+}
+
+/* The email and GitHub links under the lede, only where the panel has
+   room for them: wide screens taller than 800px. */
+.reach {
+  display: none;
+  @media (width >= 64rem) and (height > 800px) {
+    display: flex;
+  }
+}
+
+/* On the shortest phones the headline and the work fill the panel; the
+   lede is still in the share card and the Markdown. */
+@media (width < 40rem) and (height <= 700px) {
+  .lede {
+    display: none;
+  }
+}
+
+@media (width >= 40rem) {
+  .frame-head,
+  .frame-main {
+    padding-inline: 2rem;
+  }
+  .frame-main {
+    padding-block: 1.5rem 1.75rem;
+  }
+}
+
+@media (width >= 64rem) {
+  .frame {
+    display: grid;
+    height: 100dvh;
+    grid-template-columns: minmax(26rem, 30rem) 1fr;
+    grid-template-rows: auto 1fr;
+    padding: 1.5rem;
+  }
+  .frame-head,
+  .frame-main {
+    grid-column: 1;
+    border: 1px solid var(--rule);
+    background: var(--surface);
+    padding-inline: 1.75rem;
+  }
+  .frame-head {
+    min-height: 4.5rem;
+    border-bottom: 0;
+    padding-top: 0.75rem;
+  }
+  .frame-main {
+    min-height: 0;
+    border-top: 0;
+    padding-block: 1.25rem 1.5rem;
+  }
+  .stage {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+  }
+}
+
+/* --------------------------------------------------------------- controls */
+
+/* The header's buttons, which open the Skills and Contact dialogs. */
+.nav {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--muted);
+  transition: color 150ms var(--ease);
+  &:hover {
+    color: var(--foreground);
+  }
+}
+
+/* The work: a grid of names on phones, of names and kinds on tablets, and
+   a list of rows down the panel on wide screens. Each row opens its
+   product's drawer; under the pointer it steps right and its number takes
+   the accent. */
+.work {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.375rem;
+}
+
+.row {
+  display: flex;
+  width: 100%;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid var(--rule);
+  background: var(--raised);
+  padding: 0.375rem 0.75rem;
+  text-align: left;
+  line-height: 1.3;
+  transition:
+    background-color 160ms var(--ease),
+    border-color 160ms var(--ease);
+  &:hover {
+    border-color: var(--foreground);
+  }
+}
+
+.row-name {
+  font-weight: 500;
+  transition: translate 160ms steps(2, end);
+}
+
+.row-index,
+.row-kind {
+  display: none;
+}
+
+@media (width >= 40rem) {
+  .work {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .row {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.125rem;
+    padding: 0.5rem 0.75rem;
+  }
+  .row-kind {
+    display: block;
+  }
+}
+
+@media (width >= 64rem) {
+  .work {
+    grid-template-columns: 1fr;
+    gap: 0;
+    border-top: 1px solid var(--rule);
+  }
+  .row {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.75rem;
+    border-width: 0 0 1px;
+    background: transparent;
+    padding: 0.625rem 0.5rem;
+    &:hover {
+      border-color: var(--rule);
+      background: var(--raised);
+    }
+    &:hover .row-name {
+      translate: 0.25rem 0;
+    }
+    &:hover .row-index {
+      color: var(--accent);
+    }
+  }
+  .row-index {
+    display: block;
+    width: 1.75rem;
+    flex: none;
+  }
+  .row-kind {
+    margin-left: auto;
+    text-align: right;
+  }
+  @media (height <= 800px) {
+    .row {
+      min-height: 2.5rem;
+      padding-block: 0.5rem;
     }
   }
 }
 
-@keyframes shot-in {
-  from {
-    opacity: 0.4;
-    transform: translateY(1.5rem);
+/* The motion switch: a square track and knob, drawn with borders so it
+   stays visible in forced colours. The checkbox itself is visually
+   hidden, and its focus ring moves to the track. */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 1.75rem;
+  height: 1rem;
+  border: 1px solid currentColor;
+  &::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 0.625rem;
+    height: 0.625rem;
+    border: 5px solid currentColor;
+    transition: translate 160ms steps(2, end);
+  }
+}
+:checked + .switch {
+  color: var(--foreground);
+  &::after {
+    translate: 0.75rem 0;
+  }
+}
+:focus-visible + .switch {
+  outline: 2px solid var(--foreground);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------- dialogs
+   Each product, Skills and Contact open in a modal dialog (Sheet.tsx): a
+   sheet rising from the bottom on narrow screens, a drawer sliding in from
+   the right on wide ones, over a darkened page. They leave the same way;
+   transition-behavior lets display and the top layer wait for them. */
+
+.sheet {
+  --from: 0 2rem;
+  margin: auto 0 0;
+  width: 100%;
+  max-width: 100%;
+  max-height: 88dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 0;
+  border-top: 1px solid var(--rule);
+  padding: 0;
+  background: var(--surface);
+  color: var(--foreground);
+  opacity: 1;
+  translate: 0 0;
+  transition:
+    opacity 220ms var(--ease),
+    translate 360ms var(--ease),
+    overlay 360ms allow-discrete,
+    display 360ms allow-discrete;
+  &:not([open]) {
+    opacity: 0;
+    translate: var(--from);
+  }
+  @starting-style {
+    &[open] {
+      opacity: 0;
+      translate: var(--from);
+    }
+  }
+  &::backdrop {
+    background: rgb(14 15 22 / 0.72);
+    transition:
+      background-color 360ms var(--ease),
+      overlay 360ms allow-discrete,
+      display 360ms allow-discrete;
+  }
+  &:not([open])::backdrop {
+    background: rgb(14 15 22 / 0);
+  }
+  @starting-style {
+    &[open]::backdrop {
+      background: rgb(14 15 22 / 0);
+    }
+  }
+  @media (width >= 48rem) {
+    --from: 3rem 0;
+    margin: 0 0 0 auto;
+    width: min(46rem, 100vw - 4rem);
+    height: 100dvh;
+    max-height: 100dvh;
+    border-top: 0;
+    border-left: 1px solid var(--rule);
+  }
+
+  /* Screenshots rise in one after another once it's open. */
+  &[open] .shot {
+    animation: rise 600ms var(--ease) both;
+    animation-delay: calc(var(--i, 0) * 90ms + 160ms);
   }
 }
 
-/* ------------------------------------------------------------- numogram
-   Drawn like the CCRU's original: zones as rings, syzygies and currents
-   as stippled bands, gates as thin lines through small numbered rings.
-   A solid pulse runs along each current in its direction of flow; under
-   reduced motion it's hidden and the stippled tracks carry the flow.
-   Sizes are in the drawing's own units (it's 1080 wide). */
+/* ------------------------------------------------------------------ scene
+   The pixel art (Horizon.tsx, drawn by scripts/sunset.mjs) is 480 by 300
+   scene pixels, each shown as --px by --px screen pixels, a whole number.
+   In the window between the header and the panel it's centred on the
+   Cerro (--focus) with the horizon near the window's bottom edge; behind
+   the wide panel it fills the screen, anchored to the bottom, at the
+   smallest scale that covers it. Every layer is placed in scene pixels
+   (--x, --y, --w, --h), and every movement below is in steps of a whole
+   scene pixel, so the art never blurs or changes pixel size. */
 
-.numogram {
-  color: var(--foreground);
-  font-family: var(--font-mono);
-  overflow: visible;
+.stage {
+  --px: 2;
+  @media (width >= 40rem) {
+    --px: 3;
+  }
+  @media (width >= 64rem) {
+    --px: 2;
+  }
+  @media (width >= 64rem) and ((width > 960px) or (height > 600px)) {
+    --px: 3;
+  }
+  @media (width >= 64rem) and ((width > 1440px) or (height > 900px)) {
+    --px: 4;
+  }
+  @media (width >= 64rem) and ((width > 1920px) or (height > 1200px)) {
+    --px: 5;
+  }
+  @media (width >= 64rem) and ((width > 2400px) or (height > 1500px)) {
+    --px: 6;
+  }
+  @media (width >= 64rem) and ((width > 2880px) or (height > 1800px)) {
+    --px: 7;
+  }
+  @media (width >= 64rem) and ((width > 3360px) or (height > 2100px)) {
+    --px: 8;
+  }
+}
 
-  & .numogram-regions text {
-    fill: var(--muted);
-    font-size: 36px;
-    letter-spacing: 0.04em;
-    text-anchor: end;
+.scene {
+  position: absolute;
+  left: calc(50% - var(--focus) * var(--px) * 1px);
+  bottom: calc(var(--px) * -78px);
+  width: calc(var(--w) * var(--px) * 1px);
+  height: calc(var(--h) * var(--px) * 1px);
+  @media (width >= 64rem) {
+    left: calc(50% - var(--w) * var(--px) * 0.5px);
+    bottom: 0;
   }
-  & .numogram-syzygies line {
-    stroke: url(#numogram-stipple);
-    stroke-width: 70;
+
+  & .layer {
+    position: absolute;
+    left: calc(var(--x, 0) * var(--px) * 1px);
+    top: calc(var(--y, 0) * var(--px) * 1px);
+    width: calc(var(--w) * var(--px) * 1px);
+    height: calc(var(--h) * var(--px) * 1px);
+    max-width: none;
+    image-rendering: pixelated;
   }
-  & .numogram-gates path {
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 3;
+}
+
+/* Each theme shows its own things: the sun, the cows, butterflies and
+   teros by day; the stars, a shooting star, the houses' lights, the
+   fireflies and the bats by night. */
+.by-night {
+  display: none;
+}
+@media (prefers-color-scheme: dark) {
+  .by-day {
+    display: none;
   }
-  & .numogram-track {
-    fill: none;
-    stroke: url(#numogram-stipple);
-    stroke-width: 34;
+  .by-night {
+    display: block;
   }
-  & .numogram-flow {
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 34;
-    stroke-dasharray: 9 91;
-    stroke-dashoffset: 100;
+}
+
+/* One scene pixel: the stars, the houses' lights, the glints on the sea
+   and the fireflies. */
+.dot {
+  position: absolute;
+  left: calc(var(--x) * var(--px) * 1px);
+  top: calc(var(--y) * var(--px) * 1px);
+  width: calc(var(--px) * 1px);
+  height: calc(var(--px) * 1px);
+}
+
+.star {
+  background: #8b91aa;
+  opacity: 0.9;
+}
+.star-bright {
+  background: #d4d8e8;
+  opacity: 1;
+}
+
+.light {
+  background: #f3c27a;
+}
+
+.glint {
+  background: #f4faff;
+  opacity: 0;
+  @media (prefers-color-scheme: dark) {
+    background: #a9b5d6;
+  }
+}
+
+/* A firefly: its light and a cross of glow one scene pixel out. */
+.firefly {
+  --g: calc(var(--px) * 1px);
+  background: #f6eb9a;
+  box-shadow:
+    var(--g) 0 0 #807a46,
+    calc(var(--g) * -1) 0 0 #807a46,
+    0 var(--g) 0 #807a46,
+    0 calc(var(--g) * -1) 0 #807a46;
+  opacity: 0.8;
+}
+
+/* A shooting star: its head and a trail of three pixels, fading, up and
+   to the right of it. Hidden until it falls. */
+.meteor {
+  --g: calc(var(--px) * 1px);
+  background: #f4f6ff;
+  box-shadow:
+    var(--g) calc(var(--g) * -1) 0 #b9bfd6,
+    calc(var(--g) * 2) calc(var(--g) * -2) 0 #7a819c,
+    calc(var(--g) * 3) calc(var(--g) * -3) 0 #474d66;
+  opacity: 0;
+}
+
+.clouds {
+  background-repeat: repeat-x;
+  background-size: calc(480px * var(--px)) 100%;
+  image-rendering: pixelated;
+}
+.clouds-far {
+  background-image: url("/scene/day/clouds-far.png");
+}
+.clouds-near {
+  background-image: url("/scene/day/clouds-near.png");
+}
+
+/* Sprites: a strip of frames (--sw scene pixels wide in all), shown one
+   frame at a time and stepped through by moving the strip. */
+.sprite {
+  background-repeat: no-repeat;
+  background-size: calc(var(--sw) * var(--px) * 1px) calc(var(--h) * var(--px) * 1px);
+  image-rendering: pixelated;
+}
+.wheel {
+  background-image: url("/scene/day/wheel.png");
+}
+.car {
+  background-image: url("/scene/day/car.png");
+}
+.car-right {
+  background-position-x: calc(var(--w) * var(--px) * -1px);
+}
+.bird {
+  background-image: url("/scene/day/birds.png");
+}
+.cow {
+  background-image: url("/scene/day/cows.png");
+}
+.butterfly {
+  background-image: url("/scene/day/butterfly.png");
+}
+.bat {
+  background-image: url("/scene/night/bats.png");
+}
+@media (prefers-color-scheme: dark) {
+  .clouds-far {
+    background-image: url("/scene/night/clouds-far.png");
+  }
+  .clouds-near {
+    background-image: url("/scene/night/clouds-near.png");
+  }
+  .wheel {
+    background-image: url("/scene/night/wheel.png");
+  }
+  .car {
+    background-image: url("/scene/night/car.png");
+  }
+}
+
+/* ----------------------------------------------------------------- motion
+   Everything moves in CSS:
+   - the header and panel slide in, and their contents rise in, on load
+   - two bands of cloud drift at different speeds and wrap around
+   - the grass sways through four frames, and the windmill's wheel turns
+   - a car runs along the road each way now and then, its lamps lit at
+     night, and the sea glints
+   - by day, teros cross, the cows graze and look up, and butterflies
+     flutter over the grass
+   - by night, the moon rises a little and the houses' lights come on,
+     one or two going off now and then; the stars twinkle, a star
+     shoots, bats flit and fireflies blink
+   - rows step on hover, and the dialogs slide in
+   Only transform, translate and opacity move, except the sprites, whose
+   frames step by background position, on a few tiny elements; paths go
+   straight across or at 45 degrees, so every step is a whole scene pixel.
+   The motion switch in the header stops all of it (the rules at the end),
+   and so does a system that asks for reduced motion. */
+
+.frame-head,
+.frame-main {
+  --enter: 0 1rem;
+  animation: panel-in 560ms steps(7, end) both;
+  @media (width >= 64rem) {
+    --enter: -1.5rem 0;
+  }
+}
+.frame-main {
+  animation-delay: 60ms;
+}
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    translate: var(--enter);
+  }
+}
+
+.rise {
+  animation: rise 700ms var(--ease) both;
+  animation-delay: calc(var(--i, 0) * 70ms + 240ms);
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 0.75rem;
+  }
+}
+
+.clouds-far,
+.clouds-near {
+  will-change: transform;
+  animation: drift linear infinite;
+}
+.clouds-far {
+  animation-duration: 480s;
+  animation-timing-function: steps(480, end);
+}
+.clouds-near {
+  animation-duration: 240s;
+  animation-timing-function: steps(480, end);
+  animation-delay: -60s;
+}
+@keyframes drift {
+  to {
+    transform: translateX(calc(var(--px) * -480px));
+  }
+}
+
+.grass {
+  will-change: transform;
+  animation: sway 1.8s steps(4, end) infinite;
+}
+@keyframes sway {
+  to {
+    /* The whole stack of frames: four steps of one frame each. */
+    transform: translateY(calc(var(--h) * var(--px) * -1px));
+  }
+}
+
+/* The strip of frames, moved one frame per step. */
+@keyframes frames {
+  to {
+    background-position-x: calc(var(--sw) * var(--px) * -1px);
+  }
+}
+
+.wheel {
+  animation: frames 0.9s steps(4, end) infinite;
+}
+
+/* The cars take about half a minute to cross, then the road is empty for
+   a while. */
+.car-left {
+  animation: car-left 47s infinite;
+  animation-delay: 6s;
+}
+@keyframes car-left {
+  0% {
+    transform: translateX(0);
+    animation-timing-function: steps(492, end);
+  }
+  60%,
+  100% {
+    transform: translateX(calc(var(--px) * -492px));
+  }
+}
+.car-right {
+  animation: car-right 61s infinite;
+  animation-delay: 21s;
+}
+@keyframes car-right {
+  0% {
+    transform: translateX(0);
+    animation-timing-function: steps(492, end);
+  }
+  52%,
+  100% {
+    transform: translateX(calc(var(--px) * 492px));
+  }
+}
+
+.glint {
+  animation: glint calc(1.9s + var(--i) * 0.31s) steps(1, end) infinite;
+  animation-delay: calc(var(--i) * -0.7s);
+}
+@keyframes glint {
+  0%,
+  55% {
     opacity: 0;
   }
-  & .numogram-zones circle,
-  & .numogram-gate-labels circle {
-    fill: var(--background);
-    stroke: currentColor;
-    stroke-width: 5;
-  }
-  & .numogram-gate-labels circle {
-    stroke-width: 3;
-  }
-  & .numogram-zones text,
-  & .numogram-gate-labels text {
-    fill: currentColor;
-    text-anchor: middle;
-  }
-  & .numogram-zones text {
-    font-size: 56px;
-  }
-  & .numogram-gate-labels text {
-    font-size: 28px;
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .numogram .numogram-flow {
+  60% {
     opacity: 1;
-    animation: numogram-flow 3s linear infinite;
+  }
+  75% {
+    opacity: 0.5;
+  }
+  90%,
+  100% {
+    opacity: 0;
   }
 }
 
-@keyframes numogram-flow {
-  to {
-    stroke-dashoffset: 0;
+/* By day. Teros cross from right to left in the first half of each
+   minute, one scene pixel at a time, then wait off-screen. */
+.flock {
+  will-change: transform;
+  animation: fly 60s infinite;
+  animation-delay: 4s;
+}
+@keyframes fly {
+  0% {
+    transform: translateX(0);
+    animation-timing-function: steps(540, end);
+  }
+  50%,
+  100% {
+    transform: translateX(calc(var(--px) * -540px));
+  }
+}
+.bird {
+  animation: frames 480ms steps(2, end) infinite;
+  animation-delay: calc(var(--i) * -170ms);
+}
+
+/* Each cow grazes, then looks up for a moment, out of step with the
+   others. */
+.cow {
+  animation: graze calc(6s + var(--i) * 2.3s) steps(1, end) infinite;
+  animation-delay: calc(var(--i) * -3.1s);
+}
+@keyframes graze {
+  0%,
+  70% {
+    background-position-x: 0;
+  }
+  72%,
+  90% {
+    background-position-x: calc(var(--w) * var(--px) * -1px);
   }
 }
 
-@media (forced-colors: active) {
-  .numogram {
-    color: CanvasText;
-    & .numogram-regions text,
-    & .numogram-zones text,
-    & .numogram-gate-labels text {
-      fill: CanvasText;
-    }
-    & .numogram-zones circle,
-    & .numogram-gate-labels circle {
-      fill: Canvas;
-    }
+/* Butterflies flutter in a loop over the grass, zigzagging at 45
+   degrees, a pixel a step, their wings opening and shutting. */
+.butterfly {
+  animation:
+    flutter calc(6s + var(--i) * 1.3s) infinite,
+    frames 260ms steps(2, end) infinite;
+  animation-delay: calc(var(--i) * -2.3s), calc(var(--i) * -90ms);
+}
+@keyframes flutter {
+  0% {
+    transform: translate(0, 0);
+    animation-timing-function: steps(4, end);
+  }
+  14.29% {
+    transform: translate(calc(var(--px) * 4px), calc(var(--px) * -4px));
+    animation-timing-function: steps(4, end);
+  }
+  28.57% {
+    transform: translate(calc(var(--px) * 8px), 0);
+    animation-timing-function: steps(3, end);
+  }
+  39.29% {
+    transform: translate(calc(var(--px) * 11px), calc(var(--px) * -3px));
+    animation-timing-function: steps(3, end);
+  }
+  50% {
+    transform: translate(calc(var(--px) * 14px), 0);
+    animation-timing-function: steps(4, end);
+  }
+  64.29% {
+    transform: translate(calc(var(--px) * 10px), calc(var(--px) * 4px));
+    animation-timing-function: steps(4, end);
+  }
+  78.57% {
+    transform: translate(calc(var(--px) * 6px), 0);
+    animation-timing-function: steps(3, end);
+  }
+  89.29% {
+    transform: translate(calc(var(--px) * 3px), calc(var(--px) * 3px));
+    animation-timing-function: steps(3, end);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* By night. The moon rises a few pixels as the page loads, and the
+   houses' lights come on in turn; two of them go off now and then. */
+@media (prefers-color-scheme: dark) {
+  .orb {
+    animation: moon-rise 5s steps(8, end) both;
+  }
+}
+@keyframes moon-rise {
+  from {
+    transform: translateY(calc(var(--px) * 8px));
+  }
+}
+
+.light {
+  animation: light-on 1ms steps(1, end) backwards;
+  animation-delay: calc(2.4s + var(--i) * 0.45s);
+}
+@keyframes light-on {
+  from {
+    opacity: 0;
+  }
+}
+.light-off {
+  animation: light-off calc(40s + var(--i) * 3s) steps(1, end) infinite backwards;
+  animation-delay: calc(2.4s + var(--i) * 0.45s);
+}
+@keyframes light-off {
+  0%,
+  20% {
+    opacity: 0;
+  }
+  20.01%,
+  100% {
+    opacity: 1;
+  }
+}
+
+.star {
+  animation: twinkle calc(2.6s + var(--i) * 0.37s) steps(1, end) infinite;
+  animation-delay: calc(var(--i) * -0.83s);
+}
+@keyframes twinkle {
+  0% {
+    opacity: 0.9;
+  }
+  35% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  80% {
+    opacity: 0.55;
+  }
+}
+
+/* A star shoots every twenty seconds or so: down and to the left, thirty
+   pixels in under a second. */
+.meteor {
+  animation: meteor 19s infinite;
+  animation-delay: 7s;
+}
+@keyframes meteor {
+  0%,
+  95% {
+    opacity: 0;
+    transform: translate(0, 0);
+    animation-timing-function: steps(1, end);
+  }
+  95.01% {
+    opacity: 1;
+    transform: translate(0, 0);
+    animation-timing-function: steps(30, end);
+  }
+  99.5% {
+    opacity: 1;
+    transform: translate(calc(var(--px) * -30px), calc(var(--px) * 30px));
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--px) * -30px), calc(var(--px) * 30px));
+  }
+}
+
+/* Bats flit in loops above the windmill, their wings beating fast. */
+.bat {
+  animation:
+    flit calc(4.2s + var(--i) * 0.9s) infinite,
+    frames 180ms steps(2, end) infinite;
+  animation-delay: calc(var(--i) * -1.7s), calc(var(--i) * -60ms);
+}
+@keyframes flit {
+  0% {
+    transform: translate(0, 0);
+    animation-timing-function: steps(6, end);
+  }
+  20% {
+    transform: translate(calc(var(--px) * 6px), calc(var(--px) * -6px));
+    animation-timing-function: steps(5, end);
+  }
+  37% {
+    transform: translate(calc(var(--px) * 11px), calc(var(--px) * -1px));
+    animation-timing-function: steps(9, end);
+  }
+  67% {
+    transform: translate(calc(var(--px) * 2px), calc(var(--px) * 8px));
+    animation-timing-function: steps(4, end);
+  }
+  80% {
+    transform: translate(calc(var(--px) * -2px), calc(var(--px) * 4px));
+    animation-timing-function: steps(2, end);
+  }
+  87% {
+    transform: translate(calc(var(--px) * -2px), calc(var(--px) * 2px));
+    animation-timing-function: steps(2, end);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* Each firefly glows for a moment, rising a pixel or two, then goes dark
+   for a few seconds, out of step with the others. */
+.firefly {
+  animation: glow calc(4.2s + var(--i) * 0.61s) steps(1, end) infinite;
+  animation-delay: calc(var(--i) * -1.37s);
+}
+@keyframes glow {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  62% {
+    opacity: 0.6;
+  }
+  68% {
+    opacity: 1;
+    transform: translateY(calc(var(--px) * -1px));
+  }
+  78% {
+    opacity: 0.6;
+    transform: translateY(calc(var(--px) * -2px));
+  }
+  84%,
+  100% {
+    opacity: 0;
+    transform: translateY(calc(var(--px) * -2px));
+  }
+}
+
+/* The switch: unchecked, nothing moves. Without scripts the switch can't
+   know the system setting, so that stops the motion instead; with them,
+   MotionScript (Motion.tsx) sets the switch from it, and the visitor can
+   turn the motion back on. */
+html:not(:has(#motion:checked)) *,
+html:not(:has(#motion:checked)) *::before,
+html:not(:has(#motion:checked)) *::after,
+html:not(:has(#motion:checked)) *::backdrop {
+  animation: none !important;
+  transition: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-js]) *,
+  html:not([data-js]) *::before,
+  html:not([data-js]) *::after,
+  html:not([data-js]) *::backdrop {
+    animation: none !important;
+    transition: none !important;
   }
 }
 
 /* Windows contrast themes: hairlines become solid system lines, so the
-   structure survives. */
+   structure survives; the scene keeps its own colours. */
 @media (forced-colors: active) {
   * {
     border-color: CanvasText;

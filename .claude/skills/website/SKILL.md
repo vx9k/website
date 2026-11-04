@@ -37,24 +37,30 @@ this one session; there's no need for subagents on a site this size.
    repo's own words ("experimental", "early days"); `license` is the SPDX
    id. Avoid version numbers in `status` for repos that release daily.
 4. Order `products` by how much each says about vx's work.
-5. Screenshot, only from the repo or vx. Download into the scratchpad,
-   look at it, then convert:
+5. Screenshots, only from the repo or vx; a product can have a few, the
+   main one first. Download into the scratchpad, look at them, then
+   convert each at 640 and at its own width (up to 1280; never enlarge).
+   Where `avifenc` is missing, ffmpeg's libaom writes AVIF:
 
    ```sh
-   for w in 640 1280; do
-     magick shot.png -filter Lanczos -resize ${w}x /tmp/s$w.png
-     avifenc -q 70 -s 4 /tmp/s$w.png public/work/<id>-$w.avif
-     magick /tmp/s$w.png -quality 82 public/work/<id>-$w.webp
+   full=$(identify -format %w shot.png)
+   for w in 640 $full; do
+     convert shot.png -filter Lanczos -resize ${w}x /tmp/s$w.png
+     avifenc -q 70 -s 4 /tmp/s$w.png public/work/<id>-$w.avif \
+       || ffmpeg -y -i /tmp/s$w.png -c:v libaom-av1 -still-picture 1 -crf 28 -pix_fmt yuv444p public/work/<id>-$w.avif
+     convert /tmp/s$w.png -quality 82 public/work/<id>-$w.webp
    done
    ```
 
-   Set `image.width`/`height` to the 1280 file's size and write `alt` that
-   says what the screenshot shows.
-6. Run new copy past the content rules in `AGENTS.md`: plain, sentence
+   Add it to `images` with its `widths`, the largest file's `width` and
+   `height`, and `alt` that says what the screenshot shows.
+6. Give it a `kind` of two or three words for its button. The page is one
+   screen: check the buttons still fit at 375 by 667 (see Verifying).
+7. Run new copy past the content rules in `AGENTS.md`: plain, sentence
    case, no em dashes, no marketing words, only checkable claims. Units
    like `MB/s` can break at the slash on phones; a word joiner
    (`MB/⁠s`) keeps them whole.
-7. Update the product list in `AGENTS.md` ("Today's are ...").
+8. Update the product list in `AGENTS.md` ("Today's are ...").
 
 ## Verifying a change
 
@@ -75,14 +81,60 @@ this one session; there's no need for subagents on a site this size.
 
    ```sh
    python3 -m http.server 8765 -d out &
-   firefox --headless --profile "$(mktemp -d)" --no-remote --window-size=1440,3000 --screenshot desk.png http://localhost:8765/
-   firefox --headless --profile "$(mktemp -d)" --no-remote --window-size=390,5200 --screenshot phone.png http://localhost:8765/
+   firefox --headless --profile "$(mktemp -d)" --no-remote --window-size=1440,900 --screenshot desk.png http://localhost:8765/
+   firefox --headless --profile "$(mktemp -d)" --no-remote --window-size=390,844 --screenshot phone.png http://localhost:8765/
    ```
 
-   Lazy images show as their alt text in these shots; that's expected.
+   Screenshots are only of the closed page; the dialogs' lazy images
+   load when they open, so open one to check it (Playwright, above).
+   Send vx screenshots of every visible change.
 3. Check `/index.md` reads correctly (`curl localhost:8765/index.md`).
 4. With a real browser and `pnpm wrangler dev`, open `/` and a missing path
    with the console open: no CSP or Trusted Types errors.
+
+## Changing the design
+
+`AGENTS.md` sets the direction (one screen, a panel beside Pan de Azúcar in pixel art, by day in the light theme and by night in the dark one, motion in CSS with a switch, quiet chrome);
+talk to vx before moving away from it. For a design pass, use the `unslop`
+skill's audit and passes, inside the rules in `AGENTS.md`.
+
+The scene and the mark are drawn in `scripts/sunset.mjs`, the scene in
+layers. After changing them, write a still frame and look at it, and at
+the mark, enlarged without smoothing before building:
+
+```sh
+node scripts/sunset.mjs --preview=/tmp/scene   # /tmp/scene-day.png and /tmp/scene-night.png
+convert /tmp/scene-day.png -filter point -resize 300% /tmp/day3.png
+# the mark at 10x is src/app/apple-icon.png
+```
+
+Keep each palette's `page` colour (the top of its sky) equal to
+`--stage` for its theme in `globals.css`, and the night's `soil` equal to
+the dark `--background`, or the scene gets a visible edge. A new material
+needs a colour in both palettes (`DAY` starts from `NIGHT`). The
+page picks a whole-number scale and where to anchor the scene in
+`.stage` and `.scene`: centred on the Cerro in the narrow layouts' window,
+filling the screen behind the wide panel; new
+motion goes in `globals.css` in whole scene pixels with `steps()`, and
+must stop when the Motion switch is off (the rules at the end of the
+file stop every animation and transition).
+
+After any change, check at 1440×900, 1366×768, 1920×1080, 768×1024,
+390×844 and 375×667, in both colour schemes (Playwright's `colorScheme`), with Playwright's Chromium against
+`pnpm wrangler dev`, that:
+
+- the page doesn't scroll (`scrollHeight` equals `innerHeight`), and the
+  panel's content fits it (`.frame-main`'s `scrollHeight` against its
+  `clientHeight`)
+- the cross (scene pixel 345, 158) is in the open, inside the stage and
+  outside the panel, and so is the sun or moon (414, 92) on all but the
+  shortest phone
+- every line of text keeps 4.5:1 over what's rendered behind it: hide the
+  text, screenshot, and compare each line's colour with every pixel in
+  its box, in a separate blank page (the CSP blocks `data:` images)
+- a dialog opens on click, takes focus, closes on Esc and gives focus back
+- the switch stops every animation (`document.getAnimations()` is empty)
+  and stays off after a reload, and starts off under `reducedMotion`
 
 ## Dependencies
 

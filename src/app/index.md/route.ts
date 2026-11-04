@@ -11,7 +11,7 @@ function markdown() {
   const lines = [`# ${site.title}`, "", intro.status, "", intro.line, "", intro.lede, "", `## ${title("work")}`];
 
   for (const p of products) {
-    lines.push("", `### ${p.name}`, "", p.summary);
+    lines.push("", `### ${p.name}`, "", `${p.kind}. ${p.summary}`);
     if (p.notes.length) lines.push("", ...p.notes.map((note) => `- ${note}`));
     // The facts as one paragraph with hard line breaks, so they don't run
     // into the notes' list above them.
@@ -24,7 +24,7 @@ function markdown() {
     ];
     if (p.live) facts.push(`Live: [${p.live.label}](${p.live.href})`);
     lines.push("", facts.join("\\\n"));
-    if (p.image) lines.push("", `![${p.image.alt}](${site.url}${p.image.src}-1280.webp)`);
+    for (const img of p.images ?? []) lines.push("", `![${img.alt}](${site.url}${img.src}-${img.widths.at(-1)}.webp)`);
   }
 
   lines.push("", `## ${title("skills")}`);
