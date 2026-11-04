@@ -94,7 +94,7 @@ this one session; there's no need for subagents on a site this size.
 
 ## Changing the design
 
-`AGENTS.md` sets the direction (one screen, a panel beside a pixel-art dusk at Pan de Azúcar, motion in CSS with a switch, quiet chrome);
+`AGENTS.md` sets the direction (one screen, a panel beside Pan de Azúcar in pixel art, by day in the light theme and by night in the dark one, motion in CSS with a switch, quiet chrome);
 talk to vx before moving away from it. For a design pass, use the `unslop`
 skill's audit and passes, inside the rules in `AGENTS.md`.
 
@@ -103,13 +103,15 @@ layers. After changing them, write a still frame and look at it, and at
 the mark, enlarged without smoothing before building:
 
 ```sh
-node scripts/sunset.mjs --preview=/tmp/scene.png
-convert /tmp/scene.png -filter point -resize 300% /tmp/scene3.png
+node scripts/sunset.mjs --preview=/tmp/scene   # /tmp/scene-day.png and /tmp/scene-night.png
+convert /tmp/scene-day.png -filter point -resize 300% /tmp/day3.png
 # the mark at 10x is src/app/apple-icon.png
 ```
 
-Keep the palette's second colour (after the transparent one) equal to
-`--background` in `globals.css`, or the scene gets a visible edge. The
+Keep each palette's `page` colour (the top of its sky) equal to
+`--stage` for its theme in `globals.css`, and the night's `soil` equal to
+the dark `--background`, or the scene gets a visible edge. A new material
+needs a colour in both palettes (`DAY` starts from `NIGHT`). The
 page picks a whole-number scale and where to anchor the scene in
 `.stage` and `.scene`: centred on the Cerro in the narrow layouts' window,
 filling the screen behind the wide panel; new
@@ -118,14 +120,15 @@ must stop when the Motion switch is off (the rules at the end of the
 file stop every animation and transition).
 
 After any change, check at 1440×900, 1366×768, 1920×1080, 768×1024,
-390×844 and 375×667, with Playwright's Chromium against
+390×844 and 375×667, in both colour schemes (Playwright's `colorScheme`), with Playwright's Chromium against
 `pnpm wrangler dev`, that:
 
 - the page doesn't scroll (`scrollHeight` equals `innerHeight`), and the
   panel's content fits it (`.frame-main`'s `scrollHeight` against its
   `clientHeight`)
-- the cross (scene pixel 345, 158) and the top of the sun (398, 178) are
-  in the open, inside the stage and outside the panel
+- the cross (scene pixel 345, 158) is in the open, inside the stage and
+  outside the panel, and so is the sun or moon (414, 92) on all but the
+  shortest phone
 - every line of text keeps 4.5:1 over what's rendered behind it: hide the
   text, screenshot, and compare each line's colour with every pixel in
   its box, in a separate blank page (the CSP blocks `data:` images)

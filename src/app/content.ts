@@ -194,7 +194,7 @@ export const products: Product[] = [
     kind: "This site",
     summary: "This site: a static Next.js export served by Cloudflare, with a strict content security policy and no cookies.",
     notes: [
-      "The sunset behind it is pixel art drawn by a script, pixel by pixel, and only ever shown at whole-number scales.",
+      "The Cerro behind it is pixel art drawn by a script, pixel by pixel, on a sunny day in the light theme and at night in the dark one, and only ever shown at whole-number scales.",
       "Everything moves in CSS, with a switch to turn the motion off.",
     ],
     stack: ["Next.js", "TypeScript", "Tailwind CSS", "Cloudflare Workers"],

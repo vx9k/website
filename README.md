@@ -50,7 +50,7 @@ public/
 | `AGENTS.md` | The guide for anyone, or any coding agent, changing the site: the brief, content rules, accessibility, security. `CLAUDE.md` points to it. |
 | `wrangler.jsonc` | Cloudflare Workers config: serves `out/` as static assets on kthread.dev, runs `src/worker.ts` for `/` only, and turns on the Worker's logs. |
 | `scripts/csp.mjs` | Runs after `next build`: hashes every inline script in `out/` into the CSP. |
-| `scripts/sunset.mjs` | Draws the pixel art pixel by pixel: the sunset behind Cerro Pan de Azúcar in layers the page animates, and the mark used as the favicon. Writes indexed PNGs, their positions and the favicon's SVG. Run it with `node scripts/sunset.mjs` after changing the art. |
+| `scripts/sunset.mjs` | Draws the pixel art pixel by pixel: Cerro Pan de Azúcar by day and by night, in layers and sprites the page animates, and the mark used as the favicon. Writes indexed PNGs, their positions and the favicon's SVG. Run it with `node scripts/sunset.mjs` after changing the art. |
 
 ## Agent tooling
 

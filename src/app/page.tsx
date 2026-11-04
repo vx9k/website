@@ -62,7 +62,7 @@ export default function Home() {
       >
         <div className="flex flex-col gap-4">
           <p className="rise label flex items-center gap-2.5 text-foreground" style={order(1)}>
-            {/* One pixel of the sun, the accent's mark for what's live. */}
+            {/* One pixel of ember, the accent's mark for what's live. */}
             <span aria-hidden className="size-2 bg-accent" />
             {intro.status}
           </p>

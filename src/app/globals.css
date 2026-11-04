@@ -1,26 +1,43 @@
 @import "tailwindcss" source("..");
 
 /* ---------------------------------------------------------------- palette
-   Dusk ink: one dark theme whatever the system asks for, its neutrals
-   tinted towards the night sky at the top of the scene (Horizon.tsx), so
-   the page and the picture are one. The colour lives in the scene and the
-   product screenshots; the accent, the sun's ember, marks what's live (the
-   status, the row under the pointer) and the text selection. --background
-   is the scene's first colour, so its sky comes out of the page with no
-   edge. Contrast: --foreground 16.3:1 on --background, 15.3:1 on
-   --surface, 13.9:1 on --raised; --muted 8.2:1, 7.7:1 and 7:1; --accent
-   8.1:1, 7.6:1 and 6.9:1. No text sits over the scene. */
+   Two themes, following the system: a sunny day in the light one and the
+   night in the dark one, the scene (Horizon.tsx) drawn for each. The
+   neutrals are tinted towards each theme's sky: pale blue-grey by day,
+   the night's ink by night. The colour lives in the scene and the
+   product screenshots; the accent, an ember, marks what's live (the
+   status, the row under the pointer) and the text selection. --stage is
+   the top of each sky, so the scene comes out of the page with no edge.
+   Contrast, light: --foreground 14.5:1 on --background, 15.7:1 on
+   --surface, 13.9:1 on --raised; --muted 6.7:1, 7.2:1 and 6.4:1; --accent
+   5.3:1, 5.7:1 and 5.1:1. Dark: --foreground 16.3:1, 15.3:1 and 13.9:1;
+   --muted 8.2:1, 7.7:1 and 7:1; --accent 8.1:1, 7.6:1 and 6.9:1. No text
+   sits over the scene. */
 
 :root {
-  color-scheme: dark;
-  --background: #0e0f16;
-  --surface: #141621;
-  --raised: #1c1f2d;
-  --foreground: #f1ece3;
-  --muted: #a6a9b6;
-  --accent: #ea9450;
-  --rule: rgb(241 236 227 / 13%);
+  color-scheme: light dark;
+  --background: #edf3f7;
+  --surface: #f9fbfc;
+  --raised: #e8eef2;
+  --foreground: #18212b;
+  --muted: #4a5664;
+  --accent: #a8461a;
+  --rule: rgb(24 33 43 / 15%);
+  --stage: #3f7cc2;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0e0f16;
+    --surface: #141621;
+    --raised: #1c1f2d;
+    --foreground: #f1ece3;
+    --muted: #a6a9b6;
+    --accent: #ea9450;
+    --rule: rgb(241 236 227 / 13%);
+    --stage: #0e0f16;
+  }
 }
 
 @theme inline {
@@ -144,6 +161,7 @@
   flex: 1 1 auto;
   overflow: hidden;
   contain: strict;
+  background: var(--stage);
   forced-color-adjust: none;
 }
 
@@ -489,7 +507,23 @@
   }
 }
 
-/* One scene pixel: the stars, the houses' lights and the fireflies. */
+/* Each theme shows its own things: the sun, the cows, butterflies and
+   teros by day; the stars, a shooting star, the houses' lights, the
+   fireflies and the bats by night. */
+.by-night {
+  display: none;
+}
+@media (prefers-color-scheme: dark) {
+  .by-day {
+    display: none;
+  }
+  .by-night {
+    display: block;
+  }
+}
+
+/* One scene pixel: the stars, the houses' lights, the glints on the sea
+   and the fireflies. */
 .dot {
   position: absolute;
   left: calc(var(--x) * var(--px) * 1px);
@@ -499,16 +533,24 @@
 }
 
 .star {
-  background: #5a5c70;
+  background: #8b91aa;
   opacity: 0.9;
 }
 .star-bright {
-  background: #8a8ca0;
+  background: #d4d8e8;
   opacity: 1;
 }
 
 .light {
   background: #f3c27a;
+}
+
+.glint {
+  background: #f4faff;
+  opacity: 0;
+  @media (prefers-color-scheme: dark) {
+    background: #a9b5d6;
+  }
 }
 
 /* A firefly: its light and a cross of glow one scene pixel out. */
@@ -523,36 +565,91 @@
   opacity: 0.8;
 }
 
+/* A shooting star: its head and a trail of three pixels, fading, up and
+   to the right of it. Hidden until it falls. */
+.meteor {
+  --g: calc(var(--px) * 1px);
+  background: #f4f6ff;
+  box-shadow:
+    var(--g) calc(var(--g) * -1) 0 #b9bfd6,
+    calc(var(--g) * 2) calc(var(--g) * -2) 0 #7a819c,
+    calc(var(--g) * 3) calc(var(--g) * -3) 0 #474d66;
+  opacity: 0;
+}
+
 .clouds {
   background-repeat: repeat-x;
   background-size: calc(480px * var(--px)) 100%;
   image-rendering: pixelated;
 }
 .clouds-far {
-  background-image: url("/scene/clouds-far.png");
+  background-image: url("/scene/day/clouds-far.png");
 }
 .clouds-near {
-  background-image: url("/scene/clouds-near.png");
+  background-image: url("/scene/day/clouds-near.png");
 }
 
-.bird {
-  background: url("/scene/birds.png") 0 0 / calc(19px * var(--px)) calc(5px * var(--px));
+/* Sprites: a strip of frames (--sw scene pixels wide in all), shown one
+   frame at a time and stepped through by moving the strip. */
+.sprite {
+  background-repeat: no-repeat;
+  background-size: calc(var(--sw) * var(--px) * 1px) calc(var(--h) * var(--px) * 1px);
   image-rendering: pixelated;
+}
+.wheel {
+  background-image: url("/scene/day/wheel.png");
+}
+.car {
+  background-image: url("/scene/day/car.png");
+}
+.car-right {
+  background-position-x: calc(var(--w) * var(--px) * -1px);
+}
+.bird {
+  background-image: url("/scene/day/birds.png");
+}
+.cow {
+  background-image: url("/scene/day/cows.png");
+}
+.butterfly {
+  background-image: url("/scene/day/butterfly.png");
+}
+.bat {
+  background-image: url("/scene/night/bats.png");
+}
+@media (prefers-color-scheme: dark) {
+  .clouds-far {
+    background-image: url("/scene/night/clouds-far.png");
+  }
+  .clouds-near {
+    background-image: url("/scene/night/clouds-near.png");
+  }
+  .wheel {
+    background-image: url("/scene/night/wheel.png");
+  }
+  .car {
+    background-image: url("/scene/night/car.png");
+  }
 }
 
 /* ----------------------------------------------------------------- motion
    Everything moves in CSS:
    - the header and panel slide in, and their contents rise in, on load
-   - the sun sets behind the Cerro's north shoulder, and the lights of
-     the houses at its foot come on
    - two bands of cloud drift at different speeds and wrap around
-   - the grass sways through four frames, and fireflies blink over it
-   - teros cross now and then, flapping; the stars twinkle
+   - the grass sways through four frames, and the windmill's wheel turns
+   - a car runs along the road each way now and then, its lamps lit at
+     night, and the sea glints
+   - by day, teros cross, the cows graze and look up, and butterflies
+     flutter over the grass
+   - by night, the moon rises a little and the houses' lights come on,
+     one or two going off now and then; the stars twinkle, a star
+     shoots, bats flit and fireflies blink
    - rows step on hover, and the dialogs slide in
-   Only transform, translate and opacity move, except the teros' two-frame
-   sprite, on a few tiny elements. The motion switch in the header stops
-   all of it (the rules at the end), and so does a system that asks for
-   reduced motion. */
+   Only transform, translate and opacity move, except the sprites, whose
+   frames step by background position, on a few tiny elements; paths go
+   straight across or at 45 degrees, so every step is a whole scene pixel.
+   The motion switch in the header stops all of it (the rules at the end),
+   and so does a system that asks for reduced motion. */
 
 .frame-head,
 .frame-main {
@@ -580,27 +677,6 @@
   from {
     opacity: 0;
     translate: 0 0.75rem;
-  }
-}
-
-.sun {
-  animation: sun-set 6s steps(12, end) both;
-}
-@keyframes sun-set {
-  from {
-    transform: translateY(calc(var(--px) * -12px));
-  }
-}
-
-/* Each light comes on in turn as the sun gets low; with motion off,
-   they're simply on. */
-.light {
-  animation: light-on 1ms steps(1, end) backwards;
-  animation-delay: calc(3.6s + var(--i) * 0.45s);
-}
-@keyframes light-on {
-  from {
-    opacity: 0;
   }
 }
 
@@ -635,8 +711,71 @@
   }
 }
 
-/* Teros cross from right to left in the first half of each minute, one
-   scene pixel at a time, then wait off-screen. */
+/* The strip of frames, moved one frame per step. */
+@keyframes frames {
+  to {
+    background-position-x: calc(var(--sw) * var(--px) * -1px);
+  }
+}
+
+.wheel {
+  animation: frames 0.9s steps(4, end) infinite;
+}
+
+/* The cars take about half a minute to cross, then the road is empty for
+   a while. */
+.car-left {
+  animation: car-left 47s infinite;
+  animation-delay: 6s;
+}
+@keyframes car-left {
+  0% {
+    transform: translateX(0);
+    animation-timing-function: steps(492, end);
+  }
+  60%,
+  100% {
+    transform: translateX(calc(var(--px) * -492px));
+  }
+}
+.car-right {
+  animation: car-right 61s infinite;
+  animation-delay: 21s;
+}
+@keyframes car-right {
+  0% {
+    transform: translateX(0);
+    animation-timing-function: steps(492, end);
+  }
+  52%,
+  100% {
+    transform: translateX(calc(var(--px) * 492px));
+  }
+}
+
+.glint {
+  animation: glint calc(1.9s + var(--i) * 0.31s) steps(1, end) infinite;
+  animation-delay: calc(var(--i) * -0.7s);
+}
+@keyframes glint {
+  0%,
+  55% {
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0.5;
+  }
+  90%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* By day. Teros cross from right to left in the first half of each
+   minute, one scene pixel at a time, then wait off-screen. */
 .flock {
   will-change: transform;
   animation: fly 60s infinite;
@@ -653,12 +792,107 @@
   }
 }
 .bird {
-  animation: flap 480ms steps(2, end) infinite;
+  animation: frames 480ms steps(2, end) infinite;
   animation-delay: calc(var(--i) * -170ms);
 }
-@keyframes flap {
-  to {
-    background-position-x: calc(var(--px) * -20px);
+
+/* Each cow grazes, then looks up for a moment, out of step with the
+   others. */
+.cow {
+  animation: graze calc(6s + var(--i) * 2.3s) steps(1, end) infinite;
+  animation-delay: calc(var(--i) * -3.1s);
+}
+@keyframes graze {
+  0%,
+  70% {
+    background-position-x: 0;
+  }
+  72%,
+  90% {
+    background-position-x: calc(var(--w) * var(--px) * -1px);
+  }
+}
+
+/* Butterflies flutter in a loop over the grass, zigzagging at 45
+   degrees, a pixel a step, their wings opening and shutting. */
+.butterfly {
+  animation:
+    flutter calc(6s + var(--i) * 1.3s) infinite,
+    frames 260ms steps(2, end) infinite;
+  animation-delay: calc(var(--i) * -2.3s), calc(var(--i) * -90ms);
+}
+@keyframes flutter {
+  0% {
+    transform: translate(0, 0);
+    animation-timing-function: steps(4, end);
+  }
+  14.29% {
+    transform: translate(calc(var(--px) * 4px), calc(var(--px) * -4px));
+    animation-timing-function: steps(4, end);
+  }
+  28.57% {
+    transform: translate(calc(var(--px) * 8px), 0);
+    animation-timing-function: steps(3, end);
+  }
+  39.29% {
+    transform: translate(calc(var(--px) * 11px), calc(var(--px) * -3px));
+    animation-timing-function: steps(3, end);
+  }
+  50% {
+    transform: translate(calc(var(--px) * 14px), 0);
+    animation-timing-function: steps(4, end);
+  }
+  64.29% {
+    transform: translate(calc(var(--px) * 10px), calc(var(--px) * 4px));
+    animation-timing-function: steps(4, end);
+  }
+  78.57% {
+    transform: translate(calc(var(--px) * 6px), 0);
+    animation-timing-function: steps(3, end);
+  }
+  89.29% {
+    transform: translate(calc(var(--px) * 3px), calc(var(--px) * 3px));
+    animation-timing-function: steps(3, end);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* By night. The moon rises a few pixels as the page loads, and the
+   houses' lights come on in turn; two of them go off now and then. */
+@media (prefers-color-scheme: dark) {
+  .orb {
+    animation: moon-rise 5s steps(8, end) both;
+  }
+}
+@keyframes moon-rise {
+  from {
+    transform: translateY(calc(var(--px) * 8px));
+  }
+}
+
+.light {
+  animation: light-on 1ms steps(1, end) backwards;
+  animation-delay: calc(2.4s + var(--i) * 0.45s);
+}
+@keyframes light-on {
+  from {
+    opacity: 0;
+  }
+}
+.light-off {
+  animation: light-off calc(40s + var(--i) * 3s) steps(1, end) infinite backwards;
+  animation-delay: calc(2.4s + var(--i) * 0.45s);
+}
+@keyframes light-off {
+  0%,
+  20% {
+    opacity: 0;
+  }
+  20.01%,
+  100% {
+    opacity: 1;
   }
 }
 
@@ -678,6 +912,71 @@
   }
   80% {
     opacity: 0.55;
+  }
+}
+
+/* A star shoots every twenty seconds or so: down and to the left, thirty
+   pixels in under a second. */
+.meteor {
+  animation: meteor 19s infinite;
+  animation-delay: 7s;
+}
+@keyframes meteor {
+  0%,
+  95% {
+    opacity: 0;
+    transform: translate(0, 0);
+    animation-timing-function: steps(1, end);
+  }
+  95.01% {
+    opacity: 1;
+    transform: translate(0, 0);
+    animation-timing-function: steps(30, end);
+  }
+  99.5% {
+    opacity: 1;
+    transform: translate(calc(var(--px) * -30px), calc(var(--px) * 30px));
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--px) * -30px), calc(var(--px) * 30px));
+  }
+}
+
+/* Bats flit in loops above the windmill, their wings beating fast. */
+.bat {
+  animation:
+    flit calc(4.2s + var(--i) * 0.9s) infinite,
+    frames 180ms steps(2, end) infinite;
+  animation-delay: calc(var(--i) * -1.7s), calc(var(--i) * -60ms);
+}
+@keyframes flit {
+  0% {
+    transform: translate(0, 0);
+    animation-timing-function: steps(6, end);
+  }
+  20% {
+    transform: translate(calc(var(--px) * 6px), calc(var(--px) * -6px));
+    animation-timing-function: steps(5, end);
+  }
+  37% {
+    transform: translate(calc(var(--px) * 11px), calc(var(--px) * -1px));
+    animation-timing-function: steps(9, end);
+  }
+  67% {
+    transform: translate(calc(var(--px) * 2px), calc(var(--px) * 8px));
+    animation-timing-function: steps(4, end);
+  }
+  80% {
+    transform: translate(calc(var(--px) * -2px), calc(var(--px) * 4px));
+    animation-timing-function: steps(2, end);
+  }
+  87% {
+    transform: translate(calc(var(--px) * -2px), calc(var(--px) * 2px));
+    animation-timing-function: steps(2, end);
+  }
+  100% {
+    transform: translate(0, 0);
   }
 }
 

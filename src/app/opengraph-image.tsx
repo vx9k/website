@@ -6,7 +6,8 @@ import { intro, site } from "./content";
 
 // The preview shown when the site is shared, drawn once at build time,
 // laid out like the page: the panel on the left, with the mark, the name
-// and the headline, and the scene on the right, a crop around the Cerro at
+// and the headline in the dark theme, and the night scene on the right, a
+// crop around the Cerro, the moon and the windmill at
 // exactly three times its size (scripts/sunset.mjs), so it's placed at its
 // own size and never resampled.
 export const dynamic = "force-static";
