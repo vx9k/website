@@ -9,7 +9,7 @@ export const site = {
   name: "vx",
   title: "vx, software engineer",
   description:
-    "vx is a software engineer in Uruguay who writes C for Linux and TypeScript for the web. Work: a terminal emulator in Rust, a voxel sandbox in C and Vulkan, a Discord presence daemon in Rust, a Linux distribution.",
+    "vx is a software engineer in Uruguay and a co-founder of Poopware Laboratories. Work: a terminal emulator in Rust, a voxel sandbox in C and Vulkan, a code editor in Zig, a Linux distribution and its boot stack.",
   github: "https://github.com/vx9k",
   source: "https://github.com/vx9k/website",
 };
@@ -17,9 +17,12 @@ export const site = {
 export const intro = {
   // vx's GitHub profile is marked available for hire.
   status: "Open to work",
-  // From vx's GitHub profile (Software Engineer, Uruguay).
-  line: "I’m vx, a software engineer based in Uruguay.",
-  lede: "I write C for Linux, down to PID 1, and TypeScript for the web. I’m interested in how things work underneath, from network layers to language models.",
+  // From vx's GitHub profile (Software Engineer, Uruguay; co-founder of
+  // Poopware Laboratories), and its own words for the lede.
+  line: "I’m vx, a software engineer in Uruguay.",
+  lede: "I write systems software from the bottom up: C on Linux down to PID 1, Rust and Zig for the tools I live in, Vulkan when it has to draw, and TypeScript when it has to be on the web.",
+  // The lab vx co-founded, from the profile.
+  lab: { name: "Poopware Laboratories", href: "https://github.com/poopware-laboratories", role: "Co-founder" },
 };
 
 export type Product = {
@@ -46,7 +49,9 @@ export type Product = {
   images?: { src: string; widths: number[]; width: number; height: number; alt: string }[];
 };
 
-// Ordered by how much each says about vx's work, not by date.
+// Ordered by how much each says about vx's work, not by date. Each one's
+// live numbers (stars, vx's commits, last push, latest release) come from
+// src/data/github.json, matched by its repository's URL.
 export const products: Product[] = [
   {
     id: "poopterm",
@@ -115,45 +120,20 @@ export const products: Product[] = [
     ],
   },
   {
-    id: "claude-presence",
-    name: "claude-presence",
-    kind: "Discord presence daemon",
+    id: "caca",
+    name: "caca",
+    kind: "Code editor",
     summary:
-      "Discord Rich Presence for Claude Code, in Rust: a small daemon, driven by Claude Code’s hooks, that shows what a session is doing on your Discord profile.",
-    notes: [
-      "Uses about 3 to 4 MB of memory and has no polling loop; a hook call takes about 2 ms.",
-      "Keeps lifetime stats in one SQLite file, imported from your existing transcripts.",
-      "Installs itself as a per-user service on Linux, macOS and Windows.",
-    ],
-    stack: ["Rust", "SQLite"],
-    status: "Version 0.2.0, installed with cargo",
-    license: "Apache-2.0",
-    repo: "https://github.com/vx9k/claude-presence",
-    images: [
-      {
-        src: "/work/claude-presence",
-        widths: [640, 1280],
-        width: 1280,
-        height: 490,
-        alt: "claude-presence’s terminal dashboard: the daemon running and connected to Discord, the card reading “Working in claude-presence”, and today’s tokens, prompts, active time and streak.",
-      },
-    ],
-  },
-  {
-    id: "neocaca",
-    name: "neocaca",
-    kind: "Terminal code editor",
-    summary:
-      "A modal terminal code editor in Zig, with Kakoune-style keys, multiple selections, regex search and undo.",
+      "A modal terminal code editor in Zig, with Kakoune-style keys, multiple selections, regex search, undo and several buffers.",
     notes: [
       "Ships with bounds and overflow checks on; its SIMD text scanning still runs at about 14 to 24 GiB/\u2060s.",
-      "Treats file contents as untrusted: escape sequences and control bytes are shown, never written to the terminal raw.",
-      "Saves atomically, so a crash never truncates a file.",
+      "Draws its first frame in about 1 ms, against 1.8 ms for Kakoune and 13 ms for Neovim in its own comparison.",
+      "Treats file contents as untrusted: escape sequences and control bytes are shown, never written to the terminal raw, and saves are atomic.",
     ],
     stack: ["Zig", "mimalloc"],
-    status: "Early days: edits one file at a time, with no syntax highlighting yet",
+    status: "Early development: no syntax highlighting or configuration yet",
     license: "AGPL-3.0",
-    repo: "https://github.com/poopware-laboratories/neocaca",
+    repo: "https://github.com/poopware-laboratories/caca",
     group: { name: "Poopware Laboratories", href: "https://github.com/poopware-laboratories", role: "contributor" },
   },
   {
@@ -164,7 +144,7 @@ export const products: Product[] = [
       "A Linux distribution built from source by its own recipes, on Poopware Laboratories’ own kernel fork, musl fork, init and package manager.",
     notes: [
       "Its first edition boots to a text console only, on x86_64 with UEFI.",
-      "Its init and service supervisor is 4suite, as poopsuite; its package manager, poop, is designed to check signatures and install in atomic transactions.",
+      "Its init and service supervisor is poopsuite, and its package manager has its own repository at the lab.",
       "Each performance target in its design, such as a login prompt in QEMU within 20 seconds of boot, gets measured in CI before it’s claimed.",
     ],
     stack: ["Linux", "musl", "archiso", "Shell"],
@@ -174,19 +154,20 @@ export const products: Product[] = [
     group: { name: "Poopware Laboratories", href: "https://github.com/poopware-laboratories", role: "main contributor" },
   },
   {
-    id: "4suite",
-    name: "4suite",
+    id: "poopsuite",
+    name: "poopsuite",
     kind: "Boot stack",
     summary:
       "A self-contained boot stack for Linux in C: 4init, an init that runs as PID 1 and only manages processes, and 4rc, a service manager.",
     notes: [
       "4init is 81 lines of C, linked statically against musl.",
-      "Poop Linux uses it as its init, as poopsuite, the same repository at Poopware Laboratories.",
+      "Poop Linux uses it as its init. It began as 4suite.",
     ],
     stack: ["C", "musl", "Ninja"],
     status: "Experimental",
     license: "MIT",
-    repo: "https://github.com/vx9k/4suite",
+    repo: "https://github.com/poopware-laboratories/poopsuite",
+    group: { name: "Poopware Laboratories", href: "https://github.com/poopware-laboratories", role: "author" },
   },
   {
     id: "website",
@@ -194,7 +175,8 @@ export const products: Product[] = [
     kind: "This site",
     summary: "This site: a static Next.js export served by Cloudflare, with a strict content security policy and no cookies.",
     notes: [
-      "The Cerro behind it is pixel art drawn by a script, pixel by pixel, on a sunny day in the light theme and at night in the dark one, and only ever shown at whole-number scales.",
+      "Designed after Soviet posters and mainframe consoles of the 1960s to 80s, drawn in SVG and CSS, with no images but the screenshots.",
+      "A workflow refreshes its GitHub numbers every day, and the push redeploys it.",
       "Everything moves in CSS, with a switch to turn the motion off.",
     ],
     stack: ["Next.js", "TypeScript", "Tailwind CSS", "Cloudflare Workers"],
@@ -223,6 +205,7 @@ export const contact = {
 // The page's sections, in order. Ids double as URL fragments.
 export const sections = [
   { id: "work", title: "Work" },
+  { id: "repos", title: "Repositories" },
   { id: "skills", title: "Skills" },
   { id: "contact", title: "Contact" },
 ] as const;

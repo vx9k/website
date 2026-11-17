@@ -1,0 +1,638 @@
+{
+  "generated": "2026-11-17",
+  "user": "vx9k",
+  "org": "poopware-laboratories",
+  "repos": [
+    {
+      "repo": "poopware-laboratories/poopterm",
+      "name": "poopterm",
+      "from": "org",
+      "url": "https://github.com/poopware-laboratories/poopterm",
+      "description": "A poop-themed terminal that is anything but crap: a fast, lightweight, hardware-accelerated terminal emulator in Rust for Linux, macOS and FreeBSD, with its own Vulkan renderer, tabs, themes, Sixel and kitty graphics, the kitty keyboard protocol, shell integration, SIMD parsing and its own font engine.",
+      "language": "Rust",
+      "stars": 5,
+      "commits": 391,
+      "pushed": "2026-11-16",
+      "fork": false,
+      "release": {
+        "tag": "v26.11.85",
+        "date": "2026-11-16",
+        "url": "https://github.com/poopware-laboratories/poopterm/releases/tag/v26.11.85"
+      }
+    },
+    {
+      "repo": "vx9k/blockclonia",
+      "name": "blockclonia",
+      "from": "own",
+      "url": "https://github.com/vx9k/blockclonia",
+      "description": "A Minecraft-style voxel sandbox written from scratch in C11 and Vulkan, with physics that tries to behave like the real world, a simulated human body instead of a health bar, and a renderer tuned for low-end hardware.",
+      "language": "C",
+      "stars": 1,
+      "commits": 264,
+      "pushed": "2026-11-17",
+      "fork": false,
+      "release": null
+    },
+    {
+      "repo": "vx9k/website",
+      "name": "website",
+      "from": "own",
+      "url": "https://github.com/vx9k/website",
+      "description": "Source for kthread.dev: a static Next.js + Tailwind portfolio served from Cloudflare Workers",
+      "language": "JavaScript",
+      "stars": 0,
+      "commits": 81,
+      "pushed": "2026-11-04",
+      "fork": false,
+      "release": null
+    },
+    {
+      "repo": "poopware-laboratories/caca",
+      "name": "caca",
+      "from": "org",
+      "url": "https://github.com/poopware-laboratories/caca",
+      "description": "A modern modal code editor for the terminal, written in Zig. Kakoune-style selections, multiple cursors, no dependencies beyond mimalloc.",
+      "language": "Zig",
+      "stars": 2,
+      "commits": 37,
+      "pushed": "2026-11-15",
+      "fork": false,
+      "release": null
+    },
+    {
+      "repo": "poopware-laboratories/pooplinux",
+      "name": "pooplinux",
+      "from": "org",
+      "url": "https://github.com/poopware-laboratories/pooplinux",
+      "description": null,
+      "language": "Shell",
+      "stars": 0,
+      "commits": 8,
+      "pushed": "2026-11-02",
+      "fork": false,
+      "release": null
+    },
+    {
+      "repo": "poopware-laboratories/pooplabs-apt-repo",
+      "name": "pooplabs-apt-repo",
+      "from": "org",
+      "url": "https://github.com/poopware-laboratories/pooplabs-apt-repo",
+      "description": "Repo for poopware debian packages and cydia packages",
+      "language": "Shell",
+      "stars": 1,
+      "commits": 6,
+      "pushed": "2026-11-11",
+      "fork": false,
+      "release": null
+    },
+    {
+      "repo": "poopware-laboratories/poopsuite",
+      "name": "poopsuite",
+      "from": "org",
+      "url": "https://github.com/poopware-laboratories/poopsuite",
+      "description": "A self-contained C boot stack (init, rc, logger, user).",
+      "language": "C",
+      "stars": 0,
+      "commits": 6,
+      "pushed": "2026-09-23",
+      "fork": false,
+      "release": null
+    },
+    {
+      "repo": "poopware-laboratories/plop",
+      "name": "plop",
+      "from": "org",
+      "url": "https://github.com/poopware-laboratories/plop",
+      "description": "package manager for pooplinux",
+      "language": null,
+      "stars": 0,
+      "commits": 4,
+      "pushed": "2026-11-05",
+      "fork": false,
+      "release": null
+    },
+    {
+      "repo": "poopware-laboratories/SoC-Genius",
+      "name": "SoC-Genius",
+      "from": "org",
+      "url": "https://github.com/poopware-laboratories/SoC-Genius",
+      "description": "SoC and device info tool for legacy iOS devices",
+      "language": "Objective-C",
+      "stars": 3,
+      "commits": 3,
+      "pushed": "2026-10-26",
+      "fork": false,
+      "release": null
+    }
+  ],
+  "commits": 800,
+  "languages": [
+    {
+      "name": "Rust",
+      "share": 56.4
+    },
+    {
+      "name": "C",
+      "share": 19.0
+    },
+    {
+      "name": "Zig",
+      "share": 16.5
+    },
+    {
+      "name": "Python",
+      "share": 2.9
+    },
+    {
+      "name": "Objective-C",
+      "share": 0.9
+    },
+    {
+      "name": "JavaScript",
+      "share": 0.8
+    },
+    {
+      "name": "Shell",
+      "share": 0.8
+    }
+  ],
+  "calendar": {
+    "total": 816,
+    "end": "2026-11-17",
+    "weeks": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1,
+        1,
+        4,
+        1
+      ],
+      [
+        3,
+        4,
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        2,
+        0,
+        1,
+        0
+      ],
+      [
+        3,
+        4,
+        3,
+        4,
+        1,
+        2,
+        0
+      ],
+      [
+        3,
+        4,
+        4,
+        2,
+        0,
+        0,
+        3
+      ],
+      [
+        4,
+        4,
+        1,
+        0,
+        0,
+        0,
+        2
+      ],
+      [
+        3,
+        3,
+        0,
+        2,
+        1,
+        0,
+        0
+      ],
+      [
+        1,
+        2,
+        3,
+        3,
+        2,
+        0,
+        1
+      ],
+      [
+        4,
+        3,
+        2
+      ]
+    ]
+  }
+}
