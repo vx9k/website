@@ -8,7 +8,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "website",
   "main": "src/worker.ts",
-  "compatibility_date": "2026-10-08",
+  "compatibility_date": "2026-11-16",
   // kthread.dev is attached as a Custom Domain (Cloudflare manages its DNS
   // record and certificate). www.kthread.dev 301s here via a zone
   // Redirect Rule.

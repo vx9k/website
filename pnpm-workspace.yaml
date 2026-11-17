@@ -3,3 +3,9 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
   workerd: true
+
+# eslint-config-next pulls in minimatch 10 through typescript-eslint, which
+# has a denial-of-service advisory (GHSA-g3hv-75wg-m249) fixed only in 11.
+# Dev tooling only; drop this once typescript-eslint moves to minimatch 11.
+overrides:
+  "minimatch@>=7.0.0 <11.0.1": ^11.0.1
