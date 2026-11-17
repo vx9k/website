@@ -6,40 +6,28 @@ import type { ReactNode } from "react";
 export const opens = (id: string) => ({ command: "show-modal", commandfor: id }) as Record<string, string>;
 const closes = (id: string) => ({ command: "close", commandfor: id }) as Record<string, string>;
 
-/** A modal dialog over the page: a drawer from the right on wide
- *  screens, a sheet from the bottom on narrow ones. A title with a close
- *  button, then the content, which scrolls inside the dialog if it's
- *  taller than the screen. Esc closes it, and so does a click outside it
- *  where the browser supports closedby. Opening it focuses the close
- *  button, the first control in it. */
-export default function Sheet({
-  id,
-  eyebrow,
-  title,
-  children,
-}: {
-  id: string;
-  eyebrow: string;
-  title: string;
-  children: ReactNode;
-}) {
+/** A modal dialog over the page, cut from the poster's paper strip: a
+ *  drawer from the right on wide screens, a sheet from the bottom on
+ *  narrow ones, with the red rule of the cheatline along its top. The
+ *  title, a line under it if there is one, and a Close button, then the
+ *  content, which scrolls inside the dialog if it's taller than the
+ *  screen. Esc closes it, and so does a click outside it where the
+ *  browser supports closedby. Opening it focuses the Close button. */
+export default function Sheet({ id, title, sub, children }: { id: string; title: string; sub?: string; children: ReactNode }) {
   return (
     <dialog id={id} aria-labelledby={`${id}-title`} className="sheet" {...({ closedby: "any" } as Record<string, string>)}>
-      <div className="sticky top-0 z-[1] flex items-start justify-between gap-6 border-b bg-surface px-5 pt-5 pb-4 sm:px-8 sm:pt-7">
-        <div className="flex flex-col gap-1">
-          <p className="label">{eyebrow}</p>
-          <h2 id={`${id}-title`} className="text-title">
+      <div className="sheet-head">
+        <div className="flex min-w-0 flex-col gap-1">
+          <h2 id={`${id}-title`} className="sheet-title">
             {title}
           </h2>
+          {sub && <p className="sheet-sub">{sub}</p>}
         </div>
-        <button type="button" {...closes(id)} className="label inline-flex min-h-10 shrink-0 items-center gap-2 border px-3 text-foreground hover:border-foreground">
+        <button type="button" {...closes(id)} className="key">
           Close<span className="sr-only"> {title}</span>
-          <kbd aria-hidden className="hidden text-muted sm:inline">
-            Esc
-          </kbd>
         </button>
       </div>
-      <div className="px-5 pt-6 pb-8 sm:px-8 sm:pb-10">{children}</div>
+      <div className="sheet-body">{children}</div>
     </dialog>
   );
 }

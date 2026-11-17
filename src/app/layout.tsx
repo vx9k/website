@@ -1,19 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Atkinson_Hyperlegible_Next } from "next/font/google";
+import { Antonio, Golos_Text, Michroma } from "next/font/google";
 import "./globals.css";
 import { site } from "./content";
 
-// Atkinson Hyperlegible Next sets everything, labels included: one
-// variable font, self-hosted by next/font, subset to latin and preloaded.
-// next/font has no metrics for it to size a fallback by, so it doesn't
-// try (adjustFontFallback); the system stack in globals.css (--font-sans)
-// stands in until it loads.
-const sans = Atkinson_Hyperlegible_Next({
-  variable: "--font-face-sans",
-  subsets: ["latin"],
-  display: "swap",
-  adjustFontFallback: false,
-});
+// Three faces, each with one job, self-hosted by next/font and subset to
+// latin. Antonio, narrow and heavy, sets the slogans and titles in
+// capitals, like the lettering on Soviet posters; Golos Text, drawn by
+// Paratype in Moscow, sets every sentence, label and figure; Michroma, wide
+// and even like the logotype under an Aeroflot poster, sets the wordmark
+// alone. The fallbacks in globals.css stand in until they load.
+const display = Antonio({ variable: "--font-face-display", subsets: ["latin"], weight: "700", display: "swap" });
+const body = Golos_Text({ variable: "--font-face-body", subsets: ["latin"], weight: ["400", "600"], display: "swap" });
+const wordmark = Michroma({ variable: "--font-face-wordmark", subsets: ["latin"], weight: "400", display: "swap", preload: false });
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -33,11 +31,12 @@ export const metadata: Metadata = {
   formatDetection: { telephone: false, email: false, address: false },
 };
 
-// Two themes, following the system; the browser chrome matches each.
+// Two themes, following the system; the browser chrome takes each one's
+// field: cream paper by day, the poster's night in the dark.
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#edf3f7" },
-    { media: "(prefers-color-scheme: dark)", color: "#0e0f16" },
+    { media: "(prefers-color-scheme: light)", color: "#ece3cf" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b1030" },
   ],
   colorScheme: "light dark",
 };
@@ -72,7 +71,7 @@ const analyticsToken = process.env.CF_WEB_ANALYTICS_TOKEN;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en-US" dir="ltr" className={sans.variable}>
+    <html lang="en-US" dir="ltr" className={`${display.variable} ${body.variable} ${wordmark.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: trustedTypesPolicy }} />
       </head>

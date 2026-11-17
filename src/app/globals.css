@@ -1,59 +1,90 @@
 @import "tailwindcss" source("..");
 
 /* ---------------------------------------------------------------- palette
-   Two themes, following the system: a sunny day in the light one and the
-   night in the dark one, the scene (Horizon.tsx) drawn for each. The
-   neutrals are tinted towards each theme's sky: pale blue-grey by day,
-   the night's ink by night. The colour lives in the scene and the
-   product screenshots; the accent, an ember, marks what's live (the
-   status, the row under the pointer) and the text selection. --stage is
-   the top of each sky, so the scene comes out of the page with no edge.
-   Contrast, light: --foreground 14.5:1 on --background, 15.7:1 on
-   --surface, 13.9:1 on --raised; --muted 6.7:1, 7.2:1 and 6.4:1; --accent
-   5.3:1, 5.7:1 and 5.1:1. Dark: --foreground 16.3:1, 15.3:1 and 13.9:1;
-   --muted 8.2:1, 7.7:1 and 7:1; --accent 8.1:1, 7.6:1 and 6.9:1. No text
-   sits over the scene. */
+   The page is a 1960s Aeroflot poster with an ES EVM console's lamps laid
+   across it. Two themes, following the system. Dark is the poster as it
+   was printed: night paint above, cream paper below. Light prints it the
+   other way round: cream paint with ultramarine, and an ink strip. Text
+   sits on the paint only as the header and the slogan; everything else is
+   on the strip, the lamp bar or a dialog, all solid.
+
+   Contrast, dark: --on-field 15.8:1 on --field; --strip-ink 13.4:1 on
+   --strip, --muted 6.1:1, --signal 5.5:1; --on-chip 6.3:1 on --chip;
+   --lamp-ink 9.6:1 on --console. Light: --on-field 13.4:1 on --field;
+   --strip-ink 13.4:1 on --strip, --muted 9.1:1, --signal 5.6:1. The year
+   is 104px or more and decorative. The paint's darkest and lightest steps
+   are measured behind the slogan in both themes. */
 
 :root {
   color-scheme: light dark;
-  --background: #edf3f7;
-  --surface: #f9fbfc;
-  --raised: #e8eef2;
-  --foreground: #18212b;
-  --muted: #4a5664;
-  --accent: #a8461a;
-  --rule: rgb(24 33 43 / 15%);
-  --stage: #3f7cc2;
+  --gutter: clamp(1rem, 4.4vw, 4rem);
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* light: the poster printed on cream, with an ink strip */
+  --field: oklch(91.8% 0.028 87);
+  --on-field: oklch(23.2% 0.062 273);
+  --strip: oklch(23.2% 0.062 273);
+  --strip-ink: oklch(91.8% 0.028 87);
+  --muted: oklch(81% 0.035 273);
+  --rule: oklch(91.8% 0.028 87 / 20%);
+  --signal: oklch(68.5% 0.206 33);
+  --chip: oklch(50% 0.182 30);
+  --on-chip: oklch(97% 0.01 85);
+  --year: oklch(68.5% 0.206 33);
+  --console: oklch(18.2% 0.006 264);
+  --lamp-ink: oklch(80% 0.03 80);
+  --lamp-0: oklch(30% 0.034 62);
+  --lamp-1: oklch(44.7% 0.089 53);
+  --lamp-2: oklch(58.9% 0.131 50);
+  --lamp-3: oklch(72.5% 0.153 58);
+  --lamp-4: oklch(79.7% 0.156 66);
+  --paint-wash: oklch(45% 0.14 268);
+  --paint-wash-o: 0.2;
+  --paint-brush: oklch(42% 0.15 268);
+  --paint-brush-o: 0.55;
+  --paint-grain: oklch(35% 0.04 80);
+  --paint-grain-o: 0.22;
+  --paint-star: transparent;
+  --paint-needle: oklch(33.1% 0.136 270);
+  --paint-cheatline: oklch(50% 0.182 30);
+  --paint-band: oklch(55.9% 0.158 268);
+  --paint-streak: oklch(33.1% 0.136 270);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0e0f16;
-    --surface: #141621;
-    --raised: #1c1f2d;
-    --foreground: #f1ece3;
-    --muted: #a6a9b6;
-    --accent: #ea9450;
-    --rule: rgb(241 236 227 / 13%);
-    --stage: #0e0f16;
+    /* dark: the night poster on cream paper */
+    --field: oklch(19.1% 0.064 272);
+    --on-field: oklch(95.7% 0.007 261);
+    --strip: oklch(91.8% 0.028 87);
+    --strip-ink: oklch(23.2% 0.062 273);
+    --muted: oklch(45% 0.047 259);
+    --rule: oklch(23.2% 0.062 273 / 18%);
+    --signal: oklch(50% 0.182 30);
+    --year: oklch(56% 0.208 29);
+    --paint-wash: oklch(33.1% 0.136 270);
+    --paint-wash-o: 1;
+    --paint-brush: oklch(58% 0.15 268);
+    --paint-brush-o: 1;
+    --paint-grain: oklch(72% 0.1 268);
+    --paint-grain-o: 0.3;
+    --paint-star: oklch(96.8% 0.041 90);
+    --paint-needle: oklch(95.7% 0.007 261);
+    --paint-cheatline: oklch(56% 0.208 29);
+    --paint-band: oklch(55.9% 0.158 268);
+    --paint-streak: oklch(69.6% 0.107 267);
   }
 }
 
 @theme inline {
-  /* Atkinson Hyperlegible Next first (next/font's variable, layout.tsx),
-     then the usual system stack: each platform's own UI face, the common
-     sans-serifs, and the emoji fonts last. */
-  --font-sans:
-    var(--font-face-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
-    "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  /* Antonio for the slogans and titles, Golos Text for everything you
+     read, Michroma for the wordmark (next/font's variables, layout.tsx),
+     each with a fallback of its own build. */
+  --font-display: var(--font-face-display), "Arial Narrow", "Roboto Condensed", sans-serif;
+  --font-sans: var(--font-face-body), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-wordmark: var(--font-face-wordmark), "Arial Black", sans-serif;
 
-  --color-background: var(--background);
-  --color-surface: var(--surface);
-  --color-raised: var(--raised);
-  --color-foreground: var(--foreground);
   --color-muted: var(--muted);
-  --color-accent: var(--accent);
   --color-rule: var(--rule);
 }
 
@@ -65,25 +96,26 @@
   }
 
   html {
-    background-color: var(--background);
-    color: var(--foreground);
+    background-color: var(--strip);
+    color: var(--strip-ink);
     font-family: var(--font-sans);
     -webkit-text-size-adjust: 100%;
+    font-synthesis: none;
   }
 
   body {
-    font-size: 1.0625rem;
+    font-size: 1rem;
     line-height: 1.55;
   }
 
   ::selection {
-    background: var(--accent);
-    color: var(--background);
+    background: var(--chip);
+    color: var(--on-chip);
   }
 
   :focus-visible {
-    outline: 2px solid var(--foreground);
-    outline-offset: 2px;
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
   }
 
   button {
@@ -93,44 +125,21 @@
 
 /* ------------------------------------------------------------- utilities */
 
-/* The four sizes: the headline, titles, body (set on <body>), and the
-   label for metadata. The headline shrinks on short screens, so the
-   panel fits. */
-@utility text-display {
-  font-size: clamp(1.875rem, 1.4rem + 1.5vw, 3rem);
-  font-weight: 500;
-  line-height: 1.06;
-  letter-spacing: -0.025em;
-  @media (height <= 800px) {
-    font-size: clamp(1.75rem, 1.3rem + 1.2vw, 2.5rem);
-  }
-}
-
-@utility text-title {
-  font-size: clamp(1.5rem, 1.2rem + 1vw, 2.25rem);
-  font-weight: 500;
-  line-height: 1.1;
-  letter-spacing: -0.015em;
-}
-
-/* Labels for metadata: the same face, smaller and a little heavier, in
-   sentence case and the muted colour, with figures of one width so the
-   work's numbers line up. */
+/* Labels for metadata: the text face a step smaller, sentence case,
+   muted, with figures of one width. */
 @utility label {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  line-height: 1.25rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
   font-variant-numeric: tabular-nums;
   color: var(--muted);
 }
 
-/* Text links: underlined, the underline thickening on hover. Every link
-   is at least 24px tall (min-h-6) for WCAG 2.2's target size. */
+/* Text links: underlined, the underline thickening on hover. */
 @utility link {
   text-decoration-line: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.25em;
-  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
   transition: text-decoration-color 200ms var(--ease);
   &:hover {
     text-decoration-color: currentColor;
@@ -138,11 +147,14 @@
 }
 
 /* ------------------------------------------------------------------ frame
-   The one screen (Frame.tsx). Narrow: the header, a window onto the scene,
-   and the panel, stacked to fill the screen. Wide: the scene fills the
-   window and the header and panel make one solid column down the left.
-   Nothing scrolls but a dialog; zoomed text may, as WCAG's reflow rule
-   needs, so overflow is never locked. */
+   One screen (Frame.tsx): the field takes what's left above the lamp bar
+   and the strip. Nothing scrolls but a dialog; zoomed text may, as WCAG's
+   reflow rule needs, so overflow is never locked. */
+
+html,
+body {
+  overflow-x: clip;
+}
 
 .frame {
   display: flex;
@@ -150,208 +162,398 @@
   flex-direction: column;
 }
 
-.frame-head {
+.field {
   position: relative;
-  z-index: 1;
+  isolation: isolate;
+  display: grid;
+  flex: 1 1 auto;
+  min-height: 15rem;
+  grid-template-areas: "head" "needle" "slogan";
+  grid-template-rows: auto minmax(3rem, 1fr) auto;
+  gap: 0.5rem;
+  overflow: hidden;
+  padding: 0.75rem var(--gutter) 1.25rem;
+  background: var(--field);
+  color: var(--on-field);
+  @media (width >= 64rem) {
+    grid-template-areas: "head head" "space needle" "slogan needle";
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    column-gap: 2rem;
+    padding-bottom: 1.75rem;
+  }
+}
+.field-paint {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  forced-color-adjust: none;
+}
+.texture {
+  width: 100%;
+  height: 100%;
+}
+.flood-wash {
+  flood-color: var(--paint-wash);
+  flood-opacity: var(--paint-wash-o);
+}
+.flood-brush {
+  flood-color: var(--paint-brush);
+  flood-opacity: var(--paint-brush-o);
+}
+.flood-grain {
+  flood-color: var(--paint-grain);
+  flood-opacity: var(--paint-grain-o);
+}
+
+.field-head {
+  grid-area: head;
   display: flex;
-  min-height: 3.5rem;
-  flex: none;
+  min-height: 3rem;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.25rem 1rem;
+}
+.wordmark {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  font-family: var(--font-wordmark);
+  font-size: clamp(1.125rem, 1rem + 0.6vw, 1.625rem);
+  letter-spacing: 0.12em;
+}
+.nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 2.25rem);
+}
+.nav-wide {
+  display: none;
+  @media (width >= 40rem) {
+    display: list-item;
+  }
+}
+/* The header's links and buttons: the text face, underlined in red on
+   hover like the cheatline. */
+.navlink {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  font-size: 0.9375rem;
+  border-bottom: 2px solid transparent;
+  transition: border-color 150ms var(--ease);
+  &:hover {
+    border-color: var(--paint-cheatline);
+  }
 }
 
-.stage {
+.needle-box {
   position: relative;
+  grid-area: needle;
   min-height: 0;
-  flex: 1 1 auto;
   overflow: hidden;
-  contain: strict;
-  background: var(--stage);
   forced-color-adjust: none;
 }
-
-.frame-main {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex: none;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 1.25rem;
-  border-top: 1px solid var(--rule);
-  background: var(--surface);
-  padding: 1rem 1rem 1.25rem;
+/* Out of the flow, so the drawing fills its box and never sizes it. */
+.needle-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
-/* The email and GitHub links under the lede, only where the panel has
-   room for them: wide screens taller than 800px. */
+/* The slogan: Antonio in capitals, as large as the field allows, resting
+   at its foot. */
+.slogan {
+  grid-area: slogan;
+  align-self: end;
+  min-width: 0;
+  max-width: 16ch;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, min(11vw, 8.5dvh), 4.5rem);
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+  @media (width >= 64rem) {
+    font-size: clamp(3.5rem, min(7.4vw, 13dvh), 8.5rem);
+  }
+}
+
+/* The lamp bar: a week a column, the newest on the right. */
+.lampbar {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+  padding: 0.625rem var(--gutter);
+  background: var(--console);
+  color: var(--lamp-ink);
+  forced-color-adjust: none;
+}
+.lamps {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  justify-content: flex-end;
+  gap: 3px;
+  overflow: hidden;
+  /* Where the whole year fits, it spans the bar. */
+  @media (width >= 64rem) {
+    justify-content: space-between;
+  }
+}
+.lamp-week {
+  display: grid;
+  flex: none;
+  gap: 3px;
+}
+.lamp {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--lamp-0);
+  @media (width >= 48rem) and (height >= 44rem) {
+    width: 7px;
+    height: 7px;
+  }
+}
+.l1 { background: var(--lamp-1); }
+.l2 { background: var(--lamp-2); }
+.l3 { background: var(--lamp-3); }
+.l4 { background: var(--lamp-4); }
+.lamp-caption {
+  flex: none;
+  max-width: 11rem;
+  font-size: 0.8125rem;
+  line-height: 1.3;
+  strong {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1.05;
+    color: var(--lamp-4);
+    font-variant-numeric: tabular-nums;
+  }
+  @media (width < 40rem) {
+    max-width: 8.5rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* The paper strip: who vx is, the work and the year. */
+.strip {
+  display: grid;
+  grid-template-areas: "work colophon";
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem clamp(1.5rem, 3vw, 3rem);
+  padding: 1rem var(--gutter) 1.25rem;
+  background: var(--strip);
+  color: var(--strip-ink);
+  @media (height >= 50rem) {
+    grid-template-areas: "about about" "work colophon";
+  }
+  @media (width >= 48rem) {
+    grid-template-areas: "about about" "work colophon";
+    padding-block: 1.25rem 1.5rem;
+  }
+  @media (width >= 64rem) {
+    grid-template-areas: "about work colophon";
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr) auto;
+  }
+}
+.about {
+  grid-area: about;
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.625rem;
+  @media (height >= 50rem), (width >= 48rem) {
+    display: flex;
+  }
+}
+/* On the 404 page, the only thing in the strip. */
+.strip > .about:only-child {
+  display: flex;
+  grid-column: 1 / -1;
+}
+.status {
+  padding: 0.125rem 0.5rem;
+  background: var(--chip);
+  color: var(--on-chip);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.lede {
+  max-width: 42ch;
+  font-size: 1.0625rem;
+  text-wrap: pretty;
+}
 .reach {
   display: none;
-  @media (width >= 64rem) and (height > 800px) {
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+  font-size: 0.9375rem;
+  @media (width >= 64rem) {
     display: flex;
   }
 }
 
-/* On the shortest phones the headline and the work fill the panel; the
-   lede is still in the share card and the Markdown. */
-@media (width < 40rem) and (height <= 700px) {
-  .lede {
-    display: none;
+.work {
+  grid-area: work;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.strip-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  @media (width >= 64rem) and (height >= 44rem) {
+    font-size: 1.875rem;
+  }
+}
+/* The work as a poster's programme: numbered entries, two columns where
+   there's room. Each opens its product's drawer. */
+.programme {
+  display: grid;
+  column-gap: 2rem;
+  @media (width >= 48rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.entry {
+  display: grid;
+  width: 100%;
+  min-height: 2.5rem;
+  grid-template-columns: 2rem minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: 0.75rem;
+  padding: 0.375rem 0.5rem;
+  margin-inline: -0.5rem;
+  border-top: 1px solid var(--rule);
+  text-align: left;
+  transition:
+    background-color 150ms steps(2, end),
+    color 150ms steps(2, end);
+  &:hover,
+  &:focus-visible {
+    background: var(--chip);
+    color: var(--on-chip);
+    .entry-n,
+    .entry-kind,
+    .entry-fig {
+      color: var(--on-chip);
+    }
+  }
+  &:focus-visible {
+    outline-offset: 0;
+  }
+}
+/* Short phones: the entries close up a little so the strip fits. */
+@media (height < 42rem) {
+  .entry {
+    min-height: 2.25rem;
+    padding-block: 0.25rem;
+  }
+}
+.entry-n {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  line-height: 1;
+  color: var(--signal);
+  font-variant-numeric: tabular-nums;
+}
+.entry-name {
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: uppercase;
+  @media (width >= 64rem) and (height >= 44rem) {
+    font-size: 1.5rem;
+  }
+}
+.entry-kind {
+  display: none;
+  margin-top: 0.125rem;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.3;
+  text-transform: none;
+  color: var(--muted);
+  @media (width >= 48rem) {
+    display: block;
+  }
+}
+.entry-fig {
+  display: none;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  @media (width >= 80rem) {
+    display: block;
   }
 }
 
-@media (width >= 40rem) {
-  .frame-head,
-  .frame-main {
-    padding-inline: 2rem;
-  }
-  .frame-main {
-    padding-block: 1.5rem 1.75rem;
-  }
+/* The poster's stacked date: the year in red, a star at its shoulder. */
+.colophon {
+  grid-area: colophon;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.75rem;
+  forced-color-adjust: none;
 }
-
-@media (width >= 64rem) {
-  .frame {
-    display: grid;
-    height: 100dvh;
-    grid-template-columns: minmax(26rem, 30rem) 1fr;
-    grid-template-rows: auto 1fr;
-    padding: 1.5rem;
-  }
-  .frame-head,
-  .frame-main {
-    grid-column: 1;
-    border: 1px solid var(--rule);
-    background: var(--surface);
-    padding-inline: 1.75rem;
-  }
-  .frame-head {
-    min-height: 4.5rem;
-    border-bottom: 0;
-    padding-top: 0.75rem;
-  }
-  .frame-main {
-    min-height: 0;
-    border-top: 0;
-    padding-block: 1.25rem 1.5rem;
-  }
-  .stage {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
+.year {
+  position: relative;
+  display: grid;
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, min(6.5vw, 11dvh), 6.5rem);
+  font-weight: 700;
+  line-height: 0.84;
+  color: var(--year);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.year-star {
+  position: absolute;
+  top: 0;
+  left: -0.32em;
+  width: 0.24em;
+  fill: currentColor;
+}
+.colophon-site {
+  display: none;
+  font-family: var(--font-wordmark);
+  font-size: 0.75rem;
+  @media (width >= 64rem) {
+    display: block;
   }
 }
 
 /* --------------------------------------------------------------- controls */
 
-/* The header's buttons, which open the Skills and Contact dialogs. */
-.nav {
+/* A key cap, for Close: the console's white keys. */
+.key {
   display: inline-flex;
   min-height: 2.5rem;
+  flex: none;
   align-items: center;
+  padding-inline: 0.875rem;
+  border: 1px solid currentColor;
+  border-bottom-width: 3px;
   font-size: 0.875rem;
-  color: var(--muted);
-  transition: color 150ms var(--ease);
-  &:hover {
-    color: var(--foreground);
-  }
-}
-
-/* The work: a grid of names on phones, of names and kinds on tablets, and
-   a list of rows down the panel on wide screens. Each row opens its
-   product's drawer; under the pointer it steps right and its number takes
-   the accent. */
-.work {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.375rem;
-}
-
-.row {
-  display: flex;
-  width: 100%;
-  min-height: 2.75rem;
-  align-items: center;
-  gap: 0.75rem;
-  border: 1px solid var(--rule);
-  background: var(--raised);
-  padding: 0.375rem 0.75rem;
-  text-align: left;
-  line-height: 1.3;
-  transition:
-    background-color 160ms var(--ease),
-    border-color 160ms var(--ease);
-  &:hover {
-    border-color: var(--foreground);
-  }
-}
-
-.row-name {
-  font-weight: 500;
-  transition: translate 160ms steps(2, end);
-}
-
-.row-index,
-.row-kind {
-  display: none;
-}
-
-@media (width >= 40rem) {
-  .work {
-    grid-template-columns: repeat(4, 1fr);
-  }
-  .row {
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 0.125rem;
-    padding: 0.5rem 0.75rem;
-  }
-  .row-kind {
-    display: block;
-  }
-}
-
-@media (width >= 64rem) {
-  .work {
-    grid-template-columns: 1fr;
-    gap: 0;
-    border-top: 1px solid var(--rule);
-  }
-  .row {
-    flex-direction: row;
-    align-items: baseline;
-    gap: 0.75rem;
-    border-width: 0 0 1px;
-    background: transparent;
-    padding: 0.625rem 0.5rem;
-    &:hover {
-      border-color: var(--rule);
-      background: var(--raised);
-    }
-    &:hover .row-name {
-      translate: 0.25rem 0;
-    }
-    &:hover .row-index {
-      color: var(--accent);
-    }
-  }
-  .row-index {
-    display: block;
-    width: 1.75rem;
-    flex: none;
-  }
-  .row-kind {
-    margin-left: auto;
-    text-align: right;
-  }
-  @media (height <= 800px) {
-    .row {
-      min-height: 2.5rem;
-      padding-block: 0.5rem;
-    }
+  font-weight: 600;
+  transition: translate 120ms steps(2, end);
+  &:active {
+    translate: 0 1px;
   }
 }
 
@@ -363,34 +565,34 @@
   display: inline-block;
   width: 1.75rem;
   height: 1rem;
-  border: 1px solid currentColor;
+  border: 1.5px solid currentColor;
   &::after {
     content: "";
     position: absolute;
     top: 2px;
     left: 2px;
-    width: 0.625rem;
-    height: 0.625rem;
-    border: 5px solid currentColor;
+    width: 0.5rem;
+    height: 0.5rem;
+    border: 4px solid currentColor;
     transition: translate 160ms steps(2, end);
   }
 }
-:checked + .switch {
-  color: var(--foreground);
-  &::after {
-    translate: 0.75rem 0;
-  }
+:checked + .switch::after {
+  translate: 0.7rem 0;
+  border-color: var(--paint-cheatline);
 }
 :focus-visible + .switch {
-  outline: 2px solid var(--foreground);
-  outline-offset: 2px;
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
 }
 
 /* ---------------------------------------------------------------- dialogs
-   Each product, Skills and Contact open in a modal dialog (Sheet.tsx): a
-   sheet rising from the bottom on narrow screens, a drawer sliding in from
-   the right on wide ones, over a darkened page. They leave the same way;
-   transition-behavior lets display and the top layer wait for them. */
+   Each product, Repositories, Skills and Contact open in a modal dialog
+   (Sheet.tsx), cut from the strip's paper with the cheatline's red along
+   its top: a sheet rising from the bottom on narrow screens, a drawer
+   sliding in from the right on wide ones, over the darkened poster. They
+   leave the same way; transition-behavior lets display and the top layer
+   wait for them. */
 
 .sheet {
   --from: 0 2rem;
@@ -401,10 +603,10 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   border: 0;
-  border-top: 1px solid var(--rule);
+  border-top: 6px solid var(--paint-cheatline);
   padding: 0;
-  background: var(--surface);
-  color: var(--foreground);
+  background: var(--strip);
+  color: var(--strip-ink);
   opacity: 1;
   translate: 0 0;
   transition:
@@ -423,18 +625,18 @@
     }
   }
   &::backdrop {
-    background: rgb(14 15 22 / 0.72);
+    background: oklch(12% 0.04 272 / 0.72);
     transition:
       background-color 360ms var(--ease),
       overlay 360ms allow-discrete,
       display 360ms allow-discrete;
   }
   &:not([open])::backdrop {
-    background: rgb(14 15 22 / 0);
+    background: oklch(12% 0.04 272 / 0);
   }
   @starting-style {
     &[open]::backdrop {
-      background: rgb(14 15 22 / 0);
+      background: oklch(12% 0.04 272 / 0);
     }
   }
   @media (width >= 48rem) {
@@ -444,7 +646,7 @@
     height: 100dvh;
     max-height: 100dvh;
     border-top: 0;
-    border-left: 1px solid var(--rule);
+    border-left: 6px solid var(--paint-cheatline);
   }
 
   /* Screenshots rise in one after another once it's open. */
@@ -453,232 +655,130 @@
     animation-delay: calc(var(--i, 0) * 90ms + 160ms);
   }
 }
-
-/* ------------------------------------------------------------------ scene
-   The pixel art (Horizon.tsx, drawn by scripts/sunset.mjs) is 480 by 300
-   scene pixels, each shown as --px by --px screen pixels, a whole number.
-   In the window between the header and the panel it's centred on the
-   Cerro (--focus) with the horizon near the window's bottom edge; behind
-   the wide panel it fills the screen, anchored to the bottom, at the
-   smallest scale that covers it. Every layer is placed in scene pixels
-   (--x, --y, --w, --h), and every movement below is in steps of a whole
-   scene pixel, so the art never blurs or changes pixel size. */
-
-.stage {
-  --px: 2;
+.sheet-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.25rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--rule);
+  background: var(--strip);
   @media (width >= 40rem) {
-    --px: 3;
+    padding: 1.75rem 2rem 1.25rem;
   }
-  @media (width >= 64rem) {
-    --px: 2;
-  }
-  @media (width >= 64rem) and ((width > 960px) or (height > 600px)) {
-    --px: 3;
-  }
-  @media (width >= 64rem) and ((width > 1440px) or (height > 900px)) {
-    --px: 4;
-  }
-  @media (width >= 64rem) and ((width > 1920px) or (height > 1200px)) {
-    --px: 5;
-  }
-  @media (width >= 64rem) and ((width > 2400px) or (height > 1500px)) {
-    --px: 6;
-  }
-  @media (width >= 64rem) and ((width > 2880px) or (height > 1800px)) {
-    --px: 7;
-  }
-  @media (width >= 64rem) and ((width > 3360px) or (height > 2100px)) {
-    --px: 8;
+}
+.sheet-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 1.6rem + 1.6vw, 3rem);
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  overflow-wrap: break-word;
+}
+.sheet-sub {
+  color: var(--muted);
+}
+.sheet-body {
+  padding: 1.5rem 1.25rem 2.5rem;
+  @media (width >= 40rem) {
+    padding: 1.75rem 2rem 3rem;
   }
 }
 
-.scene {
-  position: absolute;
-  left: calc(50% - var(--focus) * var(--px) * 1px);
-  bottom: calc(var(--px) * -78px);
-  width: calc(var(--w) * var(--px) * 1px);
-  height: calc(var(--h) * var(--px) * 1px);
-  @media (width >= 64rem) {
-    left: calc(50% - var(--w) * var(--px) * 0.5px);
-    bottom: 0;
-  }
-
-  & .layer {
-    position: absolute;
-    left: calc(var(--x, 0) * var(--px) * 1px);
-    top: calc(var(--y, 0) * var(--px) * 1px);
-    width: calc(var(--w) * var(--px) * 1px);
-    height: calc(var(--h) * var(--px) * 1px);
-    max-width: none;
-    image-rendering: pixelated;
+/* The Repositories dialog: a ledger of everything vx has committed to. */
+.ledger {
+  display: flex;
+  flex-direction: column;
+}
+.ledger-row {
+  display: grid;
+  gap: 0.75rem 2rem;
+  padding-block: 1rem;
+  border-top: 1px solid var(--rule);
+  @media (width >= 40rem) {
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 }
-
-/* Each theme shows its own things: the sun, the cows, butterflies and
-   teros by day; the stars, a shooting star, the houses' lights, the
-   fireflies and the bats by night. */
-.by-night {
-  display: none;
+.ledger-name {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: uppercase;
 }
-@media (prefers-color-scheme: dark) {
-  .by-day {
-    display: none;
+.ledger-facts {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: 0 1.25rem;
+  align-content: start;
+  font-variant-numeric: tabular-nums;
+  dt {
+    font-size: 0.8125rem;
+    color: var(--muted);
   }
-  .by-night {
-    display: block;
-  }
-}
-
-/* One scene pixel: the stars, the houses' lights, the glints on the sea
-   and the fireflies. */
-.dot {
-  position: absolute;
-  left: calc(var(--x) * var(--px) * 1px);
-  top: calc(var(--y) * var(--px) * 1px);
-  width: calc(var(--px) * 1px);
-  height: calc(var(--px) * 1px);
-}
-
-.star {
-  background: #8b91aa;
-  opacity: 0.9;
-}
-.star-bright {
-  background: #d4d8e8;
-  opacity: 1;
-}
-
-.light {
-  background: #f3c27a;
-}
-
-.glint {
-  background: #f4faff;
-  opacity: 0;
-  @media (prefers-color-scheme: dark) {
-    background: #a9b5d6;
+  dd {
+    font-size: 0.9375rem;
   }
 }
-
-/* A firefly: its light and a cross of glow one scene pixel out. */
-.firefly {
-  --g: calc(var(--px) * 1px);
-  background: #f6eb9a;
-  box-shadow:
-    var(--g) 0 0 #807a46,
-    calc(var(--g) * -1) 0 0 #807a46,
-    0 var(--g) 0 #807a46,
-    0 calc(var(--g) * -1) 0 #807a46;
-  opacity: 0.8;
+.langs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
-
-/* A shooting star: its head and a trail of three pixels, fading, up and
-   to the right of it. Hidden until it falls. */
-.meteor {
-  --g: calc(var(--px) * 1px);
-  background: #f4f6ff;
-  box-shadow:
-    var(--g) calc(var(--g) * -1) 0 #b9bfd6,
-    calc(var(--g) * 2) calc(var(--g) * -2) 0 #7a819c,
-    calc(var(--g) * 3) calc(var(--g) * -3) 0 #474d66;
-  opacity: 0;
+.lang {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr) 3.5rem;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.9375rem;
 }
-
-.clouds {
-  background-repeat: repeat-x;
-  background-size: calc(480px * var(--px)) 100%;
-  image-rendering: pixelated;
-}
-.clouds-far {
-  background-image: url("/scene/day/clouds-far.png");
-}
-.clouds-near {
-  background-image: url("/scene/day/clouds-near.png");
-}
-
-/* Sprites: a strip of frames (--sw scene pixels wide in all), shown one
-   frame at a time and stepped through by moving the strip. */
-.sprite {
-  background-repeat: no-repeat;
-  background-size: calc(var(--sw) * var(--px) * 1px) calc(var(--h) * var(--px) * 1px);
-  image-rendering: pixelated;
-}
-.wheel {
-  background-image: url("/scene/day/wheel.png");
-}
-.car {
-  background-image: url("/scene/day/car.png");
-}
-.car-right {
-  background-position-x: calc(var(--w) * var(--px) * -1px);
-}
-.bird {
-  background-image: url("/scene/day/birds.png");
-}
-.cow {
-  background-image: url("/scene/day/cows.png");
-}
-.butterfly {
-  background-image: url("/scene/day/butterfly.png");
-}
-.bat {
-  background-image: url("/scene/night/bats.png");
-}
-@media (prefers-color-scheme: dark) {
-  .clouds-far {
-    background-image: url("/scene/night/clouds-far.png");
+.lang-bar {
+  display: flex;
+  gap: 2px;
+  forced-color-adjust: none;
+  i {
+    flex: 1;
+    height: 0.625rem;
+    background: color-mix(in oklch, var(--strip-ink) 14%, transparent);
   }
-  .clouds-near {
-    background-image: url("/scene/night/clouds-near.png");
-  }
-  .wheel {
-    background-image: url("/scene/night/wheel.png");
-  }
-  .car {
-    background-image: url("/scene/night/car.png");
+  .on {
+    background: var(--signal);
   }
 }
 
 /* ----------------------------------------------------------------- motion
    Everything moves in CSS:
-   - the header and panel slide in, and their contents rise in, on load
-   - two bands of cloud drift at different speeds and wrap around
-   - the grass sways through four frames, and the windmill's wheel turns
-   - a car runs along the road each way now and then, its lamps lit at
-     night, and the sea glints
-   - by day, teros cross, the cows graze and look up, and butterflies
-     flutter over the grass
-   - by night, the moon rises a little and the houses' lights come on,
-     one or two going off now and then; the stars twinkle, a star
-     shoots, bats flit and fireflies blink
-   - rows step on hover, and the dialogs slide in
-   Only transform, translate and opacity move, except the sprites, whose
-   frames step by background position, on a few tiny elements; paths go
-   straight across or at 45 degrees, so every step is a whole scene pixel.
-   The motion switch in the header stops all of it (the rules at the end),
-   and so does a system that asks for reduced motion. */
+   - the field, lamp bar and strip step in, and the strip's contents rise
+   - the needle climbs into place on load, then cruises along its line
+   - the stars twinkle, and a few lamps blink like a console at work
+   - entries fill red on hover, and the dialogs slide in
+   Only transform, translate and opacity move. The motion switch in the
+   header stops all of it (the rules at the end), and so does a system
+   that asks for reduced motion. */
 
-.frame-head,
-.frame-main {
-  --enter: 0 1rem;
-  animation: panel-in 560ms steps(7, end) both;
-  @media (width >= 64rem) {
-    --enter: -1.5rem 0;
-  }
+.field,
+.lampbar,
+.strip {
+  animation: panel-in 520ms steps(6, end) both;
 }
-.frame-main {
-  animation-delay: 60ms;
+.lampbar {
+  animation-delay: 80ms;
+}
+.strip {
+  animation-delay: 140ms;
 }
 @keyframes panel-in {
   from {
     opacity: 0;
-    translate: var(--enter);
   }
 }
 
 .rise {
   animation: rise 700ms var(--ease) both;
-  animation-delay: calc(var(--i, 0) * 70ms + 240ms);
+  animation-delay: calc(var(--i, 0) * 70ms + 260ms);
 }
 @keyframes rise {
   from {
@@ -687,332 +787,42 @@
   }
 }
 
-.clouds-far,
-.clouds-near {
-  will-change: transform;
-  animation: drift linear infinite;
-}
-.clouds-far {
-  animation-duration: 480s;
-  animation-timing-function: steps(480, end);
-}
-.clouds-near {
-  animation-duration: 240s;
-  animation-timing-function: steps(480, end);
-  animation-delay: -60s;
-}
-@keyframes drift {
-  to {
-    transform: translateX(calc(var(--px) * -480px));
-  }
-}
-
-.grass {
-  will-change: transform;
-  animation: sway 1.8s steps(4, end) infinite;
-}
-@keyframes sway {
-  to {
-    /* The whole stack of frames: four steps of one frame each. */
-    transform: translateY(calc(var(--h) * var(--px) * -1px));
-  }
-}
-
-/* The strip of frames, moved one frame per step. */
-@keyframes frames {
-  to {
-    background-position-x: calc(var(--sw) * var(--px) * -1px);
-  }
-}
-
-.wheel {
-  animation: frames 0.9s steps(4, end) infinite;
-}
-
-/* The cars take about half a minute to cross, then the road is empty for
-   a while. */
-.car-left {
-  animation: car-left 47s infinite;
-  animation-delay: 6s;
-}
-@keyframes car-left {
-  0% {
-    transform: translateX(0);
-    animation-timing-function: steps(492, end);
-  }
-  60%,
-  100% {
-    transform: translateX(calc(var(--px) * -492px));
-  }
-}
-.car-right {
-  animation: car-right 61s infinite;
-  animation-delay: 21s;
-}
-@keyframes car-right {
-  0% {
-    transform: translateX(0);
-    animation-timing-function: steps(492, end);
-  }
-  52%,
-  100% {
-    transform: translateX(calc(var(--px) * 492px));
-  }
-}
-
-.glint {
-  animation: glint calc(1.9s + var(--i) * 0.31s) steps(1, end) infinite;
-  animation-delay: calc(var(--i) * -0.7s);
-}
-@keyframes glint {
-  0%,
-  55% {
-    opacity: 0;
-  }
-  60% {
-    opacity: 1;
-  }
-  75% {
-    opacity: 0.5;
-  }
-  90%,
-  100% {
-    opacity: 0;
-  }
-}
-
-/* By day. Teros cross from right to left in the first half of each
-   minute, one scene pixel at a time, then wait off-screen. */
-.flock {
-  will-change: transform;
-  animation: fly 60s infinite;
-  animation-delay: 4s;
-}
-@keyframes fly {
-  0% {
-    transform: translateX(0);
-    animation-timing-function: steps(540, end);
-  }
-  50%,
-  100% {
-    transform: translateX(calc(var(--px) * -540px));
-  }
-}
-.bird {
-  animation: frames 480ms steps(2, end) infinite;
-  animation-delay: calc(var(--i) * -170ms);
-}
-
-/* Each cow grazes, then looks up for a moment, out of step with the
-   others. */
-.cow {
-  animation: graze calc(6s + var(--i) * 2.3s) steps(1, end) infinite;
-  animation-delay: calc(var(--i) * -3.1s);
-}
-@keyframes graze {
-  0%,
-  70% {
-    background-position-x: 0;
-  }
-  72%,
-  90% {
-    background-position-x: calc(var(--w) * var(--px) * -1px);
-  }
-}
-
-/* Butterflies flutter in a loop over the grass, zigzagging at 45
-   degrees, a pixel a step, their wings opening and shutting. */
-.butterfly {
+/* The needle climbs in along its line (30 degrees: 2 across for each 1
+   up, near enough), then drifts forward and back. */
+.needle {
   animation:
-    flutter calc(6s + var(--i) * 1.3s) infinite,
-    frames 260ms steps(2, end) infinite;
-  animation-delay: calc(var(--i) * -2.3s), calc(var(--i) * -90ms);
+    climb 1100ms var(--ease) 200ms both,
+    cruise 7s ease-in-out 1300ms infinite alternate;
 }
-@keyframes flutter {
-  0% {
-    transform: translate(0, 0);
-    animation-timing-function: steps(4, end);
-  }
-  14.29% {
-    transform: translate(calc(var(--px) * 4px), calc(var(--px) * -4px));
-    animation-timing-function: steps(4, end);
-  }
-  28.57% {
-    transform: translate(calc(var(--px) * 8px), 0);
-    animation-timing-function: steps(3, end);
-  }
-  39.29% {
-    transform: translate(calc(var(--px) * 11px), calc(var(--px) * -3px));
-    animation-timing-function: steps(3, end);
-  }
-  50% {
-    transform: translate(calc(var(--px) * 14px), 0);
-    animation-timing-function: steps(4, end);
-  }
-  64.29% {
-    transform: translate(calc(var(--px) * 10px), calc(var(--px) * 4px));
-    animation-timing-function: steps(4, end);
-  }
-  78.57% {
-    transform: translate(calc(var(--px) * 6px), 0);
-    animation-timing-function: steps(3, end);
-  }
-  89.29% {
-    transform: translate(calc(var(--px) * 3px), calc(var(--px) * 3px));
-    animation-timing-function: steps(3, end);
-  }
-  100% {
-    transform: translate(0, 0);
-  }
-}
-
-/* By night. The moon rises a few pixels as the page loads, and the
-   houses' lights come on in turn; two of them go off now and then. */
-@media (prefers-color-scheme: dark) {
-  .orb {
-    animation: moon-rise 5s steps(8, end) both;
-  }
-}
-@keyframes moon-rise {
-  from {
-    transform: translateY(calc(var(--px) * 8px));
-  }
-}
-
-.light {
-  animation: light-on 1ms steps(1, end) backwards;
-  animation-delay: calc(2.4s + var(--i) * 0.45s);
-}
-@keyframes light-on {
+@keyframes climb {
   from {
     opacity: 0;
+    translate: -120px 0;
   }
 }
-.light-off {
-  animation: light-off calc(40s + var(--i) * 3s) steps(1, end) infinite backwards;
-  animation-delay: calc(2.4s + var(--i) * 0.45s);
-}
-@keyframes light-off {
-  0%,
-  20% {
-    opacity: 0;
-  }
-  20.01%,
-  100% {
-    opacity: 1;
+@keyframes cruise {
+  to {
+    translate: 16px 0;
   }
 }
 
-.star {
-  animation: twinkle calc(2.6s + var(--i) * 0.37s) steps(1, end) infinite;
-  animation-delay: calc(var(--i) * -0.83s);
+.twinkle {
+  animation: twinkle 3.4s steps(2, end) infinite;
+  animation-delay: var(--d, 0s);
 }
 @keyframes twinkle {
-  0% {
-    opacity: 0.9;
-  }
-  35% {
-    opacity: 0.35;
-  }
   50% {
-    opacity: 0.9;
-  }
-  80% {
-    opacity: 0.55;
+    opacity: 0.25;
   }
 }
 
-/* A star shoots every twenty seconds or so: down and to the left, thirty
-   pixels in under a second. */
-.meteor {
-  animation: meteor 19s infinite;
-  animation-delay: 7s;
+.blink {
+  animation: blink 1.6s steps(1, end) infinite;
+  animation-delay: var(--d, 0s);
 }
-@keyframes meteor {
-  0%,
-  95% {
-    opacity: 0;
-    transform: translate(0, 0);
-    animation-timing-function: steps(1, end);
-  }
-  95.01% {
-    opacity: 1;
-    transform: translate(0, 0);
-    animation-timing-function: steps(30, end);
-  }
-  99.5% {
-    opacity: 1;
-    transform: translate(calc(var(--px) * -30px), calc(var(--px) * 30px));
-  }
-  100% {
-    opacity: 0;
-    transform: translate(calc(var(--px) * -30px), calc(var(--px) * 30px));
-  }
-}
-
-/* Bats flit in loops above the windmill, their wings beating fast. */
-.bat {
-  animation:
-    flit calc(4.2s + var(--i) * 0.9s) infinite,
-    frames 180ms steps(2, end) infinite;
-  animation-delay: calc(var(--i) * -1.7s), calc(var(--i) * -60ms);
-}
-@keyframes flit {
-  0% {
-    transform: translate(0, 0);
-    animation-timing-function: steps(6, end);
-  }
-  20% {
-    transform: translate(calc(var(--px) * 6px), calc(var(--px) * -6px));
-    animation-timing-function: steps(5, end);
-  }
-  37% {
-    transform: translate(calc(var(--px) * 11px), calc(var(--px) * -1px));
-    animation-timing-function: steps(9, end);
-  }
-  67% {
-    transform: translate(calc(var(--px) * 2px), calc(var(--px) * 8px));
-    animation-timing-function: steps(4, end);
-  }
-  80% {
-    transform: translate(calc(var(--px) * -2px), calc(var(--px) * 4px));
-    animation-timing-function: steps(2, end);
-  }
-  87% {
-    transform: translate(calc(var(--px) * -2px), calc(var(--px) * 2px));
-    animation-timing-function: steps(2, end);
-  }
-  100% {
-    transform: translate(0, 0);
-  }
-}
-
-/* Each firefly glows for a moment, rising a pixel or two, then goes dark
-   for a few seconds, out of step with the others. */
-.firefly {
-  animation: glow calc(4.2s + var(--i) * 0.61s) steps(1, end) infinite;
-  animation-delay: calc(var(--i) * -1.37s);
-}
-@keyframes glow {
-  0% {
-    opacity: 0;
-    transform: translateY(0);
-  }
-  62% {
-    opacity: 0.6;
-  }
-  68% {
-    opacity: 1;
-    transform: translateY(calc(var(--px) * -1px));
-  }
-  78% {
-    opacity: 0.6;
-    transform: translateY(calc(var(--px) * -2px));
-  }
-  84%,
-  100% {
-    opacity: 0;
-    transform: translateY(calc(var(--px) * -2px));
+@keyframes blink {
+  50% {
+    opacity: 0.35;
   }
 }
 
@@ -1038,7 +848,7 @@ html:not(:has(#motion:checked)) *::backdrop {
 }
 
 /* Windows contrast themes: hairlines become solid system lines, so the
-   structure survives; the scene keeps its own colours. */
+   structure survives; the paint, lamps and year keep their own colours. */
 @media (forced-colors: active) {
   * {
     border-color: CanvasText;

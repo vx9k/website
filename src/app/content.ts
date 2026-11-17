@@ -11,6 +11,8 @@ export const site = {
   description:
     "vx is a software engineer in Uruguay and a co-founder of Poopware Laboratories. Work: a terminal emulator in Rust, a voxel sandbox in C and Vulkan, a code editor in Zig, a Linux distribution and its boot stack.",
   github: "https://github.com/vx9k",
+  // vx's X account, linked from the GitHub profile.
+  x: "https://x.com/vx9000k",
   source: "https://github.com/vx9k/website",
 };
 
@@ -18,9 +20,10 @@ export const intro = {
   // vx's GitHub profile is marked available for hire.
   status: "Open to work",
   // From vx's GitHub profile (Software Engineer, Uruguay; co-founder of
-  // Poopware Laboratories), and its own words for the lede.
+  // Poopware Laboratories).
   line: "I’m vx, a software engineer in Uruguay.",
-  lede: "I write systems software from the bottom up: C on Linux down to PID 1, Rust and Zig for the tools I live in, Vulkan when it has to draw, and TypeScript when it has to be on the web.",
+  // vx's words.
+  lede: "I build my own tools, from the init system to the terminal I use every day.",
   // The lab vx co-founded, from the profile.
   lab: { name: "Poopware Laboratories", href: "https://github.com/poopware-laboratories", role: "Co-founder" },
 };

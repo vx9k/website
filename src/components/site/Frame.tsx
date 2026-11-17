@@ -1,42 +1,49 @@
 import type { ReactNode } from "react";
-import Mark from "./Mark";
+import Lamps from "./Lamps";
 import { MotionScript, MotionToggle } from "./Motion";
-import Poster from "./Poster";
+import { Needle, Texture } from "./Paint";
 
-/** The one screen every page is: a poster and a console.
+/** The one screen every page is, laid out like a 1960s Aeroflot poster.
  *
- *  On wide screens the poster stands down the left, full height, with its
- *  paper strip at the foot, and the console fills the right: the header
- *  and the page's content on one solid panel, behind an orange and black
- *  pillar like those on an ES EVM mainframe. On narrower screens the
- *  header runs across the top, the poster shows through a band below it,
- *  framed on the aircraft, and the console fills the rest.
+ *  Above, the painted field: the wordmark and the header on it, and the
+ *  slogan (the page's h1) resting at its foot. Across the middle, the lamp
+ *  bar: vx's contribution calendar as a mainframe console's lamp row.
+ *  Below, the paper strip: the poster's band of plain paper, here holding
+ *  the page's content. The field takes whatever height is left, so the
+ *  whole thing is one screen at every size.
  *
- *  Nothing sits over the poster, so the text never depends on what's
- *  behind it. */
-export default function Frame({ nav, children }: { nav?: ReactNode; children: ReactNode }) {
+ *  The only text on the paint is the header and the slogan, in the
+ *  field's ink, kept clear of the needle on every layout. */
+export default function Frame({ slogan, nav, children }: { slogan: ReactNode; nav?: ReactNode; children: ReactNode }) {
   return (
     <div className="frame">
-      <header className="frame-head">
-        <a href="/" className="brand">
-          <Mark />
-          vx
-        </a>
-        <nav aria-label="More">
-          <ul className="flex items-center gap-1 sm:gap-2">
-            {nav}
-            <li>
-              <MotionToggle />
-            </li>
-          </ul>
-        </nav>
-      </header>
-      <MotionScript />
+      <div className="field">
+        <div aria-hidden className="field-paint">
+          <Texture />
+        </div>
+        <header className="field-head">
+          <a href="/" className="wordmark" aria-label="vx, home">
+            VX
+          </a>
+          <nav aria-label="More">
+            <ul className="nav">
+              {nav}
+              <li>
+                <MotionToggle />
+              </li>
+            </ul>
+          </nav>
+        </header>
+        <MotionScript />
+        <div aria-hidden className="needle-box">
+          <Needle />
+        </div>
+        <h1 className="slogan">{slogan}</h1>
+      </div>
 
-      <Poster />
-      <div aria-hidden className="pillar" />
+      <Lamps />
 
-      <main id="main" tabIndex={-1} className="frame-main focus:outline-none">
+      <main id="main" tabIndex={-1} className="strip focus:outline-none">
         {children}
       </main>
     </div>
