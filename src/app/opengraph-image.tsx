@@ -1,58 +1,62 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
-import mark from "@/components/site/mark.json";
 import { intro, site } from "./content";
+import { year } from "./github";
 
-// The preview shown when the site is shared, drawn once at build time,
-// laid out like the page: the panel on the left, with the mark, the name
-// and the headline in the dark theme, and the night scene on the right, a
-// crop around the Cerro, the moon and the windmill at
-// exactly three times its size (scripts/sunset.mjs), so it's placed at its
-// own size and never resampled.
+// The preview shown when the site is shared, drawn once at build time as
+// the page is: the night field with the slogan and the needle, and the
+// paper strip with the wordmark and the year in red. next/og can't take
+// next/font's files, so Antonio's 700 comes from src/assets/fonts/ (SIL
+// Open Font License, OFL.txt there); it sets every word.
 export const dynamic = "force-static";
 export const alt = `${site.name}: ${intro.line}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const scene = `data:image/png;base64,${await readFile(join(process.cwd(), "src/assets/scene-og.png"), "base64")}`;
-// The site's face, in the two weights the card uses. next/og can't take
-// next/font's files, so these are its static instances from Google Fonts
-// (SIL Open Font License, src/assets/fonts/OFL.txt).
-const face = (weight: 400 | 500) => readFile(join(process.cwd(), `src/assets/fonts/atkinson-hyperlegible-next-${weight}.ttf`));
-const fonts = [
-  { name: "Atkinson Hyperlegible Next", data: await face(400), weight: 400 as const, style: "normal" as const },
-  { name: "Atkinson Hyperlegible Next", data: await face(500), weight: 500 as const, style: "normal" as const },
-];
+const antonio = await readFile(join(process.cwd(), "src/assets/fonts/antonio-700.ttf"));
+
+// The page's palette (globals.css), as hex for the renderer.
+const night = "#0b1030";
+const paper = "#ece3cf";
+const ink = "#141a3a";
+const red = "#d3261a";
+const white = "#eef1f6";
+const cobalt = "#4c6cd0";
 
 export default function Image() {
+  const L = 420;
   return new ImageResponse(
     (
-      <div style={{ width: "100%", height: "100%", display: "flex", background: "#0e0f16", color: "#f1ece3", fontFamily: "Atkinson Hyperlegible Next" }}>
-        <div
-          style={{
-            width: 600,
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            padding: "64px 64px 72px",
-            background: "#141621",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 20, fontSize: 28, color: "#a6a9b6" }}>
-            <svg viewBox={`0 0 ${mark.size} ${mark.size}`} width={51} height={51} shapeRendering="crispEdges">
-              {mark.runs.map(([x, y, n, fill]) => (
-                <rect key={`${x}-${y}`} x={x} y={y} width={n} height={1} fill={fill as string} />
-              ))}
-            </svg>
-            kthread.dev
-          </div>
-          <div style={{ fontSize: 60, fontWeight: 500, lineHeight: 1.08, letterSpacing: "-0.025em" }}>{intro.line}</div>
+      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", fontFamily: "Antonio", background: night }}>
+        <div style={{ position: "relative", flex: 1, display: "flex", alignItems: "flex-end", padding: "0 64px 40px" }}>
+          <svg width="560" height="330" viewBox="-260 -270 700 400" style={{ position: "absolute", right: 40, top: 30 }}>
+            <g transform="rotate(-30)">
+              <line x1="-200" y1="16" x2="250" y2="16" stroke="#7f9be0" strokeWidth="5" opacity="0.5" />
+              <line x1="-180" y1="-30" x2="250" y2="-30" stroke={white} strokeWidth="6" opacity="0.4" />
+              <line x1="-230" y1="44" x2="250" y2="44" stroke="#7f9be0" strokeWidth="8" opacity="0.25" />
+              <path d={`M0 -20L${L} -3L${L + 60} 0L${L} 3L0 22Z`} fill={white} />
+              <path d={`M0 -3L${L + 40} -0.8L${L + 40} 0.8L0 3Z`} fill={red} />
+              <path d={`M${L * 0.5} 6L${L * 0.1} 140L${-L * 0.03} 140L${L * 0.02} 12Z`} fill={white} />
+              <path d={`M${L * 0.5} 6L${L * 0.1} 140L${L * 0.07} 140L${L * 0.46} 6Z`} fill={cobalt} />
+              <path d={`M${L * 0.05} -18L${-L * 0.01} -140L${L * 0.07} -140L${L * 0.2} -14Z`} fill={white} />
+              <rect x={L * 0.035} y="-104" width="30" height="18" fill={red} />
+            </g>
+          </svg>
+          <div style={{ display: "flex", width: 680, fontSize: 104, lineHeight: 1, color: white, textTransform: "uppercase" }}>{intro.line}</div>
         </div>
-        <img src={scene} width={600} height={630} alt="" />
+        <div style={{ height: 130, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 64px", background: paper, color: ink }}>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ fontSize: 56, lineHeight: 1, letterSpacing: "0.08em", color: "#7d8ca3" }}>VX</div>
+            <div style={{ fontSize: 22, color: "#4d5e78" }}>kthread.dev</div>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", fontSize: 58, lineHeight: 0.86, color: red, alignItems: "flex-end" }}>
+            <span>{year.slice(0, 2)}</span>
+            <span>{year.slice(2)}</span>
+          </div>
+        </div>
       </div>
     ),
-    { ...size, fonts },
+    { ...size, fonts: [{ name: "Antonio", data: antonio, weight: 700, style: "normal" }] },
   );
 }

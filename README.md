@@ -1,8 +1,8 @@
 # website
 
-Source for [kthread.dev](https://kthread.dev), the personal site of [vx](https://github.com/vx9k): a one-page portfolio of vx's work.
+Source for [kthread.dev](https://kthread.dev), the personal site of [vx](https://github.com/vx9k): a one-page portfolio of vx's work, designed as a 1960s Soviet airline poster with a mainframe console's lamps across it.
 
-It's a static site built with Next.js and Tailwind CSS, exported to plain HTML and served as static assets from Cloudflare Workers. A small Worker on `/` hands agents that ask for Markdown (`Accept: text/markdown`) the page as Markdown instead of HTML.
+It's a static site built with Next.js and Tailwind CSS, exported to plain HTML and served as static assets from Cloudflare Workers. Its GitHub numbers (the contribution calendar, each project's commits and stars, the list of repositories) are refreshed every day by a workflow, the same way vx's profile README is. A small Worker on `/` hands agents that ask for Markdown (`Accept: text/markdown`) the page as Markdown instead of HTML.
 
 The brief and the rules for changing the site are in [`AGENTS.md`](AGENTS.md).
 
@@ -32,15 +32,16 @@ src/
 │   ├── page.tsx          the page
 │   ├── not-found.tsx     the 404 page
 │   ├── content.ts        everything the page says: intro, products, skills, contact
+│   ├── github.ts         helpers for the GitHub data
 │   ├── globals.css       design tokens and styles
 │   ├── index.md/         the page as Markdown, for agents
 │   ├── robots.txt/       robots.txt, with a Content Signal
 │   └── opengraph-image.tsx, sitemap.ts, manifest.ts, icons
-├── assets/               the still scene at 3x, for the share image
-└── components/site/      the frame, the scene, the dialogs, the motion switch and the mark
+├── data/github.json      what the daily workflow last read from GitHub
+├── assets/fonts/         the face for the share image
+└── components/site/      the frame, the paint, the lamps, the dialogs and the motion switch
 public/
 ├── work/                 product screenshots (AVIF and WebP)
-├── scene/                the pixel-art scene's layers (PNGs at their real size)
 ├── _headers              security headers and caching
 └── _redirects            old /en, /es and /pt links go to /
 ```
@@ -50,7 +51,7 @@ public/
 | `AGENTS.md` | The guide for anyone, or any coding agent, changing the site: the brief, content rules, accessibility, security. `CLAUDE.md` points to it. |
 | `wrangler.jsonc` | Cloudflare Workers config: serves `out/` as static assets on kthread.dev, runs `src/worker.ts` for `/` only, and turns on the Worker's logs. |
 | `scripts/csp.mjs` | Runs after `next build`: hashes every inline script in `out/` into the CSP. |
-| `scripts/sunset.mjs` | Draws the pixel art pixel by pixel: Cerro Pan de Azúcar by day and by night, in layers and sprites the page animates, and the mark used as the favicon. Writes indexed PNGs, their positions and the favicon's SVG. Run it with `node scripts/sunset.mjs` after changing the art. |
+| `scripts/github.mjs` | Reads vx's repositories, commits, stars, languages, releases and contribution calendar from the GitHub API and writes `src/data/github.json`. `.github/workflows/github-data.yml` runs it daily and commits the file when it changes, which redeploys the site. |
 
 ## Agent tooling
 

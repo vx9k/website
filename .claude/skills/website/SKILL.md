@@ -16,8 +16,8 @@ this one session; there's no need for subagents on a site this size.
   (`src/app/page.tsx`), the Markdown version (`src/app/index.md/route.ts`)
   and the JSON-LD all read from it, so a new field on `Product` usually
   needs all three updated.
-- One product: `src/components/site/Product.tsx`. Sections:
-  `src/components/site/Section.tsx`. Tokens and utilities:
+- One product's dialog: `src/components/site/ProjectDialog.tsx`. The
+  screen: `src/components/site/Frame.tsx`. Tokens and utilities:
   `src/app/globals.css`.
 - Headers and CSP: `public/_headers`, filled in by `scripts/csp.mjs` after
   `next build`. The `/` Worker: `src/worker.ts`.
@@ -94,41 +94,34 @@ this one session; there's no need for subagents on a site this size.
 
 ## Changing the design
 
-`AGENTS.md` sets the direction (one screen, a panel beside Pan de Azúcar in pixel art, by day in the light theme and by night in the dark one, motion in CSS with a switch, quiet chrome);
-talk to vx before moving away from it. For a design pass, use the `unslop`
-skill's audit and passes, inside the rules in `AGENTS.md`.
+`AGENTS.md` sets the direction (one screen laid out as a 1960s Aeroflot
+poster: the painted field with the slogan, the lamp bar, the paper strip;
+Antonio, Golos Text and Michroma; motion in CSS with a switch); talk to vx
+before moving away from it. For a design pass, use the `unslop` skill's
+audit and passes, inside the rules in `AGENTS.md`.
 
-The scene and the mark are drawn in `scripts/sunset.mjs`, the scene in
-layers. After changing them, write a still frame and look at it, and at
-the mark, enlarged without smoothing before building:
+The paint is SVG in `src/components/site/Paint.tsx`: `Texture` (washes,
+grain, brush streaks, stars) fills the field, and `Needle` sits in its own
+box (`.needle-box`), beside the slogan from 64rem up and above it below
+that, so the two never cross. Every colour, the filters' included, is a
+token in `globals.css` (`--paint-*`, through `flood-color` and
+`flood-opacity` on the filters), so a colour change is one token per
+theme. Keep the paint flat: noise cut into a few steps of alpha, never a
+gradient. New motion goes in `globals.css`, `transform`, `translate` and
+`opacity` only, and must stop when the Motion switch is off (the rules at
+the end of the file stop every animation and transition).
 
-```sh
-node scripts/sunset.mjs --preview=/tmp/scene   # /tmp/scene-day.png and /tmp/scene-night.png
-convert /tmp/scene-day.png -filter point -resize 300% /tmp/day3.png
-# the mark at 10x is src/app/apple-icon.png
-```
-
-Keep each palette's `page` colour (the top of its sky) equal to
-`--stage` for its theme in `globals.css`, and the night's `soil` equal to
-the dark `--background`, or the scene gets a visible edge. A new material
-needs a colour in both palettes (`DAY` starts from `NIGHT`). The
-page picks a whole-number scale and where to anchor the scene in
-`.stage` and `.scene`: centred on the Cerro in the narrow layouts' window,
-filling the screen behind the wide panel; new
-motion goes in `globals.css` in whole scene pixels with `steps()`, and
-must stop when the Motion switch is off (the rules at the end of the
-file stop every animation and transition).
+The lamp bar and each product's numbers come from `src/data/github.json`.
+Don't edit it by hand: run `GITHUB_TOKEN=... node scripts/github.mjs`, or
+let the daily workflow do it.
 
 After any change, check at 1440×900, 1366×768, 1920×1080, 768×1024,
 390×844 and 375×667, in both colour schemes (Playwright's `colorScheme`), with Playwright's Chromium against
 `pnpm wrangler dev`, that:
 
-- the page doesn't scroll (`scrollHeight` equals `innerHeight`), and the
-  panel's content fits it (`.frame-main`'s `scrollHeight` against its
-  `clientHeight`)
-- the cross (scene pixel 345, 158) is in the open, inside the stage and
-  outside the panel, and so is the sun or moon (414, 92) on all but the
-  shortest phone
+- the page doesn't scroll (`scrollHeight` equals `innerHeight`)
+- the needle and the slogan don't overlap, and the slogan keeps 4.5:1
+  over the paint behind it in both themes
 - every line of text keeps 4.5:1 over what's rendered behind it: hide the
   text, screenshot, and compare each line's colour with every pixel in
   its box, in a separate blank page (the CSP blocks `data:` images)

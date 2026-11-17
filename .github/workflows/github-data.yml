@@ -1,0 +1,51 @@
+name: Refresh GitHub data
+
+# Daily, like the profile README's projects list: scripts/github.mjs
+# rewrites src/data/github.json from the GitHub API, and if anything
+# changed, the commit to main makes Workers Builds rebuild and deploy the
+# site with the new numbers.
+
+on:
+  schedule:
+    - cron: "41 6 * * *" # daily, 06:41 UTC
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/github.mjs
+      - .github/workflows/github-data.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: github-data
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Refresh src/data/github.json
+        run: node scripts/github.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit if changed
+        run: |
+          if git diff --quiet -- src/data/github.json; then
+            echo "Nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/github.json
+          git commit -m "Refresh GitHub data"
+          git push

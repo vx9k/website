@@ -7,7 +7,7 @@
  *  instead (the data-js rule in globals.css). */
 export function MotionToggle() {
   return (
-    <label className="inline-flex min-h-10 cursor-pointer items-center gap-2.5 text-sm text-muted hover:text-foreground">
+    <label className="navlink cursor-pointer gap-2.5">
       <input id="motion" type="checkbox" role="switch" defaultChecked className="peer sr-only" />
       <span aria-hidden className="switch" />
       Motion

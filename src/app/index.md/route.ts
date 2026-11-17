@@ -1,4 +1,5 @@
 import { contact, intro, products, sections, site, skills } from "../content";
+import { day, github, statsFor } from "../github";
 
 // The page as Markdown, for agents: src/worker.ts serves it at "/" to
 // requests that ask for text/markdown, and it's also at /index.md. It's
@@ -8,7 +9,17 @@ export const dynamic = "force-static";
 const title = (id: (typeof sections)[number]["id"]) => sections.find((s) => s.id === id)!.title;
 
 function markdown() {
-  const lines = [`# ${site.title}`, "", intro.status, "", intro.line, "", intro.lede, "", `## ${title("work")}`];
+  const lines = [
+    `# ${site.title}`,
+    "",
+    intro.status,
+    "",
+    intro.line,
+    "",
+    `${intro.lede} ${intro.lab.role} of [${intro.lab.name}](${intro.lab.href}).`,
+    "",
+    `## ${title("work")}`,
+  ];
 
   for (const p of products) {
     lines.push("", `### ${p.name}`, "", `${p.kind}. ${p.summary}`);
@@ -22,10 +33,18 @@ function markdown() {
       `License: ${p.license}`,
       `Repository: <${p.repo}>`,
     ];
+    const live = statsFor(p.repo);
+    if (live) facts.push(`On GitHub: ${live.commits} commits by vx, ${live.stars} stars, last pushed ${day(live.pushed)}`);
+    if (live?.release) facts.push(`Latest release: [${live.release.tag}](${live.release.url})`);
     if (p.live) facts.push(`Live: [${p.live.label}](${p.live.href})`);
     lines.push("", facts.join("\\\n"));
     for (const img of p.images ?? []) lines.push("", `![${img.alt}](${site.url}${img.src}-${img.widths.at(-1)}.webp)`);
   }
+
+  lines.push("", `## ${title("repos")}`, "", `Every public repository vx has committed to, refreshed from GitHub on ${day(github.generated)}.`, "");
+  for (const r of github.repos)
+    lines.push(`- [${r.name}](${r.url})${r.description ? `: ${r.description}` : ""} (${r.language ?? "no language"}, ${r.commits} commits by vx, ${r.stars} stars)`);
+  if (github.calendar) lines.push("", `${github.calendar.total} contributions on GitHub in the year to ${day(github.calendar.end)}.`);
 
   lines.push("", `## ${title("skills")}`);
   for (const g of skills) lines.push("", `### ${g.group}`, "", ...g.items.map((item) => `- ${item}`));
@@ -40,6 +59,7 @@ function markdown() {
     "",
     `- Email: <mailto:${contact.email}>`,
     `- GitHub: <${site.github}>`,
+    `- X: <${site.x}>`,
     `- Source for this site: <${site.source}>`,
   );
 
