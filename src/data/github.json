@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-17",
+  "generated": "2026-11-18",
   "user": "vx9k",
   "org": "poopware-laboratories",
   "repos": [
@@ -28,8 +28,8 @@
       "description": "A Minecraft-style voxel sandbox written from scratch in C11 and Vulkan, with physics that tries to behave like the real world, a simulated human body instead of a health bar, and a renderer tuned for low-end hardware.",
       "language": "C",
       "stars": 1,
-      "commits": 285,
-      "pushed": "2026-11-17",
+      "commits": 304,
+      "pushed": "2026-11-18",
       "fork": false,
       "release": null
     },
@@ -39,9 +39,9 @@
       "from": "own",
       "url": "https://github.com/vx9k/website",
       "description": "Source for kthread.dev: a static Next.js + Tailwind portfolio served from Cloudflare Workers",
-      "language": "JavaScript",
+      "language": "TypeScript",
       "stars": 0,
-      "commits": 81,
+      "commits": 82,
       "pushed": "2026-11-17",
       "fork": false,
       "release": null
@@ -129,44 +129,44 @@
       }
     }
   ],
-  "commits": 821,
+  "commits": 841,
   "languages": [
     {
       "name": "Rust",
-      "share": 54.8
+      "share": 52.2
     },
     {
       "name": "C",
-      "share": 22.1
+      "share": 25.8
     },
     {
       "name": "Zig",
-      "share": 16
+      "share": 15.3
     },
     {
       "name": "Python",
-      "share": 2.9
+      "share": 2.8
     },
     {
       "name": "Objective-C",
-      "share": 0.9
-    },
-    {
-      "name": "JavaScript",
       "share": 0.8
     },
     {
       "name": "Shell",
-      "share": 0.8
+      "share": 0.7
     },
     {
       "name": "CMake",
       "share": 0.6
+    },
+    {
+      "name": "TypeScript",
+      "share": 0.6
     }
   ],
   "calendar": {
-    "total": 1306,
-    "end": "2026-11-17",
+    "total": 1344,
+    "end": "2026-11-18",
     "weeks": [
       [
         0,
@@ -638,6 +638,7 @@
       ],
       [
         4,
+        2,
         2,
         1
       ]
