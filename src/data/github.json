@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-21",
+  "generated": "2026-11-22",
   "user": "vx9k",
   "org": "poopware-laboratories",
   "repos": [
@@ -12,7 +12,7 @@
       "language": "Rust",
       "stars": 5,
       "commits": 391,
-      "pushed": "2026-11-16",
+      "pushed": "2026-11-21",
       "fork": false,
       "release": {
         "tag": "v26.11.85",
@@ -42,7 +42,7 @@
       "language": "TypeScript",
       "stars": 0,
       "commits": 82,
-      "pushed": "2026-11-20",
+      "pushed": "2026-11-21",
       "fork": false,
       "release": null
     },
@@ -133,15 +133,15 @@
   "languages": [
     {
       "name": "Rust",
-      "share": 51
+      "share": 51.6
     },
     {
       "name": "C",
-      "share": 27.5
+      "share": 27.1
     },
     {
       "name": "Zig",
-      "share": 14.9
+      "share": 14.8
     },
     {
       "name": "Python",
@@ -165,8 +165,8 @@
     }
   ],
   "calendar": {
-    "total": 1496,
-    "end": "2026-11-21",
+    "total": 1534,
+    "end": "2026-11-22",
     "weeks": [
       [
         0,
@@ -274,15 +274,6 @@
         0,
         0,
         0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
         1
       ],
       [
@@ -601,7 +592,7 @@
         0
       ],
       [
-        1,
+        2,
         4,
         3,
         1,
@@ -619,7 +610,7 @@
         1
       ],
       [
-        2,
+        3,
         2,
         0,
         1,
@@ -644,6 +635,9 @@
         4,
         2,
         0
+      ],
+      [
+        3
       ]
     ]
   }
