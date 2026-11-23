@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-22",
+  "generated": "2026-11-23",
   "user": "vx9k",
   "org": "poopware-laboratories",
   "repos": [
@@ -12,12 +12,12 @@
       "language": "Rust",
       "stars": 5,
       "commits": 391,
-      "pushed": "2026-11-21",
+      "pushed": "2026-11-22",
       "fork": false,
       "release": {
-        "tag": "v26.11.85",
-        "date": "2026-11-16",
-        "url": "https://github.com/poopware-laboratories/poopterm/releases/tag/v26.11.85"
+        "tag": "v26.11.86",
+        "date": "2026-11-22",
+        "url": "https://github.com/poopware-laboratories/poopterm/releases/tag/v26.11.86"
       }
     },
     {
@@ -28,8 +28,8 @@
       "description": "A Minecraft-style voxel sandbox written from scratch in C11 and Vulkan, with physics that tries to behave like the real world, a simulated human body instead of a health bar, and a renderer tuned for low-end hardware.",
       "language": "C",
       "stars": 1,
-      "commits": 310,
-      "pushed": "2026-11-18",
+      "commits": 321,
+      "pushed": "2026-11-23",
       "fork": false,
       "release": null
     },
@@ -42,7 +42,7 @@
       "language": "TypeScript",
       "stars": 0,
       "commits": 82,
-      "pushed": "2026-11-21",
+      "pushed": "2026-11-22",
       "fork": false,
       "release": null
     },
@@ -129,19 +129,19 @@
       }
     }
   ],
-  "commits": 847,
+  "commits": 858,
   "languages": [
     {
       "name": "Rust",
-      "share": 51.6
+      "share": 50.9
     },
     {
       "name": "C",
-      "share": 27.1
+      "share": 28.3
     },
     {
       "name": "Zig",
-      "share": 14.8
+      "share": 14.4
     },
     {
       "name": "Python",
@@ -165,8 +165,8 @@
     }
   ],
   "calendar": {
-    "total": 1534,
-    "end": "2026-11-22",
+    "total": 1650,
+    "end": "2026-11-23",
     "weeks": [
       [
         0,
@@ -478,7 +478,7 @@
         0,
         1,
         0,
-        2,
+        1,
         1,
         0,
         0
@@ -566,7 +566,7 @@
       ],
       [
         2,
-        2,
+        1,
         1,
         0,
         0,
@@ -583,26 +583,26 @@
         0
       ],
       [
+        1,
         2,
+        1,
         3,
         1,
-        4,
-        1,
         1,
         0
       ],
       [
-        2,
+        1,
         4,
-        3,
+        2,
         1,
         0,
         0,
-        2
+        1
       ],
       [
-        4,
-        4,
+        3,
+        3,
         1,
         0,
         0,
@@ -610,8 +610,8 @@
         1
       ],
       [
-        3,
         2,
+        1,
         0,
         1,
         1,
@@ -621,23 +621,24 @@
       [
         1,
         1,
-        2,
+        1,
         2,
         1,
         0,
         1
       ],
       [
-        4,
+        3,
         2,
         2,
+        1,
         2,
-        4,
-        2,
+        1,
         0
       ],
       [
-        3
+        4,
+        1
       ]
     ]
   }
